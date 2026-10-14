@@ -1,0 +1,31 @@
+appId: com.hienvs.app
+productName: hienvs
+directories:
+  buildResources: build
+files:
+  - out/**
+  - package.json
+asarUnpack:
+  - '**/node_modules/lzma-native/**'
+extraResources:
+  - from: resources/registry
+    to: registry
+win:
+  target:
+    - nsis
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  artifactName: ${productName}-${version}-${arch}-setup.${ext}
+mac:
+  target:
+    - dmg
+  identity: null
+  category: public.app-category.developer-tools
+linux:
+  target:
+    - AppImage
+    - deb
+  category: Development
+npmRebuild: false

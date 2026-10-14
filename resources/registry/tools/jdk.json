@@ -1,0 +1,417 @@
+{
+  "schemaVersion": 1,
+  "id": "jdk",
+  "name": "JDK",
+  "description": "Java 开发工具包，按发行商（Temurin / Corretto / Zulu / Oracle OpenJDK）统一管理，支持多版本共存与一键切换",
+  "category": "language",
+  "homepage": "https://openjdk.org",
+  "env": {
+    "vars": [
+      { "name": "JAVA_HOME", "value": "{{currentDir}}", "expand": true }
+    ],
+    "pathDirs": ["bin"]
+  },
+  "distributions": {
+    "temurin": {
+      "name": "Eclipse Temurin",
+      "description": "Eclipse 基金会 Adoptium 工作组的 OpenJDK 发行版",
+      "homepage": "https://adoptium.net",
+      "defaultVersion": "21.0.5+11",
+      "platforms": {
+        "windows": {
+          "archive": "zip",
+          "stripComponents": 1,
+          "assets": {
+            "21.0.5+11": {
+              "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jdk_x64_windows_hotspot_21.0.5_11.zip",
+              "mirrors": [
+                { "name": "清华 TUNA", "url": "https://mirrors.tuna.tsinghua.edu.cn/Adoptium/21/jdk/x64/windows/OpenJDK21U-jdk_x64_windows_hotspot_21.0.5_11.zip" }
+              ]
+            },
+            "11.0.25+9": {
+              "url": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.25%2B9/OpenJDK11U-jdk_x64_windows_hotspot_11.0.25_9.zip",
+              "mirrors": [
+                { "name": "清华 TUNA", "url": "https://mirrors.tuna.tsinghua.edu.cn/Adoptium/11/jdk/x64/windows/OpenJDK11U-jdk_x64_windows_hotspot_11.0.25_9.zip" }
+              ]
+            }
+          },
+          "workflowOverrides": {
+            "install": [
+              {
+                "id": "verify",
+                "insertAfter": "extract",
+                "type": "verify",
+                "run": "\"{{versionDir}}{{sep}}bin{{sep}}java{{ext}}\"",
+                "args": ["-version"],
+                "shell": true,
+                "timeoutSec": 60
+              }
+            ]
+          }
+        },
+        "darwin": {
+          "archive": "tar.gz",
+          "stripComponents": 1,
+          "assets": {
+            "21.0.5+11": {
+              "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jdk_aarch64_mac_hotspot_21.0.5_11.tar.gz",
+              "mirrors": [
+                { "name": "清华 TUNA", "url": "https://mirrors.tuna.tsinghua.edu.cn/Adoptium/21/jdk/aarch64/mac/OpenJDK21U-jdk_aarch64_mac_hotspot_21.0.5_11.tar.gz" }
+              ]
+            }
+          },
+          "workflowOverrides": {
+            "install": [
+              {
+                "id": "extract",
+                "type": "extract",
+                "to": "{{tmpDir}}/jdk"
+              },
+              {
+                "id": "flatten",
+                "insertAfter": "extract",
+                "type": "move",
+                "from": "{{tmpDir}}/jdk/Contents/Home",
+                "to": "{{versionDir}}"
+              },
+              {
+                "id": "cleanup-tmp",
+                "insertAfter": "flatten",
+                "type": "cleanup",
+                "paths": ["{{tmpDir}}"]
+              },
+              {
+                "id": "verify",
+                "insertAfter": "cleanup-tmp",
+                "type": "verify",
+                "run": "\"{{versionDir}}/bin/java\"",
+                "args": ["-version"],
+                "shell": true,
+                "timeoutSec": 60
+              }
+            ]
+          }
+        },
+        "linux": {
+          "archive": "tar.gz",
+          "stripComponents": 1,
+          "assets": {
+            "21.0.5+11": {
+              "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.5%2B11/OpenJDK21U-jdk_x64_linux_hotspot_21.0.5_11.tar.gz",
+              "mirrors": [
+                { "name": "清华 TUNA", "url": "https://mirrors.tuna.tsinghua.edu.cn/Adoptium/21/jdk/x64/linux/OpenJDK21U-jdk_x64_linux_hotspot_21.0.5_11.tar.gz" }
+              ]
+            },
+            "11.0.25+9": {
+              "url": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.25%2B9/OpenJDK11U-jdk_x64_linux_hotspot_11.0.25_9.tar.gz",
+              "mirrors": [
+                { "name": "清华 TUNA", "url": "https://mirrors.tuna.tsinghua.edu.cn/Adoptium/11/jdk/x64/linux/OpenJDK11U-jdk_x64_linux_hotspot_11.0.25_9.tar.gz" }
+              ]
+            }
+          },
+          "workflowOverrides": {
+            "install": [
+              {
+                "id": "verify",
+                "insertAfter": "extract",
+                "type": "verify",
+                "run": "\"{{versionDir}}/bin/java\"",
+                "args": ["-version"],
+                "shell": true,
+                "timeoutSec": 60
+              }
+            ]
+          }
+        }
+      }
+    },
+    "corretto": {
+      "name": "Amazon Corretto",
+      "description": "亚马逊提供的免费 OpenJDK 生产级发行版",
+      "homepage": "https://aws.amazon.com/corretto/",
+      "defaultVersion": "21.0.5.11.1",
+      "platforms": {
+        "windows": {
+          "archive": "zip",
+          "stripComponents": 1,
+          "assets": {
+            "21.0.5.11.1": {
+              "url": "https://corretto.aws/downloads/resources/21.0.5.11.1/amazon-corretto-21.0.5.11.1-windows-x64-jdk.zip"
+            },
+            "17.0.13.11.1": {
+              "url": "https://corretto.aws/downloads/resources/17.0.13.11.1/amazon-corretto-17.0.13.11.1-windows-x64-jdk.zip"
+            }
+          },
+          "workflowOverrides": {
+            "install": [
+              {
+                "id": "verify",
+                "insertAfter": "extract",
+                "type": "verify",
+                "run": "\"{{versionDir}}{{sep}}bin{{sep}}java{{ext}}\"",
+                "args": ["-version"],
+                "shell": true,
+                "timeoutSec": 60
+              }
+            ]
+          }
+        },
+        "darwin": {
+          "archive": "tar.gz",
+          "stripComponents": 1,
+          "assets": {
+            "21.0.5.11.1": {
+              "url": "https://corretto.aws/downloads/resources/21.0.5.11.1/amazon-corretto-21.0.5.11.1-macosx-aarch64-jdk.tar.gz"
+            }
+          },
+          "workflowOverrides": {
+            "install": [
+              {
+                "id": "extract",
+                "type": "extract",
+                "to": "{{tmpDir}}/jdk"
+              },
+              {
+                "id": "flatten",
+                "insertAfter": "extract",
+                "type": "move",
+                "from": "{{tmpDir}}/jdk/Contents/Home",
+                "to": "{{versionDir}}"
+              },
+              {
+                "id": "cleanup-tmp",
+                "insertAfter": "flatten",
+                "type": "cleanup",
+                "paths": ["{{tmpDir}}"]
+              },
+              {
+                "id": "verify",
+                "insertAfter": "cleanup-tmp",
+                "type": "verify",
+                "run": "\"{{versionDir}}/bin/java\"",
+                "args": ["-version"],
+                "shell": true,
+                "timeoutSec": 60
+              }
+            ]
+          }
+        },
+        "linux": {
+          "archive": "tar.gz",
+          "stripComponents": 1,
+          "assets": {
+            "21.0.5.11.1": {
+              "url": "https://corretto.aws/downloads/resources/21.0.5.11.1/amazon-corretto-21.0.5.11.1-linux-x64-jdk.tar.gz"
+            },
+            "17.0.13.11.1": {
+              "url": "https://corretto.aws/downloads/resources/17.0.13.11.1/amazon-corretto-17.0.13.11.1-linux-x64-jdk.tar.gz"
+            }
+          },
+          "workflowOverrides": {
+            "install": [
+              {
+                "id": "verify",
+                "insertAfter": "extract",
+                "type": "verify",
+                "run": "\"{{versionDir}}/bin/java\"",
+                "args": ["-version"],
+                "shell": true,
+                "timeoutSec": 60
+              }
+            ]
+          }
+        }
+      }
+    },
+    "zulu": {
+      "name": "Azul Zulu",
+      "description": "Azul Systems 提供的 OpenJDK 认证构建",
+      "homepage": "https://www.azul.com/downloads/",
+      "defaultVersion": "21.0.4",
+      "platforms": {
+        "windows": {
+          "archive": "zip",
+          "stripComponents": 1,
+          "assets": {
+            "21.0.4": {
+              "url": "https://cdn.azul.com/zulu/bin/zulu21.36.17-ca-jdk21.0.4-win_x64.zip"
+            },
+            "17.0.13": {
+              "url": "https://cdn.azul.com/zulu/bin/zulu17.54.21-ca-jdk17.0.13-win_x64.zip"
+            }
+          },
+          "workflowOverrides": {
+            "install": [
+              {
+                "id": "verify",
+                "insertAfter": "extract",
+                "type": "verify",
+                "run": "\"{{versionDir}}{{sep}}bin{{sep}}java{{ext}}\"",
+                "args": ["-version"],
+                "shell": true,
+                "timeoutSec": 60
+              }
+            ]
+          }
+        },
+        "darwin": {
+          "archive": "tar.gz",
+          "stripComponents": 1,
+          "assets": {
+            "21.0.4": {
+              "url": "https://cdn.azul.com/zulu/bin/zulu21.36.17-ca-jdk21.0.4-macosx_aarch64.tar.gz"
+            }
+          },
+          "workflowOverrides": {
+            "install": [
+              {
+                "id": "extract",
+                "type": "extract",
+                "to": "{{tmpDir}}/jdk"
+              },
+              {
+                "id": "flatten",
+                "insertAfter": "extract",
+                "type": "move",
+                "from": "{{tmpDir}}/jdk/Contents/Home",
+                "to": "{{versionDir}}"
+              },
+              {
+                "id": "cleanup-tmp",
+                "insertAfter": "flatten",
+                "type": "cleanup",
+                "paths": ["{{tmpDir}}"]
+              },
+              {
+                "id": "verify",
+                "insertAfter": "cleanup-tmp",
+                "type": "verify",
+                "run": "\"{{versionDir}}/bin/java\"",
+                "args": ["-version"],
+                "shell": true,
+                "timeoutSec": 60
+              }
+            ]
+          }
+        },
+        "linux": {
+          "archive": "tar.gz",
+          "stripComponents": 1,
+          "assets": {
+            "21.0.4": {
+              "url": "https://cdn.azul.com/zulu/bin/zulu21.36.17-ca-jdk21.0.4-linux_x64.tar.gz"
+            },
+            "17.0.13": {
+              "url": "https://cdn.azul.com/zulu/bin/zulu17.54.21-ca-jdk17.0.13-linux_x64.tar.gz"
+            }
+          },
+          "workflowOverrides": {
+            "install": [
+              {
+                "id": "verify",
+                "insertAfter": "extract",
+                "type": "verify",
+                "run": "\"{{versionDir}}/bin/java\"",
+                "args": ["-version"],
+                "shell": true,
+                "timeoutSec": 60
+              }
+            ]
+          }
+        }
+      }
+    },
+    "openjdk": {
+      "name": "Oracle OpenJDK",
+      "description": "Oracle 提供的 OpenJDK 参考实现 GPL 构建",
+      "homepage": "https://jdk.java.net",
+      "defaultVersion": "21.0.2",
+      "platforms": {
+        "windows": {
+          "archive": "zip",
+          "stripComponents": 1,
+          "assets": {
+            "21.0.2": {
+              "url": "https://download.java.net/java/GA/jdk21.0.2/f2283984656d49d69e91c558476027ac/13/GPL/openjdk-21.0.2_windows-x64_bin.zip"
+            }
+          },
+          "workflowOverrides": {
+            "install": [
+              {
+                "id": "verify",
+                "insertAfter": "extract",
+                "type": "verify",
+                "run": "\"{{versionDir}}{{sep}}bin{{sep}}java{{ext}}\"",
+                "args": ["-version"],
+                "shell": true,
+                "timeoutSec": 60
+              }
+            ]
+          }
+        },
+        "darwin": {
+          "archive": "tar.gz",
+          "stripComponents": 1,
+          "assets": {
+            "21.0.2": {
+              "url": "https://download.java.net/java/GA/jdk21.0.2/f2283984656d49d69e91c558476027ac/13/GPL/openjdk-21.0.2_macos-aarch64_bin.tar.gz"
+            }
+          },
+          "workflowOverrides": {
+            "install": [
+              {
+                "id": "extract",
+                "type": "extract",
+                "to": "{{tmpDir}}/jdk"
+              },
+              {
+                "id": "flatten",
+                "insertAfter": "extract",
+                "type": "move",
+                "from": "{{tmpDir}}/jdk/Contents/Home",
+                "to": "{{versionDir}}"
+              },
+              {
+                "id": "cleanup-tmp",
+                "insertAfter": "flatten",
+                "type": "cleanup",
+                "paths": ["{{tmpDir}}"]
+              },
+              {
+                "id": "verify",
+                "insertAfter": "cleanup-tmp",
+                "type": "verify",
+                "run": "\"{{versionDir}}/bin/java\"",
+                "args": ["-version"],
+                "shell": true,
+                "timeoutSec": 60
+              }
+            ]
+          }
+        },
+        "linux": {
+          "archive": "tar.gz",
+          "stripComponents": 1,
+          "assets": {
+            "21.0.2": {
+              "url": "https://download.java.net/java/GA/jdk21.0.2/f2283984656d49d69e91c558476027ac/13/GPL/openjdk-21.0.2_linux-x64_bin.tar.gz"
+            }
+          },
+          "workflowOverrides": {
+            "install": [
+              {
+                "id": "verify",
+                "insertAfter": "extract",
+                "type": "verify",
+                "run": "\"{{versionDir}}/bin/java\"",
+                "args": ["-version"],
+                "shell": true,
+                "timeoutSec": 60
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

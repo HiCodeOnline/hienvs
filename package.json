@@ -1,0 +1,46 @@
+{
+  "name": "hienvs",
+  "version": "0.1.0",
+  "description": "hienvs - 跨平台开发环境管理器：多版本下载、安装、切换，由远程 JSON 清单驱动的工作流编排",
+  "main": "./out/main/index.js",
+  "author": "hienvs",
+  "license": "MIT",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "start": "electron-vite preview",
+    "dist": "npm run build && electron-builder --publish never",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:mac": "npm run build && electron-builder --mac",
+    "dist:linux": "npm run build && electron-builder --linux"
+  },
+  "dependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tar-stream": "^3.2.2",
+    "undici": "^8.11.2",
+    "yauzl": "^3.4.0",
+    "zod": "^4.6.7",
+    "zustand": "^5.0.15"
+  },
+  "optionalDependencies": {
+    "lzma-native": "^8.0.6"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/yauzl": "^2.10.3",
+    "@vitejs/plugin-react": "^5.2.0",
+    "electron": "^44.7.0",
+    "electron-builder": "^26.15.3",
+    "electron-vite": "^5.0.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^7.3.7",
+    "vitest": "^5.0.4"
+  }
+}

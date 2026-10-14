@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "name": "hienvs official registry",
+  "updatedAt": "2026-10-13T00:00:00Z",
+  "tools": [
+    {
+      "id": "jdk",
+      "name": "JDK",
+      "description": "Java 开发工具包，按发行商（Temurin / Corretto / Zulu / Oracle OpenJDK）统一管理，支持多版本共存与一键切换",
+      "category": "language",
+      "homepage": "https://openjdk.org",
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg",
+      "manifest": "tools/jdk.json"
+    },
+    {
+      "id": "maven",
+      "name": "Apache Maven",
+      "description": "Java 项目构建与依赖管理工具",
+      "category": "build-tool",
+      "homepage": "https://maven.apache.org",
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/maven/maven-original.svg",
+      "manifest": "tools/maven.json"
+    },
+    {
+      "id": "go",
+      "name": "Go",
+      "description": "Google Go 编程语言工具链",
+      "category": "language",
+      "homepage": "https://go.dev",
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/go/go-original.svg",
+      "manifest": "tools/go.json"
+    },
+    {
+      "id": "node",
+      "name": "Node.js",
+      "description": "基于 V8 的 JavaScript 运行时",
+      "category": "runtime",
+      "homepage": "https://nodejs.org",
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg",
+      "manifest": "tools/node.json"
+    }
+  ]
+}

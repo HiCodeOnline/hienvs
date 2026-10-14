@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "id": "node",
+  "name": "Node.js",
+  "description": "基于 V8 的 JavaScript 运行时（Linux 使用 tar.xz 通道）",
+  "category": "runtime",
+  "homepage": "https://nodejs.org",
+  "defaultVersion": "22.12.0",
+  "env": {
+    "pathDirs": ["bin"]
+  },
+  "platforms": {
+    "windows": {
+      "archive": "zip",
+      "stripComponents": 1,
+      "assets": {
+        "22.12.0": {
+          "url": "https://nodejs.org/dist/v22.12.0/node-v22.12.0-win-x64.zip",
+          "mirrors": [
+            { "name": "淘宝 npmmirror", "url": "https://npmmirror.com/mirrors/node/v22.12.0/node-v22.12.0-win-x64.zip" }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}{{sep}}node{{ext}}\"",
+            "args": ["--version"],
+            "shell": true,
+            "timeoutSec": 60
+          }
+        ]
+      }
+    },
+    "darwin": {
+      "archive": "tar.gz",
+      "stripComponents": 1,
+      "assets": {
+        "22.12.0": {
+          "url": "https://nodejs.org/dist/v22.12.0/node-v22.12.0-darwin-arm64.tar.gz",
+          "mirrors": [
+            { "name": "淘宝 npmmirror", "url": "https://npmmirror.com/mirrors/node/v22.12.0/node-v22.12.0-darwin-arm64.tar.gz" }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}/bin/node\"",
+            "args": ["--version"],
+            "shell": true,
+            "timeoutSec": 60
+          }
+        ]
+      }
+    },
+    "linux": {
+      "archive": "tar.xz",
+      "stripComponents": 1,
+      "assets": {
+        "22.12.0": {
+          "url": "https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz",
+          "mirrors": [
+            { "name": "淘宝 npmmirror", "url": "https://npmmirror.com/mirrors/node/v22.12.0/node-v22.12.0-linux-x64.tar.xz" }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}/bin/node\"",
+            "args": ["--version"],
+            "shell": true,
+            "timeoutSec": 60
+          }
+        ]
+      }
+    }
+  }
+}

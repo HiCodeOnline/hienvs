@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "id": "go",
+  "name": "Go",
+  "description": "Google Go 编程语言工具链",
+  "category": "language",
+  "homepage": "https://go.dev",
+  "defaultVersion": "1.23.4",
+  "env": {
+    "vars": [
+      { "name": "GOROOT", "value": "{{currentDir}}" }
+    ],
+    "pathDirs": ["bin"]
+  },
+  "platforms": {
+    "windows": {
+      "archive": "zip",
+      "stripComponents": 1,
+      "assets": {
+        "1.23.4": {
+          "url": "https://go.dev/dl/go1.23.4.windows-amd64.zip",
+          "mirrors": [
+            { "name": "清华 TUNA", "url": "https://mirrors.tuna.tsinghua.edu.cn/golang/go1.23.4.windows-amd64.zip" }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}{{sep}}bin{{sep}}go{{ext}}\"",
+            "args": ["version"],
+            "shell": true,
+            "timeoutSec": 60
+          }
+        ]
+      }
+    },
+    "darwin": {
+      "archive": "tar.gz",
+      "stripComponents": 1,
+      "assets": {
+        "1.23.4": {
+          "url": "https://go.dev/dl/go1.23.4.darwin-arm64.tar.gz",
+          "mirrors": [
+            { "name": "清华 TUNA", "url": "https://mirrors.tuna.tsinghua.edu.cn/golang/go1.23.4.darwin-arm64.tar.gz" }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}/bin/go\"",
+            "args": ["version"],
+            "shell": true,
+            "timeoutSec": 60
+          }
+        ]
+      }
+    },
+    "linux": {
+      "archive": "tar.gz",
+      "stripComponents": 1,
+      "assets": {
+        "1.23.4": {
+          "url": "https://go.dev/dl/go1.23.4.linux-amd64.tar.gz",
+          "mirrors": [
+            { "name": "清华 TUNA", "url": "https://mirrors.tuna.tsinghua.edu.cn/golang/go1.23.4.linux-amd64.tar.gz" }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}/bin/go\"",
+            "args": ["version"],
+            "shell": true,
+            "timeoutSec": 60
+          }
+        ]
+      }
+    }
+  }
+}
