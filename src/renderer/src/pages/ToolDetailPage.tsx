@@ -139,10 +139,7 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
         返回工具箱
       </button>
 
-      <PageHeader
-        title={view.name}
-        subtitle={view.description}
-      />
+      <PageHeader title={view.name} />
 
       {/* 头部信息 */}
       <div className="mb-6 flex items-center gap-4 rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">

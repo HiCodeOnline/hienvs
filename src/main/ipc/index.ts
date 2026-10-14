@@ -1,5 +1,5 @@
 // IPC 注册：全部 invoke 通道
-import { dialog, ipcMain } from 'electron'
+import { BrowserWindow, dialog, ipcMain } from 'electron'
 import type { AppContext } from '../context'
 import { IPC } from '@shared/ipc-channels'
 import type { AppSettings } from '@shared/tool-types'
@@ -37,10 +37,10 @@ export function registerAllIpc(ctx: AppContext): void {
     })
     return res.canceled ? null : (res.filePaths[0] ?? null)
   })
+  handle(IPC.AppDiskUsage, (dir: string) => ctx.diskUsage(dir))
 
   handle(IPC.RegistryList, () => ctx.ensureRegistryLoaded().then(() => ctx.snapshot()))
   handle(IPC.RegistryRefresh, () => ctx.refreshRegistry(true))
-  handle(IPC.RegistryRefreshIcons, () => ctx.refreshIcons())
   handle(IPC.RegistryUpdateSource, (sourceId: string) => ctx.updateRegistrySource(sourceId))
 
   handle(IPC.ToolsDetail, (toolId: string) => ctx.toolDetail(toolId))
@@ -62,4 +62,27 @@ export function registerAllIpc(ctx: AppContext): void {
 
   handle(IPC.EnvSnapshot, () => ctx.envSnapshot())
   handle(IPC.EnvPreview, (req: { toolId: string; version?: string; scope?: 'user' | 'system' }) => ctx.envPreview(req.toolId, req.version, req.scope))
+
+  // 窗口控制：frameless 自定义标题栏按钮（作用于发起调用的窗口）
+  const handleWindow = (channel: string, fn: (win: BrowserWindow) => unknown): void => {
+    ipcMain.handle(channel, async (event) => {
+      try {
+        const win = BrowserWindow.fromWebContents(event.sender)
+        if (!win) throw new Error('窗口不存在')
+        return ok(fn(win))
+      } catch (e) {
+        logger.error(`[ipc:${channel}] ${e instanceof Error ? e.message : String(e)}`)
+        return fail(e)
+      }
+    })
+  }
+
+  handleWindow(IPC.WindowMinimize, (win) => win.minimize())
+  handleWindow(IPC.WindowToggleMaximize, (win) => {
+    if (win.isMaximized()) win.unmaximize()
+    else win.maximize()
+    return win.isMaximized()
+  })
+  handleWindow(IPC.WindowClose, (win) => win.close())
+  handleWindow(IPC.WindowIsMaximized, (win) => win.isMaximized())
 }

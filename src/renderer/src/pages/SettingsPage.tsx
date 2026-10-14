@@ -1,10 +1,10 @@
-// 设置页：数据目录 / 清单源 / 镜像策略 / 并发 / 环境变量作用域 / 代理
+// 设置页：数据目录 / 软件源 / 镜像策略 / 并发 / 环境变量作用域 / 代理
 import { useEffect, useState, type ReactNode } from 'react'
 import type { AppSettings } from '@shared/tool-types'
 import type { RegistrySource } from '@shared/registry-types'
 import { useAppStore } from '../stores/app'
 import { useSettingsStore } from '../stores/settings'
-import { Badge, Button, PageHeader, Spinner } from '../components/common'
+import { Badge, Button, Spinner } from '../components/common'
 
 export function SettingsPage() {
   const pushToast = useAppStore((s) => s.pushToast)
@@ -107,18 +107,8 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="p-8">
-      <PageHeader
-        title="设置"
-        actions={
-          <Button onClick={save} disabled={saving}>
-            {saving ? <Spinner className="h-3.5 w-3.5" /> : null}
-            保存设置
-          </Button>
-        }
-      />
-
-      <div className="mx-auto max-w-2xl space-y-6">
+    <div className="flex h-full flex-col overflow-y-auto">
+      <div className="mx-auto w-full max-w-2xl shrink-0 space-y-6 p-8">
         {/* 目录 */}
         <Section title="目录" hint="状态、日志与清单缓存固定保存在用户目录 .hienvs 下">
           <Field label="安装目录" hint="工具版本与 current 链接的存放位置（修改后已安装的工具不会自动迁移）">
@@ -140,8 +130,8 @@ export function SettingsPage() {
           </div>
         </Section>
 
-        {/* 清单源 */}
-        <Section title="清单源" hint="远程 URL 或本地文件夹，按顺序合并（后面的覆盖前面的，内置源兜底）；远程源可开启自动更新（每 10 分钟拉取一次）">
+        {/* 软件源 */}
+        <Section title="软件源" hint="远程 URL 或本地文件夹，按顺序合并（后面的覆盖前面的，内置源兜底）；远程源可开启自动更新（每 10 分钟拉取一次）">
           <div className="space-y-2">
             {draft.registries.map((r, i) => (
               <div
@@ -262,6 +252,16 @@ export function SettingsPage() {
             />
           </Field>
         </Section>
+      </div>
+
+      {/* 底部固定操作栏：滚动到任意位置都能点击保存 */}
+      <div className="sticky bottom-0 mt-auto shrink-0 border-t border-zinc-200 bg-zinc-50 px-8 py-3 dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="mx-auto flex max-w-2xl justify-end">
+          <Button onClick={save} disabled={saving}>
+            {saving ? <Spinner className="h-3.5 w-3.5" /> : null}
+            保存设置
+          </Button>
+        </div>
       </div>
     </div>
   )

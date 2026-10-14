@@ -5,6 +5,8 @@ import { useRegistryStore } from './stores/registry'
 import { useTasksStore } from './stores/tasks'
 import { useSettingsStore } from './stores/settings'
 import { Sidebar } from './components/layout/Sidebar'
+import { TitleBar } from './components/layout/TitleBar'
+import { StatusBar } from './components/layout/StatusBar'
 import { DashboardPage } from './pages/DashboardPage'
 import { ToolsPage } from './pages/ToolsPage'
 import { ToolDetailPage } from './pages/ToolDetailPage'
@@ -61,15 +63,19 @@ export default function App() {
   }, [pushToast])
 
   return (
-    <div className="flex h-screen overflow-hidden bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto">
-        {page === 'dashboard' && <DashboardPage />}
-        {page === 'tools' && <ToolsPage />}
-        {page === 'tool-detail' && detailToolId && <ToolDetailPage toolId={detailToolId} />}
-        {page === 'tasks' && <TasksPage />}
-        {page === 'settings' && <SettingsPage />}
-      </main>
+    <div className="flex h-screen flex-col overflow-hidden bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
+      <TitleBar />
+      <div className="flex min-h-0 flex-1">
+        <Sidebar />
+        <main className="flex-1 overflow-y-auto">
+          {page === 'dashboard' && <DashboardPage />}
+          {page === 'tools' && <ToolsPage />}
+          {page === 'tool-detail' && detailToolId && <ToolDetailPage toolId={detailToolId} />}
+          {page === 'tasks' && <TasksPage />}
+          {page === 'settings' && <SettingsPage />}
+        </main>
+      </div>
+      <StatusBar />
       <ToastHost />
     </div>
   )

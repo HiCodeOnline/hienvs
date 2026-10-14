@@ -1,6 +1,7 @@
 // 应用上下文：装配设置/路径/清单/解析器/任务管理器，对外提供领域操作
 import { app, session, shell } from 'electron'
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { buildPaths, defaultHienvsHome, type HienvsPaths } from './core/paths'
@@ -16,11 +17,25 @@ import { compareVersions, currentOsName, makeVersionKey, safeVersionSegment, spl
 import { matchPlatform, normalizeArch } from './registry/platform-match'
 import type { RegistrySnapshot, ToolSummary, VersionInfo, RegistrySourceStatus, MirrorSource } from '@shared/registry-types'
 import type { EnvPlan, EnvPreview, EnvSnapshotData, TaskSnapshot } from '@shared/task-types'
-import type { AppInfo, SystemToolInfo } from '@shared/tool-types'
+import type { AppInfo, DiskUsage, SystemToolInfo } from '@shared/tool-types'
 import { buildEnvPlan, renderManagedBlock, type ActiveToolRef } from './services/env/planner'
 import { previewEnvPlan, readWindowsUserPath, readManagedBlock, parseBlockVars, parseBlockPathEntries, unixManagedBlockFiles } from './services/env/apply'
 import { readWindowsVar } from './services/env/apply-windows'
 import { patchProcessEnv, detectSystemTool, runVersionCommand } from './services/activator'
+
+/** 操作系统展示名称：Windows 按内核构建号区分 10/11，macOS 由 Darwin 内核版本换算 */
+function currentOsLabel(): string {
+  const release = os.release()
+  if (process.platform === 'win32') {
+    const build = Number(release.split('.')[2] ?? 0)
+    return `Windows ${build >= 22000 ? '11' : '10'}`
+  }
+  if (process.platform === 'darwin') {
+    const major = Number(release.split('.')[0] ?? 0)
+    return major >= 20 ? `macOS ${major - 9}` : `macOS 10.${Math.max(major - 4, 0)}`
+  }
+  return 'Linux'
+}
 
 /** 某资产的可选下载源列表：官方源在前，具名镜像源在后（含各自可选 size） */
 function assetSources(asset: { url: string; size?: number; mirrors?: MirrorSource[] }): MirrorSource[] {
@@ -145,6 +160,7 @@ export class AppContext {
   }
 
   updateSettings(patch: Parameters<typeof settingsStore.set>[0]) {
+    const prevSources = JSON.stringify(settingsStore.get().registries)
     const next = settingsStore.set(patch)
     if (patch.installDir || patch.downloadDir) {
       this.paths = buildPaths({ home: defaultHienvsHome(), installDir: next.installDir, downloadDir: next.downloadDir })
@@ -161,6 +177,12 @@ export class AppContext {
       osSeparator: path.sep,
       exeExt: this.exeExt
     })
+    // 清单源配置变更后需重新加载清单，否则工具列表与状态栏仍显示旧源
+    if (patch.registries && JSON.stringify(next.registries) !== prevSources) {
+      void this.refreshRegistry(true).catch((e) =>
+        logger.warn(`[registry] 清单源配置变更后加载失败: ${e instanceof Error ? e.message : String(e)}`)
+      )
+    }
     return next
   }
 
@@ -185,7 +207,9 @@ export class AppContext {
       this.registryTools = res.tools
       this.registryStatuses = res.statuses
       logger.info(`[registry] 加载完成: ${res.tools.length} 个工具`)
-      // 图标增量同步放到后台，避免阻塞清单返回；完成后推送最新快照刷新图标
+      // 清单数据就绪即刻推送快照（状态栏、源列表随之更新），不等图标下载
+      this.notify('registry:updated', { snapshot: this.snapshot() })
+      // 图标增量同步放到后台，避免阻塞清单返回；完成后再次推送以刷新图标
       void this.syncIcons(res.tools).then(() => {
         this.notify('registry:updated', { snapshot: this.snapshot() })
       })
@@ -268,13 +292,6 @@ export class AppContext {
       /* 目录不存在等 */
     }
     this.writeIconsMeta(nextMeta)
-  }
-
-  /** 手动刷新图标：强制重新下载全部清单工具的图标并返回最新快照 */
-  async refreshIcons(): Promise<RegistrySnapshot> {
-    await this.ensureRegistryLoaded()
-    await this.syncIcons(this.registryTools, true)
-    return this.snapshot()
   }
 
   /** 手动更新单个远程源：重新拉取该源内容到本地缓存并重建快照（其余远程源用缓存） */
@@ -567,11 +584,18 @@ export class AppContext {
       electron: process.versions.electron ?? '',
       platform: process.platform,
       arch: this.arch,
+      osLabel: currentOsLabel(),
       installDir: this.paths.toolsDir,
       downloadDir: this.paths.downloadsDir,
       home: this.paths.home,
       isPackaged: app.isPackaged
     }
+  }
+
+  /** 目录所在磁盘的空间占用（取该目录所属卷的根路径统计） */
+  async diskUsage(dir: string): Promise<DiskUsage> {
+    const stat = await fs.promises.statfs(path.parse(dir).root || path.sep)
+    return { total: stat.blocks * stat.bsize, free: stat.bavail * stat.bsize }
   }
 
   openPath(target: 'logs' | 'tools' | 'installDir' | 'downloads'): void {

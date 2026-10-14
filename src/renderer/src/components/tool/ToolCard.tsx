@@ -20,7 +20,7 @@ export function ToolCard({
   return (
     <div
       onClick={onOpen}
-      className="group cursor-pointer rounded-xl border border-zinc-200 bg-white p-5 transition-all hover:border-brand-300 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-brand-700"
+      className="group cursor-pointer rounded-xl border border-zinc-200 bg-white p-5 transition-all hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
     >
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">

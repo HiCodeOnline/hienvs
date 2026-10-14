@@ -25,11 +25,11 @@ const api = {
   openPath: (target: 'logs' | 'tools' | 'installDir' | 'downloads') => invoke<void>(IPC.AppOpenPath, target),
   selectDirectory: (opts?: { title?: string; defaultPath?: string }) =>
     invoke<string | null>(IPC.AppSelectDirectory, opts ?? {}),
+  diskUsage: (dir: string) => invoke<import('../shared/tool-types').DiskUsage>(IPC.AppDiskUsage, dir),
 
   // 注册表
   registryList: () => invoke<import('../shared/registry-types').RegistrySnapshot>(IPC.RegistryList),
   registryRefresh: () => invoke<import('../shared/registry-types').RegistrySnapshot>(IPC.RegistryRefresh),
-  registryRefreshIcons: () => invoke<import('../shared/registry-types').RegistrySnapshot>(IPC.RegistryRefreshIcons),
   registryUpdateSource: (sourceId: string) => invoke<import('../shared/registry-types').RegistrySnapshot>(IPC.RegistryUpdateSource, sourceId),
 
   // 工具
@@ -58,13 +58,23 @@ const api = {
   envPreview: (toolId: string, version?: string, scope?: 'user' | 'system') =>
     invoke<import('../shared/task-types').EnvPreview>(IPC.EnvPreview, { toolId, version, scope }),
 
+  // 窗口控制（frameless 自定义标题栏）
+  windowMinimize: () => invoke<void>(IPC.WindowMinimize),
+  windowToggleMaximize: () => invoke<boolean>(IPC.WindowToggleMaximize),
+  windowClose: () => invoke<void>(IPC.WindowClose),
+  windowIsMaximized: () => invoke<boolean>(IPC.WindowIsMaximized),
+
+  // 当前运行平台（用于标题栏按钮样式的平台适配）
+  platform: process.platform,
+
   // 事件订阅
   onTaskUpdated: (cb: (payload: { task: import('../shared/task-types').TaskSnapshot }) => void) => subscribe(IPC.TaskUpdated, cb),
   onTaskRemoved: (cb: (payload: { taskId: string }) => void) => subscribe(IPC.TaskRemoved, cb),
   onTaskProgress: (cb: (payload: import('../shared/task-types').TaskProgressEvent) => void) => subscribe(IPC.TaskProgress, cb),
   onTaskLog: (cb: (payload: import('../shared/task-types').TaskLogEvent) => void) => subscribe(IPC.TaskLog, cb),
   onRegistryUpdated: (cb: (payload: { snapshot: import('../shared/registry-types').RegistrySnapshot }) => void) => subscribe(IPC.RegistryUpdated, cb),
-  onEnvChanged: (cb: (payload: { toolId: string; applied: boolean }) => void) => subscribe(IPC.EnvChanged, cb)
+  onEnvChanged: (cb: (payload: { toolId: string; applied: boolean }) => void) => subscribe(IPC.EnvChanged, cb),
+  onWindowMaximizedChanged: (cb: (maximized: boolean) => void) => subscribe(IPC.WindowMaximizedChanged, cb)
 }
 
 contextBridge.exposeInMainWorld('api', api)

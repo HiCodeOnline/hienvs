@@ -6,6 +6,7 @@ import { defaultHienvsHome } from './core/paths'
 import { settingsStore } from './core/settings'
 import { AppContext } from './context'
 import { registerAllIpc } from './ipc'
+import { IPC } from '@shared/ipc-channels'
 
 let ctx: AppContext | null = null
 
@@ -20,7 +21,8 @@ function createWindow(ctx: AppContext): BrowserWindow {
     windowStatePersistence: true,
     autoHideMenuBar: true,
     backgroundColor: '#09090b',
-    titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
+    // macOS 使用原生红绿灯按钮，Windows/Linux 使用无边框窗口配合自绘控制按钮
+    ...(process.platform === 'darwin' ? { titleBarStyle: 'hiddenInset' as const } : { frame: false }),
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
       sandbox: true,
@@ -31,6 +33,10 @@ function createWindow(ctx: AppContext): BrowserWindow {
   })
 
   win.on('ready-to-show', () => win.show())
+
+  // 最大化状态变化通知渲染层，用于切换自定义标题栏的最大化/还原图标
+  win.on('maximize', () => win.webContents.send(IPC.WindowMaximizedChanged, true))
+  win.on('unmaximize', () => win.webContents.send(IPC.WindowMaximizedChanged, false))
 
   // 阻止导航到外部页面；外链用系统浏览器
   win.webContents.setWindowOpenHandler(({ url }) => {

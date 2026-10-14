@@ -23,6 +23,15 @@ body,
   height: 100%;
 }
 
+/* 无边框窗口拖拽区域 */
+.drag-region {
+  -webkit-app-region: drag;
+}
+
+.no-drag {
+  -webkit-app-region: no-drag;
+}
+
 /* 细滚动条 */
 *::-webkit-scrollbar {
   width: 8px;

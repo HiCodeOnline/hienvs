@@ -44,8 +44,16 @@ export interface AppInfo {
   electron: string
   platform: string
   arch: string
+  /** 操作系统展示名称，如 Windows 11 / macOS 14 / Linux */
+  osLabel: string
   home: string
   installDir: string
   downloadDir: string
   isPackaged: boolean
+}
+
+/** 目录所在磁盘的空间占用（字节） */
+export interface DiskUsage {
+  total: number
+  free: number
 }

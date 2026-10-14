@@ -5,11 +5,11 @@ export const IPC = {
   AppInfo: 'app:info',
   AppOpenPath: 'app:openPath',
   AppSelectDirectory: 'app:selectDirectory',
+  AppDiskUsage: 'app:diskUsage',
 
   // invoke: 注册表
   RegistryList: 'registry:list',
   RegistryRefresh: 'registry:refresh',
-  RegistryRefreshIcons: 'registry:refreshIcons',
   RegistryUpdateSource: 'registry:updateSource',
 
   // invoke: 工具
@@ -36,11 +36,18 @@ export const IPC = {
   EnvSnapshot: 'env:snapshot',
   EnvPreview: 'env:preview',
 
+  // invoke: 窗口控制（frameless 自定义标题栏）
+  WindowMinimize: 'window:minimize',
+  WindowToggleMaximize: 'window:toggleMaximize',
+  WindowClose: 'window:close',
+  WindowIsMaximized: 'window:isMaximized',
+
   // 事件: main -> renderer
   TaskUpdated: 'task:updated',
   TaskRemoved: 'task:removed',
   TaskProgress: 'task:progress',
   TaskLog: 'task:log',
   RegistryUpdated: 'registry:updated',
-  EnvChanged: 'env:changed'
+  EnvChanged: 'env:changed',
+  WindowMaximizedChanged: 'window:maximizedChanged'
 } as const

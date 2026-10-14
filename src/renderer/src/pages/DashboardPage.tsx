@@ -1,7 +1,7 @@
 // 仪表盘：仅展示已激活工具
 import { useAppStore } from '../stores/app'
 import { useRegistryStore } from '../stores/registry'
-import { EmptyState, PageHeader, Spinner } from '../components/common'
+import { EmptyState, Spinner } from '../components/common'
 import { ToolCard } from '../components/tool/ToolCard'
 
 export function DashboardPage() {
@@ -12,11 +12,9 @@ export function DashboardPage() {
 
   return (
     <div className="p-8">
-      <PageHeader title="仪表盘" subtitle="管理你的开发工具链" />
-
       {loading && activeTools.length === 0 ? (
         <div className="flex items-center gap-2 text-sm text-zinc-400">
-          <Spinner /> 加载注册表…
+          <Spinner /> 加载软件源…
         </div>
       ) : activeTools.length === 0 ? (
         <div className="rounded-xl border border-dashed border-zinc-200 dark:border-zinc-800">
