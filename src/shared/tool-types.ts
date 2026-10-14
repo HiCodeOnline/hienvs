@@ -30,6 +30,8 @@ export interface AppSettings {
   taskConcurrency: number
   proxy?: string
   autoRefreshRegistry: boolean
+  /** 仪表盘安全提示是否已被用户关闭（关闭后不再展示） */
+  securityNoticeDismissed: boolean
 }
 
 export interface SystemToolInfo {

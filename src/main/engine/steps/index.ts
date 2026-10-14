@@ -8,6 +8,7 @@ import { download } from '../../worker/downloader'
 import { extractZip } from '../../worker/extractor/zip'
 import { extractTar } from '../../worker/extractor/tar'
 import { applyEnvPlan } from '../../services/env/apply'
+import { isLink, removeLink } from '../../core/links'
 import type { DownloadParams } from '../../worker/downloader'
 import type { ExtractOptions } from '../../worker/extractor/zip'
 
@@ -431,20 +432,11 @@ const cleanupStep: StepHandler = async (params, _ctx, run) => {
   return { detail: `清理 ${n} 项` }
 }
 
-function isSymlinkish(p: string): boolean {
-  try {
-    const st = fs.lstatSync(p)
-    return st.isSymbolicLink()
-  } catch {
-    return false
-  }
-}
-
 const linkCurrentStep: StepHandler = async (params, ctx, run) => {
   const target = resolveOne(params.target as string)
   const link = resolveOne(params.link as string)
   if (!fs.existsSync(target)) throw new Error(`目标版本目录不存在: ${target}`)
-  if (isSymlinkish(link)) {
+  if (isLink(link)) {
     try {
       const real = fs.realpathSync(link)
       if (path.resolve(real) === path.resolve(target)) {
@@ -452,16 +444,16 @@ const linkCurrentStep: StepHandler = async (params, ctx, run) => {
         return { detail: '已指向目标' }
       }
     } catch { /* 失效链接，重建 */ }
-    fs.rmSync(link, { force: true })
+    removeLink(link)
   } else if (fs.existsSync(link)) {
     // current 不是链接（异常状态），删除重建
-    fs.rmSync(link, { recursive: true, force: true })
+    removeLink(link)
   }
   fs.symlinkSync(target, link, ctx.platform === 'windows' ? 'junction' : 'dir')
   run.log(`current → ${path.basename(target)}`)
   run.undo(async () => {
     try {
-      if (isSymlinkish(link)) fs.rmSync(link, { force: true })
+      removeLink(link)
     } catch { /* 忽略 */ }
   })
   return { detail: `${path.basename(link)} → ${path.basename(target)}` }
@@ -469,8 +461,8 @@ const linkCurrentStep: StepHandler = async (params, ctx, run) => {
 
 const unlinkCurrentStep: StepHandler = async (params, _ctx, run) => {
   const link = resolveOne(params.link as string)
-  if (isSymlinkish(link)) {
-    fs.rmSync(link, { force: true })
+  if (isLink(link)) {
+    removeLink(link)
     run.log('已解除 current 链接')
   }
   return { detail: '解除激活' }

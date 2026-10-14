@@ -5,18 +5,34 @@ import type { ToolSummary, VersionInfo } from '@shared/registry-types'
 import type { TaskSnapshot } from '@shared/task-types'
 import { useAppStore } from '../stores/app'
 import { useRegistryStore } from '../stores/registry'
-import { Badge, Button, EmptyState, Modal, PageHeader, Spinner, ToolAvatar, formatVersionLabel } from '../components/common'
+import { Badge, Button, EmptyState, Modal, Spinner, ToolAvatar, formatVersionLabel } from '../components/common'
 
 interface VersionGroup {
   dist?: string
   name: string
+  homepage?: string
   defaultVersion?: string
   items: VersionInfo[]
 }
 
+/** 官网链接：交给主进程用系统浏览器打开 */
+function HomepageLink({ url }: { url: string }) {
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noreferrer"
+      title={url}
+      className="text-xs text-brand-600 hover:underline dark:text-brand-400"
+    >
+      官网
+    </a>
+  )
+}
+
 /** 用工具箱快照快速构造详情视图（含名称/版本/安装状态，不含健康检测等异步数据） */
 function summaryToDetail(t: ToolSummary): ToolDetail {
-  const dists = new Map<string, { id: string; name: string }>()
+  const dists = new Map<string, { id: string; name: string; homepage?: string }>()
   for (const v of t.versions) {
     if (v.dist && !dists.has(v.dist)) dists.set(v.dist, { id: v.dist, name: v.distName ?? v.dist })
   }
@@ -90,7 +106,12 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
   }
 
   // 先用工具箱快照渲染页面，完整详情（健康检测/环境变量等）异步补齐
-  const view = detail ?? (summary ? summaryToDetail(summary) : null)
+  // 已安装/激活状态始终以工具箱快照为准：快照在状态变更时由主进程即时推送，
+  // 避免详情请求与状态提交竞态导致页面停留在旧状态
+  const view =
+    detail && summary
+      ? { ...detail, installedVersions: summary.installedVersions, activeVersion: summary.activeVersion }
+      : (detail ?? (summary ? summaryToDetail(summary) : null))
 
   if (!view) {
     if (loading) {
@@ -118,10 +139,13 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
       ? view.distributions.map((d) => ({
           dist: d.id,
           name: d.name,
+          homepage: d.homepage,
           defaultVersion: d.defaultVersion,
           items: view.versions.filter((v) => v.dist === d.id)
         }))
       : [{ name: '', items: view.versions }]
+  // 有发行商层级的工具，官网挂到各发行商之后；否则沿用工具自身的官网标签
+  const hasDistributions = view.distributions.length > 0
 
   // 安装弹窗：目标版本的可选下载源（首个为官方源，其余为具名镜像源）
   const installVersion = installTarget ? view.versions.find((x) => x.key === installTarget) : null
@@ -139,13 +163,12 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
         返回工具箱
       </button>
 
-      <PageHeader title={view.name} />
-
-      {/* 头部信息 */}
+      {/* 头部信息：工具名称置于标签上方 */}
       <div className="mb-6 flex items-center gap-4 rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
         <ToolAvatar toolId={view.id} icon={view.icon} className="h-12 w-12 text-xl" />
         <div className="flex-1">
-          <div className="flex flex-wrap items-center gap-2">
+          <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{view.name}</h1>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
             {view.activeVersion && <Badge tone="green">已激活 {formatVersionLabel(view.activeVersion, view.versions)}</Badge>}
             {view.envApplied && <Badge tone="blue">环境变量已应用</Badge>}
             {view.health && <Badge tone={view.health.startsWith('✓') ? 'green' : 'red'}>{view.health}</Badge>}
@@ -156,16 +179,7 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
             )}
             {view.platformKey && <Badge tone="zinc">{view.platformKey}</Badge>}
             {view.distributions.length > 0 && <Badge tone="brand">{view.distributions.length} 个发行商</Badge>}
-            {view.homepage && (
-              <a
-                href={view.homepage}
-                onClick={(e) => e.preventDefault()}
-                className="text-xs text-brand-600 hover:underline dark:text-brand-400"
-                title={view.homepage}
-              >
-                官网
-              </a>
-            )}
+            {view.homepage && !hasDistributions && <HomepageLink url={view.homepage} />}
           </div>
           <div className="mt-1 text-xs text-zinc-400">
             已安装 {view.installedVersions.length} 个版本
@@ -184,6 +198,8 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
             {g.name && (
               <div className="mb-2 flex items-center gap-2">
                 <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{g.name}</span>
+                {/* 发行商层级的官网紧随发行商名称之后 */}
+                {(g.homepage ?? view.homepage) && <HomepageLink url={(g.homepage ?? view.homepage) as string} />}
                 {g.defaultVersion && <span className="text-xs text-zinc-400">默认 {g.defaultVersion}</span>}
               </div>
             )}
@@ -287,33 +303,47 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
             <div className="space-y-2">
               <button
                 onClick={() => setInstallSourceUrl('')}
-                className={`w-full rounded-lg border px-4 py-2 text-left text-sm transition-colors ${
+                className={`block w-full rounded-lg border px-4 py-2 text-left text-sm transition-colors ${
                   installSourceUrl === ''
                     ? 'border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300'
                     : 'border-zinc-300 text-zinc-600 dark:border-zinc-700 dark:text-zinc-400'
                 }`}
               >
-                自动（跟随镜像策略设置）
+                <span>自动（跟随镜像策略设置）</span>
+                <span
+                  className={`mt-0.5 block truncate text-xs font-normal ${
+                    installSourceUrl === '' ? 'text-brand-600/70 dark:text-brand-300/70' : 'text-zinc-400 dark:text-zinc-500'
+                  }`}
+                >
+                  按设置的镜像策略自动排序，失败时自动回退其余源
+                </span>
               </button>
               {installSources.map((s, i) => (
                 <button
                   key={s.url}
                   onClick={() => setInstallSourceUrl(s.url)}
-                  className={`w-full rounded-lg border px-4 py-2 text-left text-sm transition-colors ${
+                  className={`block w-full rounded-lg border px-4 py-2 text-left text-sm transition-colors ${
                     installSourceUrl === s.url
                       ? 'border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300'
                       : 'border-zinc-300 text-zinc-600 dark:border-zinc-700 dark:text-zinc-400'
                   }`}
                 >
-                  {s.name}
-                  {i === 0 ? '（官方）' : ''}
+                  <span>
+                    {s.name}
+                    {i === 0 ? '（官方）' : ''}
+                  </span>
+                  <span
+                    title={s.url}
+                    className={`mt-0.5 block truncate font-mono text-xs font-normal ${
+                      installSourceUrl === s.url ? 'text-brand-600/70 dark:text-brand-300/70' : 'text-zinc-400 dark:text-zinc-500'
+                    }`}
+                  >
+                    {s.url}
+                  </span>
                 </button>
               ))}
             </div>
           </div>
-          <p className="truncate text-xs text-zinc-400" title={installSourceUrl || undefined}>
-            {installSourceUrl || '按设置的镜像策略自动排序，失败时自动回退其余源'}
-          </p>
           <div className="flex justify-end gap-2">
             <Button variant="secondary" onClick={() => setInstallTarget(null)}>
               取消

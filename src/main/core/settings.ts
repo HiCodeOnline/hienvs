@@ -13,7 +13,8 @@ export function defaultSettings(): AppSettings {
     registries: [],
     mirrorPolicy: 'auto',
     taskConcurrency: 2,
-    autoRefreshRegistry: true
+    autoRefreshRegistry: true,
+    securityNoticeDismissed: false
   }
 }
 

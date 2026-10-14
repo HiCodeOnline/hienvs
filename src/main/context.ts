@@ -8,6 +8,7 @@ import { buildPaths, defaultHienvsHome, type HienvsPaths } from './core/paths'
 import { settingsStore } from './core/settings'
 import { InstalledStore } from './core/installed-store'
 import { logger } from './core/logger'
+import { removeLink } from './core/links'
 import { TaskManager } from './tasks/manager'
 import { loadRegistries, initRegistryEnv } from './registry/sources'
 import type { LoadedTool } from './registry/sources'
@@ -123,7 +124,7 @@ export class AppContext {
       const target = path.join(temurinRoot, 'v' + safeVersionSegment(legacy.activeVersion))
       const cur = path.join(this.paths.toolsDir, 'jdk', 'current')
       try {
-        fs.rmSync(cur, { recursive: true, force: true })
+        removeLink(cur)
         fs.symlinkSync(target, cur, 'junction')
       } catch (e) {
         logger.warn(`[migrate] current 链接重建失败: ${e instanceof Error ? e.message : String(e)}`)
@@ -563,7 +564,12 @@ export class AppContext {
       icon: this.icons.get(toolId),
       defaultVersion: versions.find((v) => v.isDefault)?.key ?? tool.manifest.defaultVersion,
       distributions: dists
-        ? Object.entries(dists).map(([id, def]) => ({ id, name: def.name, defaultVersion: def.defaultVersion }))
+        ? Object.entries(dists).map(([id, def]) => ({
+            id,
+            name: def.name,
+            defaultVersion: def.defaultVersion,
+            homepage: def.homepage
+          }))
         : [],
       versions,
       installedVersions: Object.keys(inst.versions),

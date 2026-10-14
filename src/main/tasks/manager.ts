@@ -315,13 +315,19 @@ export class TaskManager {
     this.journal.save(entry.journal)
     this.running.delete(snap.taskId)
     this.finished.set(snap.taskId, snap)
+    // 先提交领域状态（安装/激活记录与最新 registry 快照），再通知任务完成。
+    // 否则渲染层收到 task:updated 后立即拉取详情时会读到尚未提交的旧状态。
+    try {
+      this.onFinished?.(snap)
+    } catch (e) {
+      console.error('[task] 任务完成回调处理失败:', e)
+    }
     this.notifyUpdated(snap)
     try {
       entry.child.kill()
     } catch { /* 忽略 */ }
     this.updatePowerSave()
     this.pump()
-    this.onFinished?.(snap)
   }
 
   private notifyUpdated(snap: TaskSnapshot): void {

@@ -12,7 +12,7 @@ export interface ToolDetail {
   /** 默认版本键（多发行商工具为首个发行商的默认版本键） */
   defaultVersion?: string
   /** 发行商列表（多发行商工具，如 jdk；普通工具为空数组） */
-  distributions: { id: string; name: string; defaultVersion?: string }[]
+  distributions: { id: string; name: string; defaultVersion?: string; homepage?: string }[]
   versions: VersionInfo[]
   installedVersions: string[]
   activeVersion: string | null
