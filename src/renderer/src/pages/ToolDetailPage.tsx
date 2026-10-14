@@ -5,7 +5,7 @@ import type { ToolSummary, VersionInfo } from '@shared/registry-types'
 import type { TaskSnapshot } from '@shared/task-types'
 import { useAppStore } from '../stores/app'
 import { useRegistryStore } from '../stores/registry'
-import { Badge, Button, EmptyState, Modal, PageHeader, Spinner, ToolAvatar, formatBytes, formatVersionLabel } from '../components/common'
+import { Badge, Button, EmptyState, Modal, PageHeader, Spinner, ToolAvatar, formatVersionLabel } from '../components/common'
 
 interface VersionGroup {
   dist?: string
@@ -195,10 +195,6 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
                 <thead>
                   <tr className="border-b border-zinc-200 bg-zinc-50 text-left text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-800/50">
                     <th className="px-4 py-2.5 font-medium">版本</th>
-                    <th className="px-4 py-2.5 font-medium">大小</th>
-                    <th className="px-4 py-2.5 font-medium">校验</th>
-                    <th className="px-4 py-2.5 font-medium">镜像</th>
-                    <th className="px-4 py-2.5 font-medium">状态</th>
                     <th className="px-4 py-2.5 text-right font-medium">操作</th>
                   </tr>
                 </thead>
@@ -208,25 +204,19 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
                     const installed = view.installedVersions.includes(v.key)
                     return (
                       <tr key={v.key} className={isActive ? 'bg-brand-50/50 dark:bg-brand-900/10' : ''}>
-                        <td className="px-4 py-3 font-mono font-medium text-zinc-900 dark:text-zinc-100">
-                          {v.version}
-                          {v.isDefault && <span className="ml-2 text-[10px] text-zinc-400">默认</span>}
-                        </td>
-                        <td className="px-4 py-3 text-zinc-500">{formatBytes(v.size)}</td>
-                        <td className="px-4 py-3">{v.sha256 ? <Badge tone="green">SHA256</Badge> : <span className="text-xs text-zinc-400">无</span>}</td>
-                        <td className="px-4 py-3 text-zinc-500">
-                          {v.sources && v.sources.length > 1 ? `${v.sources.length - 1} 个` : '-'}
-                        </td>
-                        <td className="px-4 py-3">
-                          {isActive ? (
-                            <Badge tone="green">当前激活</Badge>
-                          ) : installed ? (
-                            <Badge tone="blue">已安装</Badge>
-                          ) : !v.available ? (
-                            <Badge tone="zinc">不可用</Badge>
-                          ) : (
-                            <span className="text-xs text-zinc-400">未安装</span>
-                          )}
+                        <td className="px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-mono">{v.version}</span>
+                            {isActive ? (
+                              <Badge tone="green">当前激活</Badge>
+                            ) : installed ? (
+                              <Badge tone="blue">已安装</Badge>
+                            ) : !v.available ? (
+                              <Badge tone="zinc">不可用</Badge>
+                            ) : (
+                              <span className="text-xs text-zinc-400">未安装</span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex justify-end gap-2">

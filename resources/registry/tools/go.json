@@ -8,19 +8,28 @@
   "defaultVersion": "1.23.4",
   "env": {
     "vars": [
-      { "name": "GOROOT", "value": "{{currentDir}}" }
+      {
+        "name": "GOROOT",
+        "value": "{{currentDir}}"
+      }
     ],
-    "pathDirs": ["bin"]
+    "pathDirs": [
+      "bin"
+    ]
   },
   "platforms": {
-    "windows": {
+    "windows-x64": {
       "archive": "zip",
       "stripComponents": 1,
       "assets": {
         "1.23.4": {
           "url": "https://go.dev/dl/go1.23.4.windows-amd64.zip",
           "mirrors": [
-            { "name": "清华 TUNA", "url": "https://mirrors.tuna.tsinghua.edu.cn/golang/go1.23.4.windows-amd64.zip" }
+            {
+              "name": "清华 TUNA",
+              "url": "https://mirrors.tuna.tsinghua.edu.cn/golang/go1.23.4.windows-amd64.zip",
+              "size": 81942945
+            }
           ]
         }
       },
@@ -31,21 +40,89 @@
             "insertAfter": "extract",
             "type": "verify",
             "run": "\"{{versionDir}}{{sep}}bin{{sep}}go{{ext}}\"",
-            "args": ["version"],
+            "args": [
+              "version"
+            ],
             "shell": true,
             "timeoutSec": 60
           }
         ]
       }
     },
-    "darwin": {
+    "windows-arm64": {
+      "archive": "zip",
+      "stripComponents": 1,
+      "assets": {
+        "1.23.4": {
+          "url": "https://go.dev/dl/go1.23.4.windows-arm64.zip",
+          "mirrors": [
+            {
+              "name": "清华 TUNA",
+              "url": "https://mirrors.tuna.tsinghua.edu.cn/golang/go1.23.4.windows-arm64.zip",
+              "size": 77939077
+            }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}{{sep}}bin{{sep}}go{{ext}}\"",
+            "args": [
+              "version"
+            ],
+            "shell": true,
+            "timeoutSec": 60
+          }
+        ]
+      }
+    },
+    "darwin-x64": {
+      "archive": "tar.gz",
+      "stripComponents": 1,
+      "assets": {
+        "1.23.4": {
+          "url": "https://go.dev/dl/go1.23.4.darwin-amd64.tar.gz",
+          "mirrors": [
+            {
+              "name": "清华 TUNA",
+              "url": "https://mirrors.tuna.tsinghua.edu.cn/golang/go1.23.4.darwin-amd64.tar.gz",
+              "size": 74979002
+            }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}/bin/go\"",
+            "args": [
+              "version"
+            ],
+            "shell": true,
+            "timeoutSec": 60
+          }
+        ]
+      }
+    },
+    "darwin-arm64": {
       "archive": "tar.gz",
       "stripComponents": 1,
       "assets": {
         "1.23.4": {
           "url": "https://go.dev/dl/go1.23.4.darwin-arm64.tar.gz",
           "mirrors": [
-            { "name": "清华 TUNA", "url": "https://mirrors.tuna.tsinghua.edu.cn/golang/go1.23.4.darwin-arm64.tar.gz" }
+            {
+              "name": "清华 TUNA",
+              "url": "https://mirrors.tuna.tsinghua.edu.cn/golang/go1.23.4.darwin-arm64.tar.gz",
+              "size": 71655205
+            }
           ]
         }
       },
@@ -56,21 +133,27 @@
             "insertAfter": "extract",
             "type": "verify",
             "run": "\"{{versionDir}}/bin/go\"",
-            "args": ["version"],
+            "args": [
+              "version"
+            ],
             "shell": true,
             "timeoutSec": 60
           }
         ]
       }
     },
-    "linux": {
+    "linux-x64": {
       "archive": "tar.gz",
       "stripComponents": 1,
       "assets": {
         "1.23.4": {
           "url": "https://go.dev/dl/go1.23.4.linux-amd64.tar.gz",
           "mirrors": [
-            { "name": "清华 TUNA", "url": "https://mirrors.tuna.tsinghua.edu.cn/golang/go1.23.4.linux-amd64.tar.gz" }
+            {
+              "name": "清华 TUNA",
+              "url": "https://mirrors.tuna.tsinghua.edu.cn/golang/go1.23.4.linux-amd64.tar.gz",
+              "size": 73645095
+            }
           ]
         }
       },
@@ -81,7 +164,40 @@
             "insertAfter": "extract",
             "type": "verify",
             "run": "\"{{versionDir}}/bin/go\"",
-            "args": ["version"],
+            "args": [
+              "version"
+            ],
+            "shell": true,
+            "timeoutSec": 60
+          }
+        ]
+      }
+    },
+    "linux-arm64": {
+      "archive": "tar.gz",
+      "stripComponents": 1,
+      "assets": {
+        "1.23.4": {
+          "url": "https://go.dev/dl/go1.23.4.linux-arm64.tar.gz",
+          "mirrors": [
+            {
+              "name": "清华 TUNA",
+              "url": "https://mirrors.tuna.tsinghua.edu.cn/golang/go1.23.4.linux-arm64.tar.gz",
+              "size": 70271474
+            }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}/bin/go\"",
+            "args": [
+              "version"
+            ],
             "shell": true,
             "timeoutSec": 60
           }

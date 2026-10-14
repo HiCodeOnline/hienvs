@@ -43,7 +43,31 @@ export interface WorkflowDef {
 export interface MirrorSource {
   name: string
   url: string
+  /** 文件字节数（可选）；展示与下载进度优先取所选源的 size */
+  size?: number
 }
+
+/**
+ * 分发格式：压缩包（下载后解压配置）或安装包（下载后执行安装流程）或单文件
+ * - 压缩包: zip / tar.gz / tar.xz
+ * - Windows 安装包: exe（NSIS/Inno 等静默安装）、msi、msix
+ * - macOS 安装包: dmg、pkg
+ * - Linux 包: rpm、deb
+ * - 单文件: appimage（Linux 便携可执行）、raw（单个可执行/脚本文件）
+ */
+export type AssetFormat =
+  | 'zip'
+  | 'tar.gz'
+  | 'tar.xz'
+  | 'exe'
+  | 'msi'
+  | 'msix'
+  | 'dmg'
+  | 'pkg'
+  | 'rpm'
+  | 'deb'
+  | 'appimage'
+  | 'raw'
 
 /** 版本级资产：某个版本在某平台的下载物 */
 export interface AssetDef {
@@ -53,6 +77,10 @@ export interface AssetDef {
   fileName?: string
   /** 备用镜像源（具名），官方 url 由顶层 url 提供 */
   mirrors?: MirrorSource[]
+  /** 安装包静默安装参数（仅安装包格式生效），如 exe 的 ["/S"]、msi 追加参数 */
+  installArgs?: string[]
+  /** 安装时是否需要管理员权限（msi/pkg/rpm/deb 默认 true，exe/dmg 默认 false） */
+  elevate?: boolean
 }
 
 /** 版本级覆盖（工作流步骤按 id 合并 + 资产级覆盖） */
@@ -67,7 +95,8 @@ export interface VersionOverride {
 }
 
 export interface PlatformDef {
-  archive?: 'zip' | 'tar.gz' | 'tar.xz'
+  /** 分发格式；缺省时按下载 URL 后缀推断 */
+  archive?: AssetFormat
   assets: Record<string, AssetDef>
   workflowOverrides?: WorkflowDef
 }

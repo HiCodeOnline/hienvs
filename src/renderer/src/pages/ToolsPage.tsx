@@ -81,7 +81,7 @@ export function ToolsPage() {
       ) : tools.length === 0 ? (
         <EmptyState title={keyword ? '没有匹配的工具' : '注册表为空'} hint={keyword ? '换个关键词试试' : '检查设置中的清单源配置'} />
       ) : (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
           {tools.map((t) => (
             <ToolCard key={t.id} tool={t} onOpen={() => navigate('tool-detail', t.id)} />
           ))}

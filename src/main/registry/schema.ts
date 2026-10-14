@@ -24,10 +24,10 @@ export const workflowSchema = z.object({
   uninstall: z.array(stepSchema).optional()
 }).passthrough()
 
-/** 镜像源：兼容旧版裸字符串（自动以主机名作名字）与新版本具名对象 */
+/** 镜像源：兼容旧版裸字符串（自动以主机名作名字）与新版本具名对象（可带 size） */
 export const mirrorSourceSchema = z.union([
   z.string().min(1),
-  z.object({ name: z.string().min(1), url: z.string().min(1) }).passthrough()
+  z.object({ name: z.string().min(1), url: z.string().min(1), size: z.number().min(0).optional() }).passthrough()
 ])
 
 /** 由镜像 URL 推导显示名（旧版裸字符串镜像的兜底） */
@@ -39,9 +39,26 @@ function mirrorNameFromUrl(url: string): string {
   }
 }
 
-function normalizeMirrorSource(m: z.infer<typeof mirrorSourceSchema>): { name: string; url: string } {
-  return typeof m === 'string' ? { name: mirrorNameFromUrl(m), url: m } : { name: m.name, url: m.url }
+function normalizeMirrorSource(m: z.infer<typeof mirrorSourceSchema>): { name: string; url: string; size?: number } {
+  if (typeof m === 'string') return { name: mirrorNameFromUrl(m), url: m }
+  return m.size !== undefined ? { name: m.name, url: m.url, size: m.size } : { name: m.name, url: m.url }
 }
+
+/** 分发格式：压缩包 / 安装包 / 单文件（与 shared/registry-types.ts 的 AssetFormat 同步） */
+export const ASSET_FORMATS = [
+  'zip',
+  'tar.gz',
+  'tar.xz',
+  'exe',
+  'msi',
+  'msix',
+  'dmg',
+  'pkg',
+  'rpm',
+  'deb',
+  'appimage',
+  'raw'
+] as const
 
 export const assetSchema = z
   .object({
@@ -49,7 +66,9 @@ export const assetSchema = z
     sha256: z.string().min(4).optional(),
     size: z.number().min(0).optional(),
     fileName: z.string().min(1).optional(),
-    mirrors: z.array(mirrorSourceSchema).optional()
+    mirrors: z.array(mirrorSourceSchema).optional(),
+    installArgs: z.array(z.string()).optional(),
+    elevate: z.boolean().optional()
   })
   .passthrough()
   .transform((a) => ({
@@ -58,7 +77,7 @@ export const assetSchema = z
   }))
 
 export const platformSchema = z.object({
-  archive: z.enum(['zip', 'tar.gz', 'tar.xz']).optional(),
+  archive: z.enum(ASSET_FORMATS).optional(),
   assets: z.record(z.string().min(1), assetSchema),
   workflowOverrides: workflowSchema.optional()
 }).passthrough()

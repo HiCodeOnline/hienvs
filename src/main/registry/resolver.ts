@@ -3,9 +3,10 @@ import path from 'node:path'
 import type { LoadedTool } from './types'
 import { mergeWorkflow, stepTitle } from './merge'
 import { renderDeep, safeVersionSegment, splitVersionKey, makeVersionKey } from '@shared/template'
-import type { ManifestStep, AssetDef, PlatformDef, ToolEnvDef } from '@shared/registry-types'
+import type { AssetFormat, ManifestStep, AssetDef, PlatformDef, ToolEnvDef } from '@shared/registry-types'
 import type { TaskContext, ResolvedStep } from '../engine/types'
 import { buildEnvPlan, type ActiveToolRef } from '../services/env/planner'
+import { matchPlatform } from './platform-match'
 import type { HienvsPaths } from '../core/paths'
 
 export interface ResolverDeps {
@@ -21,10 +22,20 @@ export interface ResolverDeps {
 
 export class ResolveError extends Error {}
 
-function inferArchive(url: string): 'zip' | 'tar.gz' | 'tar.xz' {
+/** 按下载 URL 后缀推断分发格式（清单未显式声明 archive 时） */
+function inferArchive(url: string): AssetFormat {
   const u = url.toLowerCase()
   if (u.endsWith('.zip')) return 'zip'
   if (u.endsWith('.tar.xz') || u.endsWith('.txz')) return 'tar.xz'
+  if (u.endsWith('.tar.gz') || u.endsWith('.tgz')) return 'tar.gz'
+  if (u.endsWith('.msi')) return 'msi'
+  if (u.endsWith('.msix') || u.endsWith('.appx')) return 'msix'
+  if (u.endsWith('.dmg')) return 'dmg'
+  if (u.endsWith('.pkg')) return 'pkg'
+  if (u.endsWith('.rpm')) return 'rpm'
+  if (u.endsWith('.deb')) return 'deb'
+  if (u.endsWith('.appimage')) return 'appimage'
+  if (u.endsWith('.exe')) return 'exe'
   return 'tar.gz'
 }
 
@@ -77,11 +88,11 @@ export class PlanResolver {
   }
 
   /** 当前平台可用的平台定义与资产；versionKey 为 dist@version 或裸版本；返回 null 表示平台不可安装 */
-  resolvePlatform(tool: LoadedTool, versionKey: string): { platform: PlatformDef; asset: AssetDef; archive: string; dist?: string; version: string } | null {
+  resolvePlatform(tool: LoadedTool, versionKey: string): { platform: PlatformDef; asset: AssetDef; archive: AssetFormat; dist?: string; version: string } | null {
     const { dist, version } = splitVersionKey(versionKey)
     this.resolveDist(tool, dist)
     const platforms = this.platformsOf(tool, dist)
-    const plat = platforms[this.deps.platformKey] ?? platforms[this.deps.platform]
+    const plat = matchPlatform(platforms, this.deps.platform, this.deps.arch)
     if (!plat) return null
     const asset = plat.assets?.[version]
     if (!asset) return null
@@ -94,32 +105,83 @@ export class PlanResolver {
     const out: string[] = []
     for (const { id: distId } of this.distributionsOf(tool)) {
       const platforms = this.platformsOf(tool, distId)
-      const plat = platforms[this.deps.platformKey] ?? platforms[this.deps.platform]
+      const plat = matchPlatform(platforms, this.deps.platform, this.deps.arch)
       for (const v of Object.keys(plat?.assets ?? {})) out.push(makeVersionKey(distId, v))
     }
     return out
   }
 
-  /** 内置默认安装工作流（清单未提供 workflows.install 时） */
-  private defaultInstallSteps(asset: AssetDef, stripComponents: number): ManifestStep[] {
-    return [
-      {
-        id: 'download',
-        type: 'download',
-        url: '{{asset.url}}',
-        fileName: '{{asset.fileName}}',
-        sha256: '{{asset.sha256}}',
-        mirrors: asset.mirrors ?? [],
-        retry: { attempts: 3, backoffMs: 2000, factor: 2 }
-      },
-      {
-        id: 'extract',
-        type: 'extract',
-        archive: '{{asset.archive}}',
-        stripComponents,
-        to: '{{versionDir}}'
-      }
-    ]
+  /** 内置默认安装工作流（清单未提供 workflows.install 时）：压缩包走解压，安装包走安装器执行，单文件落位 versionDir */
+  private defaultInstallSteps(asset: AssetDef, stripComponents: number, format: AssetFormat, os: 'windows' | 'darwin' | 'linux'): ManifestStep[] {
+    const installArgs = asset.installArgs ?? []
+    const elevate = asset.elevate
+    const download: ManifestStep = {
+      id: 'download',
+      type: 'download',
+      url: '{{asset.url}}',
+      fileName: '{{asset.fileName}}',
+      sha256: '{{asset.sha256}}',
+      size: '{{asset.size}}',
+      mirrors: asset.mirrors ?? [],
+      retry: { attempts: 3, backoffMs: 2000, factor: 2 }
+    }
+    switch (format) {
+      case 'zip':
+      case 'tar.gz':
+      case 'tar.xz':
+        return [
+          download,
+          { id: 'extract', type: 'extract', archive: '{{asset.archive}}', stripComponents, to: '{{versionDir}}' }
+        ]
+      case 'exe':
+        // NSIS: /S；Inno Setup: /VERYSILENT /NORESTART —— 通过 installArgs 按发行方式配置
+        return [download, { id: 'install', type: 'exec', run: '{{asset.path}}', args: installArgs, elevate, timeoutSec: 1800 }]
+      case 'msi':
+        return [
+          download,
+          { id: 'install', type: 'exec', run: 'msiexec', args: ['/i', '{{asset.path}}', '/qn', ...installArgs], elevate: elevate ?? true, timeoutSec: 1800 }
+        ]
+      case 'msix':
+        return [
+          download,
+          {
+            id: 'install',
+            type: 'exec',
+            run: 'powershell',
+            args: ['-NoProfile', '-NonInteractive', '-Command', `Add-AppxPackage -Path '{{asset.path}}'`],
+            timeoutSec: 1800
+          }
+        ]
+      case 'dmg':
+        // 挂载到固定挂载点 → 拷贝 .app 到 /Applications → 卸载
+        return [
+          download,
+          { id: 'mount', type: 'exec', run: 'hdiutil', args: ['attach', '-nobrowse', '-readonly', '-mountpoint', '{{tmpDir}}/dmg', '{{asset.path}}'] },
+          {
+            id: 'install',
+            type: 'exec',
+            run: '/bin/sh',
+            args: ['-c', `cp -R '{{tmpDir}}/dmg/'*.app /Applications/`],
+            elevate,
+            timeoutSec: 600
+          },
+          { id: 'detach', type: 'exec', run: '/bin/sh', args: ['-c', `hdiutil detach '{{tmpDir}}/dmg' || true`], timeoutSec: 120 }
+        ]
+      case 'pkg':
+        return [download, { id: 'install', type: 'exec', run: 'installer', args: ['-pkg', '{{asset.path}}', '-target', '/'], elevate: elevate ?? true, timeoutSec: 1800 }]
+      case 'rpm':
+        return [download, { id: 'install', type: 'exec', run: 'rpm', args: ['-Uvh', '{{asset.path}}'], elevate: elevate ?? true, timeoutSec: 1800 }]
+      case 'deb':
+        return [download, { id: 'install', type: 'exec', run: 'dpkg', args: ['-i', '{{asset.path}}'], elevate: elevate ?? true, timeoutSec: 1800 }]
+      case 'appimage':
+      case 'raw':
+        // 单文件：落位到 versionDir 并赋予可执行权限（Unix）
+        return [
+          download,
+          { id: 'install-file', type: 'move', from: '{{asset.path}}', to: '{{versionDir}}{{sep}}{{asset.fileName}}', overwrite: true },
+          ...(os !== 'windows' ? [{ id: 'chmod', type: 'exec', run: 'chmod', args: ['+x', '{{versionDir}}{{sep}}{{asset.fileName}}'] } as ManifestStep] : [])
+        ]
+    }
   }
 
   /** 版本级工作流覆盖层（发行商级优先，工具级兜底） */
@@ -130,9 +192,9 @@ export class PlanResolver {
     return { install: vo.workflowOverrides?.install ?? undefined }
   }
 
-  private buildInstallSteps(tool: LoadedTool, dist: string | undefined, version: string, plat: PlatformDef, asset: AssetDef): { steps: ManifestStep[]; warnings: string[] } {
+  private buildInstallSteps(tool: LoadedTool, dist: string | undefined, version: string, plat: PlatformDef, asset: AssetDef, format: AssetFormat, os: 'windows' | 'darwin' | 'linux'): { steps: ManifestStep[]; warnings: string[] } {
     const strip = (plat as { stripComponents?: number }).stripComponents ?? 1
-    const base = tool.manifest.workflows?.install ?? this.defaultInstallSteps(asset, strip)
+    const base = tool.manifest.workflows?.install ?? this.defaultInstallSteps(asset, strip, format, os)
     const { steps, warnings } = mergeWorkflow(base, [plat.workflowOverrides, this.versionLayer(tool, dist, version)])
     // 自动追加 env.apply（存在 env 声明且工作流中没有显式 env.apply 时）
     if (tool.manifest.env && !steps.some((s) => s.type === 'env.apply')) {
@@ -149,6 +211,10 @@ export class PlanResolver {
     const sep = d.osSeparator
     const versionDir = this.versionDirOf(tool.toolId, dist, version)
     const currentDir = path.join(d.paths.toolsDir, tool.toolId, 'current')
+    const cacheDir = dist
+      ? path.join(d.paths.downloadsDir, tool.toolId, dist, safeVersionSegment(version))
+      : path.join(d.paths.downloadsDir, tool.toolId, safeVersionSegment(version))
+    const fileName = assetFileName(asset)
     return {
       toolId: tool.toolId,
       name: tool.manifest.name,
@@ -159,9 +225,7 @@ export class PlanResolver {
       toolsDir: d.paths.toolsDir,
       hienvsHome: d.paths.home,
       tmpDir: path.join(d.paths.tmpDir, `task-${taskId}`),
-      cacheDir: dist
-        ? path.join(d.paths.downloadsDir, tool.toolId, dist, safeVersionSegment(version))
-        : path.join(d.paths.downloadsDir, tool.toolId, safeVersionSegment(version)),
+      cacheDir,
       downloadsDir: d.paths.downloadsDir,
       os: d.platform,
       arch: d.arch,
@@ -170,7 +234,8 @@ export class PlanResolver {
       ext: d.exeExt,
       'asset.url': asset.url,
       'asset.sha256': asset.sha256 ?? '',
-      'asset.fileName': assetFileName(asset),
+      'asset.fileName': fileName,
+      'asset.path': path.join(cacheDir, fileName),
       'asset.size': asset.size !== undefined ? String(asset.size) : '',
       'asset.archive': archive
     }
@@ -197,14 +262,19 @@ export class PlanResolver {
   }
 
   buildInstallTask(tool: LoadedTool, versionKey: string, taskId: string, completedStepIds: string[] = [], scope: 'user' | 'system' = 'user', preferredUrl?: string): TaskContext {
+    const d = this.deps
     const resolved = this.resolvePlatform(tool, versionKey)
     if (!resolved) throw new ResolveError(`工具 ${tool.toolId} 在当前平台(${this.deps.platformKey})没有 ${versionKey} 的资产`)
     const { platform, asset, archive, dist, version } = resolved
-    const { steps, warnings } = this.buildInstallSteps(tool, dist, version, platform, asset)
+    const { steps, warnings } = this.buildInstallSteps(tool, dist, version, platform, asset, archive, d.platform)
     for (const w of warnings) console.warn(`[resolver] ${tool.toolId}: ${w}`)
 
     const vars = this.templateVars(tool, dist, version, asset, archive, taskId)
-    const d = this.deps
+    // 用户选定镜像源且其配置了 size 时，用该 size 作为下载进度总量
+    if (preferredUrl) {
+      const m = asset.mirrors?.find((x) => x.url === preferredUrl)
+      if (m?.size !== undefined) vars['asset.size'] = String(m.size)
+    }
 
     const envPlan = tool.manifest.env
       ? buildEnvPlan({

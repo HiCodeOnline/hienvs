@@ -36,6 +36,13 @@ function checkAbort(ctx: TaskContext): void {
   if (ctx.aborted) throw new TaskCancelled()
 }
 
+/** 模板渲染后的 size 可能是数字/数字串/空串，归一化为 number | undefined */
+function parseSize(v: unknown): number | undefined {
+  if (typeof v === 'number' && Number.isFinite(v)) return v
+  if (typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v))) return Number(v)
+  return undefined
+}
+
 // ---------- download ----------
 /** 兼容镜像数组的两种形态：裸 URL 字符串 或 具名对象 { name, url } */
 function toMirrorUrls(raw: unknown): string[] {
@@ -54,7 +61,7 @@ const downloadStep: StepHandler = async (params, ctx, run) => {
     url: String(params.url ?? ''),
     fileName: params.fileName as string | undefined,
     sha256: params.sha256 as string | undefined,
-    size: params.size as number | undefined,
+    size: parseSize(params.size),
     mirrors: toMirrorUrls(params.mirrors),
     resume: params.resume as boolean | undefined,
     timeoutSec: (params.timeoutSec as number | undefined) ?? 3600
@@ -261,6 +268,94 @@ const verifyStep: StepHandler = async (params, ctx, run) => {
   return { detail: combined.split('\n')[0]?.slice(0, 120) ?? `exit ${r.code}` }
 }
 
+// ---------- exec（安装包执行 / 通用命令，支持管理员提权） ----------
+function posixQuote(s: string): string {
+  return `'${s.replace(/'/g, `'\\''`)}'`
+}
+
+/** 按平台包装提权命令：Windows PowerShell RunAs（UAC）、macOS osascript、Linux pkexec */
+function elevateCommand(cmd: string, args: string[], platform: TaskContext['platform']): { cmd: string; args: string[] } {
+  if (platform === 'windows') {
+    const psQuote = (s: string): string => `'${String(s).replace(/'/g, "''")}'`
+    const all = [cmd, ...args].map(psQuote)
+    const filePath = all[0]
+    const argList = all.length > 1 ? all.slice(1).join(',') : '@()'
+    return {
+      cmd: 'powershell',
+      args: [
+        '-NoProfile',
+        '-NonInteractive',
+        '-Command',
+        `$p = Start-Process -FilePath ${filePath} -ArgumentList ${argList} -Verb RunAs -Wait -PassThru; exit $p.ExitCode`
+      ]
+    }
+  }
+  if (platform === 'darwin') {
+    const inner = [cmd, ...args].map(posixQuote).join(' ')
+    return { cmd: 'osascript', args: ['-e', `do shell script ${posixQuote(inner)} with administrator privileges`] }
+  }
+  return { cmd: 'pkexec', args: [cmd, ...args] }
+}
+
+const execStep: StepHandler = async (params, ctx, run) => {
+  checkAbort(ctx)
+  const cmd = String(params.run ?? '')
+  if (!cmd) throw new Error('exec 缺少 run')
+  const args = (params.args as string[] | undefined) ?? []
+  const expectCode = (params.expectCode as number | undefined) ?? 0
+
+  let realCmd = cmd
+  let realArgs = args
+  let shell = params.shell === true
+  if (params.elevate === true) {
+    const el = elevateCommand(cmd, args, ctx.platform)
+    realCmd = el.cmd
+    realArgs = el.args
+    shell = false
+    run.log(`以管理员权限执行: ${cmd}`)
+  }
+
+  // PATH 注入 currentDir/bin，使相对命令名可用
+  const binDir = ctx.paths.currentDir ? path.join(ctx.paths.currentDir, 'bin') : undefined
+  const childPath = [binDir, ctx.paths.currentDir, process.env.PATH].filter(Boolean).join(path.delimiter)
+
+  const r = await new Promise<{ code: number; out: string; err: string }>((resolve, reject) => {
+    const child = spawn(realCmd, realArgs, {
+      windowsHide: true,
+      shell,
+      env: { ...process.env, PATH: childPath },
+      cwd: (params.cwd as string | undefined) ?? ctx.paths.versionDir
+    })
+    let out = ''
+    let err = ''
+    const timer = setTimeout(() => {
+      try { child.kill() } catch { /* 忽略 */ }
+      reject(new Error(`命令超时: ${cmd}`))
+    }, ((params.timeoutSec as number | undefined) ?? 300) * 1000)
+    child.stdout?.on('data', (d) => {
+      out += String(d)
+      for (const line of String(d).split('\n')) if (line.trim()) run.log(line.trimEnd(), 'debug')
+    })
+    child.stderr?.on('data', (d) => {
+      err += String(d)
+      for (const line of String(d).split('\n')) if (line.trim()) run.log(line.trimEnd(), 'debug')
+    })
+    child.on('error', (e) => {
+      clearTimeout(timer)
+      reject(e)
+    })
+    child.on('exit', (code) => {
+      clearTimeout(timer)
+      resolve({ code: code ?? -1, out, err })
+    })
+  })
+
+  if (r.code !== expectCode) {
+    throw new Error(`命令退出码 ${r.code}（期望 ${expectCode}）: ${cmd}\n${(r.err || r.out).slice(-400)}`)
+  }
+  return { detail: (r.out || r.err).split('\n')[0]?.slice(0, 120) ?? `exit ${r.code}` }
+}
+
 // ---------- shell.run / git.clone ----------
 const shellRunStep: StepHandler = async (params, ctx, run) => {
   checkAbort(ctx)
@@ -394,6 +489,7 @@ export const stepHandlers: Record<string, StepHandler> = {
   'env.apply': envApplyStep,
   verify: verifyStep,
   'shell.run': shellRunStep,
+  'exec': execStep,
   'git.clone': gitCloneStep,
   cleanup: cleanupStep,
   'builtin.link-current': linkCurrentStep,

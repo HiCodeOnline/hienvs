@@ -13,6 +13,7 @@ import type { LoadedTool } from './registry/sources'
 import { fetchIcon, readCachedIcon, writeIcon } from './registry/icons'
 import { PlanResolver, ResolveError } from './registry/resolver'
 import { compareVersions, currentOsName, makeVersionKey, safeVersionSegment, splitVersionKey } from '@shared/template'
+import { matchPlatform, normalizeArch } from './registry/platform-match'
 import type { RegistrySnapshot, ToolSummary, VersionInfo, RegistrySourceStatus, MirrorSource } from '@shared/registry-types'
 import type { EnvPlan, EnvPreview, EnvSnapshotData, TaskSnapshot } from '@shared/task-types'
 import type { AppInfo, SystemToolInfo } from '@shared/tool-types'
@@ -21,9 +22,14 @@ import { previewEnvPlan, readWindowsUserPath, readManagedBlock, parseBlockVars, 
 import { readWindowsVar } from './services/env/apply-windows'
 import { patchProcessEnv, detectSystemTool, runVersionCommand } from './services/activator'
 
-/** 某资产的可选下载源列表：官方源在前，具名镜像源在后 */
-function assetSources(asset: { url: string; mirrors?: MirrorSource[] }): MirrorSource[] {
-  return [{ name: '官方源', url: asset.url }, ...(asset.mirrors ?? [])]
+/** 某资产的可选下载源列表：官方源在前，具名镜像源在后（含各自可选 size） */
+function assetSources(asset: { url: string; size?: number; mirrors?: MirrorSource[] }): MirrorSource[] {
+  return [{ name: '官方源', url: asset.url, size: asset.size }, ...((asset.mirrors ?? []) as MirrorSource[]).map((m) => (m.size !== undefined ? m : { name: m.name, url: m.url }))]
+}
+
+/** 展示用大小：优先资产级 size，未配置时回退第一个带 size 的镜像源 */
+function assetDisplaySize(asset: { size?: number; mirrors?: MirrorSource[] }): number | undefined {
+  return asset.size ?? ((asset.mirrors ?? []) as MirrorSource[]).find((m) => m.size !== undefined)?.size
 }
 
 export class AppContext {
@@ -54,7 +60,8 @@ export class AppContext {
       this.onTaskFinished(snap)
     )
     this.osName = currentOsName(process.platform)
-    this.arch = process.arch === 'arm64' ? 'arm64' : 'x64'
+    // 严格架构识别：ia32→x86（32 位 Windows）、arm→arm（32 位 ARM），不再把 32 位误判为 x64
+    this.arch = normalizeArch(process.arch)
     this.platformKey = `${this.osName}-${this.arch}`
     this.sep = path.sep
     this.exeExt = this.osName === 'windows' ? '.exe' : ''
@@ -308,12 +315,12 @@ export class AppContext {
         : [{ id: undefined, name: undefined, defaultVersion: tool.manifest.defaultVersion, platforms: tool.manifest.platforms ?? {} }]
     const out: VersionInfo[] = []
     for (const { id: distId, name, defaultVersion, platforms } of entries) {
-      const plat = platforms[this.platformKey] ?? platforms[this.osName]
+      const plat = matchPlatform(platforms, this.osName, this.arch)
       const all = new Map<string, VersionInfo>()
       for (const p of Object.values(platforms)) {
         for (const [v, asset] of Object.entries(p.assets ?? {})) {
           if (!all.has(v)) {
-            all.set(v, { key: makeVersionKey(distId, v), version: v, dist: distId, distName: name, isDefault: defaultVersion === v, available: false, size: asset.size, sha256: asset.sha256, sources: assetSources(asset) })
+            all.set(v, { key: makeVersionKey(distId, v), version: v, dist: distId, distName: name, isDefault: defaultVersion === v, available: false, size: assetDisplaySize(asset), sha256: asset.sha256, sources: assetSources(asset) })
           }
         }
       }
@@ -322,11 +329,11 @@ export class AppContext {
           const e = all.get(v)
           if (e) {
             e.available = true
-            e.size = asset.size
+            e.size = assetDisplaySize(asset)
             e.sha256 = asset.sha256
             e.sources = assetSources(asset)
           } else {
-            all.set(v, { key: makeVersionKey(distId, v), version: v, dist: distId, distName: name, isDefault: defaultVersion === v, available: true, size: asset.size, sha256: asset.sha256, sources: assetSources(asset) })
+            all.set(v, { key: makeVersionKey(distId, v), version: v, dist: distId, distName: name, isDefault: defaultVersion === v, available: true, size: assetDisplaySize(asset), sha256: asset.sha256, sources: assetSources(asset) })
           }
         }
       }
@@ -559,7 +566,7 @@ export class AppContext {
       version: app.getVersion(),
       electron: process.versions.electron ?? '',
       platform: process.platform,
-      arch: process.arch,
+      arch: this.arch,
       installDir: this.paths.toolsDir,
       downloadDir: this.paths.downloadsDir,
       home: this.paths.home,

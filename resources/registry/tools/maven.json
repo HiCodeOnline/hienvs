@@ -7,7 +7,9 @@
   "homepage": "https://maven.apache.org",
   "defaultVersion": "3.9.9",
   "env": {
-    "pathDirs": ["bin"]
+    "pathDirs": [
+      "bin"
+    ]
   },
   "platforms": {
     "windows": {
@@ -17,8 +19,16 @@
         "3.9.9": {
           "url": "https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip",
           "mirrors": [
-            { "name": "清华 TUNA", "url": "https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip" },
-            { "name": "阿里云", "url": "https://mirrors.aliyun.com/apache/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip" }
+            {
+              "name": "清华 TUNA",
+              "url": "https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip",
+              "size": 9202456
+            },
+            {
+              "name": "阿里云",
+              "url": "https://mirrors.aliyun.com/apache/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip",
+              "size": 9202456
+            }
           ]
         }
       },
@@ -29,7 +39,9 @@
             "insertAfter": "extract",
             "type": "verify",
             "run": "\"{{versionDir}}{{sep}}bin{{sep}}mvn.cmd\"",
-            "args": ["--version"],
+            "args": [
+              "--version"
+            ],
             "shell": true,
             "timeoutSec": 120
           }
@@ -43,7 +55,11 @@
         "3.9.9": {
           "url": "https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz",
           "mirrors": [
-            { "name": "清华 TUNA", "url": "https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz" }
+            {
+              "name": "清华 TUNA",
+              "url": "https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz",
+              "size": 9102945
+            }
           ]
         }
       },
@@ -54,7 +70,9 @@
             "insertAfter": "extract",
             "type": "verify",
             "run": "\"{{versionDir}}/bin/mvn\"",
-            "args": ["--version"],
+            "args": [
+              "--version"
+            ],
             "shell": true,
             "timeoutSec": 120
           }
@@ -68,8 +86,16 @@
         "3.9.9": {
           "url": "https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz",
           "mirrors": [
-            { "name": "清华 TUNA", "url": "https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz" },
-            { "name": "阿里云", "url": "https://mirrors.aliyun.com/apache/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz" }
+            {
+              "name": "清华 TUNA",
+              "url": "https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz",
+              "size": 9102945
+            },
+            {
+              "name": "阿里云",
+              "url": "https://mirrors.aliyun.com/apache/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz",
+              "size": 9102945
+            }
           ]
         }
       },
@@ -80,7 +106,9 @@
             "insertAfter": "extract",
             "type": "verify",
             "run": "\"{{versionDir}}/bin/mvn\"",
-            "args": ["--version"],
+            "args": [
+              "--version"
+            ],
             "shell": true,
             "timeoutSec": 120
           }

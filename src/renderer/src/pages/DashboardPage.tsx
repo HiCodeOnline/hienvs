@@ -23,7 +23,7 @@ export function DashboardPage() {
           <EmptyState title="还没有激活任何工具" hint="前往工具箱安装并激活 Java、Go 等工具" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
           {activeTools.map((t) => (
             <ToolCard key={t.id} tool={t} onOpen={() => navigate('tool-detail', t.id)} />
           ))}

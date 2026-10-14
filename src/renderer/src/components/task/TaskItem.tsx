@@ -2,7 +2,8 @@
 import { useState } from 'react'
 import type { TaskSnapshot, TaskStatus } from '@shared/task-types'
 import { useAppStore } from '../../stores/app'
-import { Badge, Button, Spinner, formatDateTime, formatDuration } from '../common'
+import { useRegistryStore } from '../../stores/registry'
+import { Badge, Button, Spinner, ToolAvatar, formatDateTime, formatDuration } from '../common'
 import { StepTimeline } from './StepTimeline'
 import { LogViewer } from './LogViewer'
 
@@ -23,17 +24,10 @@ const KIND_LABEL: Record<TaskSnapshot['kind'], string> = {
   'resume-install': '续装'
 }
 
-const STATUS_ICON: Record<TaskStatus, string> = {
-  queued: '🕐',
-  running: '⚡',
-  success: '✓',
-  failed: '✗',
-  cancelled: '⊘',
-  interrupted: '⏸'
-}
-
 export function TaskItem({ task }: { task: TaskSnapshot }) {
   const pushToast = useAppStore((s) => s.pushToast)
+  // 卡片前展示对应工具的图标（未配置或加载失败时回退首字母）
+  const toolIcon = useRegistryStore((s) => s.snapshot?.tools.find((t) => t.id === task.toolId)?.icon)
   const [expanded, setExpanded] = useState(false)
   const [busy, setBusy] = useState(false)
 
@@ -59,7 +53,7 @@ export function TaskItem({ task }: { task: TaskSnapshot }) {
         className="flex cursor-pointer items-center gap-3 p-4"
         onClick={() => setExpanded((v) => !v)}
       >
-        <span className="text-lg">{STATUS_ICON[task.status]}</span>
+        <ToolAvatar toolId={task.toolId} icon={toolIcon} className="h-9 w-9 text-sm" />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">

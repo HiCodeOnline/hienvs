@@ -86,6 +86,7 @@ export function stepTitle(step: ManifestStep): string {
     'env.apply': '应用环境变量',
     'env.remove-tool': '移除环境配置',
     verify: '验证安装',
+    'exec': '执行安装程序',
     'git.clone': '克隆仓库',
     'shell.run': '执行命令',
     cleanup: '清理临时文件',

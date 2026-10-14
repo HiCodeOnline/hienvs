@@ -118,7 +118,7 @@ export function SettingsPage() {
         }
       />
 
-      <div className="max-w-2xl space-y-6">
+      <div className="mx-auto max-w-2xl space-y-6">
         {/* 目录 */}
         <Section title="目录" hint="状态、日志与清单缓存固定保存在用户目录 .hienvs 下">
           <Field label="安装目录" hint="工具版本与 current 链接的存放位置（修改后已安装的工具不会自动迁移）">
