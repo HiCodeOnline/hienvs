@@ -1,5 +1,6 @@
 // 通用小组件
 import { useState, type ReactNode } from 'react'
+import { currentLanguage } from '../../stores/i18n'
 
 export function Button({
   children,
@@ -209,7 +210,7 @@ export function formatEta(sec: number): string {
 
 export function formatDateTime(ts?: number): string {
   if (!ts) return '-'
-  return new Date(ts).toLocaleString('zh-CN', { hour12: false })
+  return new Date(ts).toLocaleString(currentLanguage(), { hour12: false })
 }
 
 export function formatDuration(from: number, to?: number): string {

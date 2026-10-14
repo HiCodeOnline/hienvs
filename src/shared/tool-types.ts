@@ -32,6 +32,8 @@ export interface AppSettings {
   autoRefreshRegistry: boolean
   /** 仪表盘安全提示是否已被用户关闭（关闭后不再展示） */
   securityNoticeDismissed: boolean
+  /** 界面语言偏好：auto 表示跟随系统语言，其余为具体语言代码 */
+  language: import('./i18n').LanguagePreference
 }
 
 export interface SystemToolInfo {
@@ -48,6 +50,8 @@ export interface AppInfo {
   arch: string
   /** 操作系统展示名称，如 Windows 11 / macOS 14 / Linux */
   osLabel: string
+  /** 系统语言区域，如 zh-CN / en-US，用于「跟随系统」匹配界面语言 */
+  systemLocale: string
   home: string
   installDir: string
   downloadDir: string

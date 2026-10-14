@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import type { AppInfo, DiskUsage } from '@shared/tool-types'
 import { useRegistryStore } from '../../stores/registry'
 import { useSettingsStore } from '../../stores/settings'
+import { useI18n } from '../../stores/i18n'
 import { formatBytes } from '../common'
 
 const ITEM = 'flex h-full items-center gap-1 px-2 transition-colors hover:bg-black/5 dark:hover:bg-white/10'
@@ -10,6 +11,7 @@ const ITEM = 'flex h-full items-center gap-1 px-2 transition-colors hover:bg-bla
 export function StatusBar() {
   const snapshot = useRegistryStore((s) => s.snapshot)
   const settings = useSettingsStore((s) => s.settings)
+  const t = useI18n()
   const [info, setInfo] = useState<AppInfo | null>(null)
   const [download, setDownload] = useState<DiskUsage | null>(null)
   const [install, setInstall] = useState<DiskUsage | null>(null)
@@ -40,7 +42,7 @@ export function StatusBar() {
   }, [downloadDir, installDir])
 
   const enabledSources = (snapshot?.sources ?? []).filter((s) => s.enabled)
-  const sourceLabel = enabledSources.length === 0 ? '无软件源' : enabledSources.map((s) => s.name).join('、')
+  const sourceLabel = enabledSources.length === 0 ? t('statusBar.noSource') : enabledSources.map((s) => s.name).join(', ')
 
   const diskItem = (label: string, usage: DiskUsage | null) => (
     <span className={ITEM} title={label}>
@@ -51,24 +53,24 @@ export function StatusBar() {
   return (
     <footer className="flex h-6 shrink-0 select-none items-center justify-between border-t border-zinc-200 bg-white text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
       <div className="flex h-full items-center">
-        <span className={`${ITEM} max-w-[16rem] truncate`} title={`启用的软件源：${sourceLabel}`}>
+        <span className={`${ITEM} max-w-[16rem] truncate`} title={t('statusBar.enabledSources', { list: sourceLabel })}>
           {enabledSources.length > 0 && (
             <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500 shadow-[0_0_6px_2px_rgba(16,185,129,0.7)]" />
           )}
           {sourceLabel}
         </span>
-        {diskItem('下载', download)}
-        {diskItem('安装', install)}
+        {diskItem(t('statusBar.download'), download)}
+        {diskItem(t('statusBar.install'), install)}
       </div>
       <div className="flex h-full items-center">
-        <span className={ITEM} title="当前操作系统与架构">
+        <span className={ITEM} title={t('statusBar.osArch')}>
           {info ? `${info.osLabel} · ${info.arch}` : '—'}
         </span>
         <a
           href="https://hicodeonline.github.io/HiEnvsRepository"
           target="_blank"
           rel="noreferrer"
-          title="打开 HiEnvs 软件源仓库"
+          title={t('statusBar.repo')}
           className={ITEM}
         >
           <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">

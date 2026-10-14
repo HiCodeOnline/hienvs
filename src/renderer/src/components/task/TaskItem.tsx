@@ -3,31 +3,36 @@ import { useState } from 'react'
 import type { TaskSnapshot, TaskStatus } from '@shared/task-types'
 import { useAppStore } from '../../stores/app'
 import { useRegistryStore } from '../../stores/registry'
+import { useI18n, useStepLabel } from '../../stores/i18n'
 import { Badge, Button, Spinner, ToolAvatar, formatDateTime, formatDuration } from '../common'
 import { StepTimeline } from './StepTimeline'
 import { LogViewer } from './LogViewer'
 
-const STATUS_BADGE: Record<TaskStatus, { tone: 'zinc' | 'green' | 'red' | 'amber' | 'brand'; label: string }> = {
-  queued: { tone: 'zinc', label: '排队中' },
-  running: { tone: 'brand', label: '执行中' },
-  success: { tone: 'green', label: '成功' },
-  failed: { tone: 'red', label: '失败' },
-  cancelled: { tone: 'amber', label: '已取消' },
-  interrupted: { tone: 'amber', label: '已中断' }
+/** 任务状态 -> 徽标配色与文案键 */
+const STATUS_BADGE: Record<TaskStatus, { tone: 'zinc' | 'green' | 'red' | 'amber' | 'brand'; key: string }> = {
+  queued: { tone: 'zinc', key: 'taskStatus.queued' },
+  running: { tone: 'brand', key: 'taskStatus.running' },
+  success: { tone: 'green', key: 'taskStatus.success' },
+  failed: { tone: 'red', key: 'taskStatus.failed' },
+  cancelled: { tone: 'amber', key: 'taskStatus.cancelled' },
+  interrupted: { tone: 'amber', key: 'taskStatus.interrupted' }
 }
 
+/** 任务类型 -> 文案键 */
 const KIND_LABEL: Record<TaskSnapshot['kind'], string> = {
-  install: '安装',
-  activate: '激活',
-  deactivate: '取消激活',
-  uninstall: '卸载',
-  'resume-install': '续装'
+  install: 'taskKind.install',
+  activate: 'taskKind.activate',
+  deactivate: 'taskKind.deactivate',
+  uninstall: 'taskKind.uninstall',
+  'resume-install': 'taskKind.resumeInstall'
 }
 
 export function TaskItem({ task }: { task: TaskSnapshot }) {
   const pushToast = useAppStore((s) => s.pushToast)
+  const t = useI18n()
+  const stepLabel = useStepLabel()
   // 卡片前展示对应工具的图标（未配置或加载失败时回退首字母）
-  const toolIcon = useRegistryStore((s) => s.snapshot?.tools.find((t) => t.id === task.toolId)?.icon)
+  const toolIcon = useRegistryStore((s) => s.snapshot?.tools.find((x) => x.id === task.toolId)?.icon)
   const [expanded, setExpanded] = useState(false)
   const [busy, setBusy] = useState(false)
 
@@ -57,20 +62,20 @@ export function TaskItem({ task }: { task: TaskSnapshot }) {
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              {KIND_LABEL[task.kind]} {task.toolName}
+              {t(KIND_LABEL[task.kind])} {task.toolName}
               {task.version ? ` ${task.version}` : ''}
             </span>
-            <Badge tone={badge.tone}>{badge.label}</Badge>
+            <Badge tone={badge.tone}>{t(badge.key)}</Badge>
             {task.resumable && (task.status === 'failed' || task.status === 'interrupted') && (
-              <Badge tone="blue">可恢复</Badge>
+              <Badge tone="blue">{t('taskItem.resumable')}</Badge>
             )}
           </div>
           <div className="mt-0.5 text-xs text-zinc-400">
-            {formatDateTime(task.createdAt)} · 步骤 {doneStepCount}/{task.steps.length}
+            {formatDateTime(task.createdAt)} · {t('taskItem.steps', { done: doneStepCount, total: task.steps.length })}
             {task.status === 'running' || task.status === 'queued'
-              ? ` · 已用时 ${formatDuration(task.startedAt ?? task.createdAt)}`
+              ? ` · ${t('taskItem.elapsed', { time: formatDuration(task.startedAt ?? task.createdAt) })}`
               : task.finishedAt
-                ? ` · 耗时 ${formatDuration(task.startedAt ?? task.createdAt, task.finishedAt)}`
+                ? ` · ${t('taskItem.duration', { time: formatDuration(task.startedAt ?? task.createdAt, task.finishedAt) })}`
                 : ''}
           </div>
         </div>
@@ -81,18 +86,18 @@ export function TaskItem({ task }: { task: TaskSnapshot }) {
               variant="secondary"
               size="sm"
               disabled={busy}
-              onClick={() => withBusy(() => window.api.tasksCancel(task.taskId), '已发送取消请求')}
+              onClick={() => withBusy(() => window.api.tasksCancel(task.taskId), t('toast.cancelRequested'))}
             >
-              取消
+              {t('taskItem.cancel')}
             </Button>
           )}
           {task.resumable && (task.status === 'failed' || task.status === 'interrupted') && (
             <Button
               size="sm"
               disabled={busy}
-              onClick={() => withBusy(() => window.api.tasksResume(task.taskId), '已从断点恢复')}
+              onClick={() => withBusy(() => window.api.tasksResume(task.taskId), t('toast.resumed'))}
             >
-              续跑
+              {t('taskItem.resume')}
             </Button>
           )}
           {!active && task.status !== 'running' && task.status !== 'queued' && (
@@ -100,9 +105,9 @@ export function TaskItem({ task }: { task: TaskSnapshot }) {
               variant="ghost"
               size="sm"
               disabled={busy}
-              onClick={() => withBusy(() => window.api.tasksRemove(task.taskId), '任务已移除')}
+              onClick={() => withBusy(() => window.api.tasksRemove(task.taskId), t('toast.taskRemoved'))}
             >
-              移除
+              {t('taskItem.remove')}
             </Button>
           )}
           <button
@@ -126,8 +131,11 @@ export function TaskItem({ task }: { task: TaskSnapshot }) {
         <div className="px-4 pb-3">
           <div className="flex items-center gap-2 text-xs text-zinc-400">
             <Spinner className="h-3 w-3 text-brand-500" />
-            当前步骤：
-            {task.steps.find((s) => s.state === 'running')?.title ?? '准备中…'}
+            {t('taskItem.currentStep')}
+            {(() => {
+              const running = task.steps.find((s) => s.state === 'running')
+              return running ? stepLabel(running) : t('taskItem.preparing')
+            })()}
           </div>
         </div>
       )}
@@ -140,7 +148,7 @@ export function TaskItem({ task }: { task: TaskSnapshot }) {
 
       {expanded && (
         <div className="border-t border-zinc-200 p-4 dark:border-zinc-800">
-          <div className="mb-4 text-xs font-medium text-zinc-500 dark:text-zinc-400">工作流步骤</div>
+          <div className="mb-4 text-xs font-medium text-zinc-500 dark:text-zinc-400">{t('taskItem.workflowSteps')}</div>
           <StepTimeline steps={task.steps} />
           <div className="mt-4">
             <LogViewer taskId={task.taskId} />

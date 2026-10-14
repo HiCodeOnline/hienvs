@@ -5,18 +5,19 @@ import type { ToolSummary, VersionInfo } from '@shared/registry-types'
 import type { TaskSnapshot } from '@shared/task-types'
 import { useAppStore } from '../stores/app'
 import { useRegistryStore } from '../stores/registry'
+import { useI18n } from '../stores/i18n'
 import { Badge, Button, EmptyState, Modal, Spinner, ToolAvatar, formatVersionLabel } from '../components/common'
 
 interface VersionGroup {
   dist?: string
   name: string
   homepage?: string
-  defaultVersion?: string
   items: VersionInfo[]
 }
 
 /** 官网链接：交给主进程用系统浏览器打开 */
 function HomepageLink({ url }: { url: string }) {
+  const t = useI18n()
   return (
     <a
       href={url}
@@ -25,7 +26,7 @@ function HomepageLink({ url }: { url: string }) {
       title={url}
       className="text-xs text-brand-600 hover:underline dark:text-brand-400"
     >
-      官网
+      {t('toolDetail.homepage')}
     </a>
   )
 }
@@ -57,7 +58,8 @@ function summaryToDetail(t: ToolSummary): ToolDetail {
 export function ToolDetailPage({ toolId }: { toolId: string }) {
   const navigate = useAppStore((s) => s.navigate)
   const pushToast = useAppStore((s) => s.pushToast)
-  const summary = useRegistryStore((s) => s.snapshot?.tools.find((t) => t.id === toolId))
+  const t = useI18n()
+  const summary = useRegistryStore((s) => s.snapshot?.tools.find((tool) => tool.id === toolId))
   const [detail, setDetail] = useState<ToolDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [uninstallVersion, setUninstallVersion] = useState<string | null>(null)
@@ -123,10 +125,10 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
     }
     return (
       <div className="p-8">
-        <EmptyState title="工具不存在或已被移除" />
+        <EmptyState title={t('toolDetail.notFound')} />
         <div className="text-center">
           <Button variant="secondary" onClick={() => navigate('tools')}>
-            返回工具箱
+            {t('toolDetail.back')}
           </Button>
         </div>
       </div>
@@ -140,7 +142,6 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
           dist: d.id,
           name: d.name,
           homepage: d.homepage,
-          defaultVersion: d.defaultVersion,
           items: view.versions.filter((v) => v.dist === d.id)
         }))
       : [{ name: '', items: view.versions }]
@@ -157,10 +158,16 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
         onClick={() => navigate('tools')}
         className="mb-4 inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
       >
-        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <svg
+          className="h-4 w-4 rtl:-scale-x-100"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
-        返回工具箱
+        {t('toolDetail.back')}
       </button>
 
       {/* 头部信息：工具名称置于标签上方 */}
@@ -169,29 +176,33 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
         <div className="flex-1">
           <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{view.name}</h1>
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            {view.activeVersion && <Badge tone="green">已激活 {formatVersionLabel(view.activeVersion, view.versions)}</Badge>}
-            {view.envApplied && <Badge tone="blue">环境变量已应用</Badge>}
+            {view.activeVersion && (
+              <Badge tone="green">
+                {t('toolDetail.active', { version: formatVersionLabel(view.activeVersion, view.versions) })}
+              </Badge>
+            )}
+            {view.envApplied && <Badge tone="blue">{t('toolDetail.envApplied')}</Badge>}
             {view.health && <Badge tone={view.health.startsWith('✓') ? 'green' : 'red'}>{view.health}</Badge>}
             {!detail && view.activeVersion && (
               <Badge tone="zinc">
-                <Spinner className="h-3 w-3" /> 健康检查中…
+                <Spinner className="h-3 w-3" /> {t('toolDetail.healthChecking')}
               </Badge>
             )}
             {view.platformKey && <Badge tone="zinc">{view.platformKey}</Badge>}
-            {view.distributions.length > 0 && <Badge tone="brand">{view.distributions.length} 个发行商</Badge>}
+            {view.distributions.length > 0 && (
+              <Badge tone="brand">{t('toolDetail.distCount', { count: view.distributions.length })}</Badge>
+            )}
             {view.homepage && !hasDistributions && <HomepageLink url={view.homepage} />}
           </div>
           <div className="mt-1 text-xs text-zinc-400">
-            已安装 {view.installedVersions.length} 个版本
-            {view.defaultVersion ? ` · 默认 ${formatVersionLabel(view.defaultVersion, view.versions)}` : ''}
+            {t('toolDetail.installedCount', { count: view.installedVersions.length })}
           </div>
         </div>
       </div>
 
       {/* 版本列表（按发行商分组） */}
-      <h2 className="mb-3 text-sm font-semibold text-zinc-900 dark:text-zinc-100">版本</h2>
       {view.versions.length === 0 ? (
-        <EmptyState title="当前平台暂无可用版本" />
+        <EmptyState title={t('toolDetail.noVersions')} />
       ) : (
         groups.map((g) => (
           <section key={g.dist ?? '_'} className="mb-6">
@@ -200,15 +211,14 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
                 <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{g.name}</span>
                 {/* 发行商层级的官网紧随发行商名称之后 */}
                 {(g.homepage ?? view.homepage) && <HomepageLink url={(g.homepage ?? view.homepage) as string} />}
-                {g.defaultVersion && <span className="text-xs text-zinc-400">默认 {g.defaultVersion}</span>}
               </div>
             )}
             <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-zinc-200 bg-zinc-50 text-left text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-800/50">
-                    <th className="px-4 py-2.5 font-medium">版本</th>
-                    <th className="px-4 py-2.5 text-right font-medium">操作</th>
+                  <tr className="border-b border-zinc-200 bg-zinc-50 text-start text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-800/50">
+                    <th className="px-4 py-2.5 font-medium">{t('toolDetail.colVersion')}</th>
+                    <th className="px-4 py-2.5 text-end font-medium">{t('toolDetail.colActions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-100 bg-white dark:divide-zinc-800 dark:bg-zinc-900">
@@ -221,17 +231,17 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="font-mono">{v.version}</span>
                             {isActive ? (
-                              <Badge tone="green">当前激活</Badge>
+                              <Badge tone="green">{t('toolDetail.currentActive')}</Badge>
                             ) : installed ? (
-                              <Badge tone="blue">已安装</Badge>
+                              <Badge tone="blue">{t('toolDetail.installed')}</Badge>
                             ) : !v.available ? (
-                              <Badge tone="zinc">不可用</Badge>
+                              <Badge tone="zinc">{t('toolDetail.unavailable')}</Badge>
                             ) : (
-                              <span className="text-xs text-zinc-400">未安装</span>
+                              <span className="text-xs text-zinc-400">{t('toolDetail.notInstalled')}</span>
                             )}
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-right">
+                        <td className="px-4 py-3 text-end">
                           <div className="flex justify-end gap-2">
                             {!installed && v.available && (
                               <Button
@@ -242,16 +252,12 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
                                   setInstallTarget(v.key)
                                 }}
                               >
-                                安装
+                                {t('toolDetail.install')}
                               </Button>
                             )}
                             {installed && !isActive && (
-                              <Button
-                                size="sm"
-                                disabled={busy}
-                                onClick={() => setActivateTarget(v.key)}
-                              >
-                                激活
+                              <Button size="sm" disabled={busy} onClick={() => setActivateTarget(v.key)}>
+                                {t('toolDetail.activate')}
                               </Button>
                             )}
                             {isActive && (
@@ -262,11 +268,11 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
                                 onClick={() =>
                                   action(
                                     () => window.api.deactivateTool(view.id),
-                                    `${formatVersionLabel(v.key, view.versions)} 已取消激活（保留安装文件）`
+                                    t('toast.deactivated', { version: formatVersionLabel(v.key, view.versions) })
                                   )
                                 }
                               >
-                                取消激活
+                                {t('toolDetail.deactivate')}
                               </Button>
                             )}
                             {installed && (
@@ -276,7 +282,7 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
                                 disabled={busy}
                                 onClick={() => setUninstallVersion(v.key)}
                               >
-                                卸载
+                                {t('toolDetail.uninstall')}
                               </Button>
                             )}
                           </div>
@@ -295,43 +301,45 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
       <Modal
         open={installTarget !== null}
         onClose={() => setInstallTarget(null)}
-        title={`安装 ${view.name} ${installTarget ? formatVersionLabel(installTarget, view.versions) : ''}`}
+        title={t('toolDetail.installTitle', {
+          name: view.name,
+          version: installTarget ? formatVersionLabel(installTarget, view.versions) : ''
+        })}
       >
         <div className="space-y-4">
           <div>
-            <div className="mb-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300">下载源</div>
+            <div className="mb-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              {t('toolDetail.downloadSource')}
+            </div>
             <div className="space-y-2">
               <button
                 onClick={() => setInstallSourceUrl('')}
-                className={`block w-full rounded-lg border px-4 py-2 text-left text-sm transition-colors ${
+                className={`block w-full rounded-lg border px-4 py-2 text-start text-sm transition-colors ${
                   installSourceUrl === ''
                     ? 'border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300'
                     : 'border-zinc-300 text-zinc-600 dark:border-zinc-700 dark:text-zinc-400'
                 }`}
               >
-                <span>自动（跟随镜像策略设置）</span>
+                <span>{t('toolDetail.autoSource')}</span>
                 <span
                   className={`mt-0.5 block truncate text-xs font-normal ${
                     installSourceUrl === '' ? 'text-brand-600/70 dark:text-brand-300/70' : 'text-zinc-400 dark:text-zinc-500'
                   }`}
                 >
-                  按设置的镜像策略自动排序，失败时自动回退其余源
+                  {t('toolDetail.autoSourceHint')}
                 </span>
               </button>
               {installSources.map((s, i) => (
                 <button
                   key={s.url}
                   onClick={() => setInstallSourceUrl(s.url)}
-                  className={`block w-full rounded-lg border px-4 py-2 text-left text-sm transition-colors ${
+                  className={`block w-full rounded-lg border px-4 py-2 text-start text-sm transition-colors ${
                     installSourceUrl === s.url
                       ? 'border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300'
                       : 'border-zinc-300 text-zinc-600 dark:border-zinc-700 dark:text-zinc-400'
                   }`}
                 >
-                  <span>
-                    {s.name}
-                    {i === 0 ? '（官方）' : ''}
-                  </span>
+                  <span>{i === 0 ? t('toolDetail.officialTag', { name: s.name }) : s.name}</span>
                   <span
                     title={s.url}
                     className={`mt-0.5 block truncate font-mono text-xs font-normal ${
@@ -346,7 +354,7 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="secondary" onClick={() => setInstallTarget(null)}>
-              取消
+              {t('common.cancel')}
             </Button>
             <Button
               disabled={busy}
@@ -354,10 +362,15 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
                 const v = installTarget
                 const src = installSourceUrl
                 setInstallTarget(null)
-                if (v) void action(() => window.api.installTool(view.id, v, src || undefined), `${formatVersionLabel(v, view.versions)} 已加入安装队列`)
+                if (v) {
+                  void action(
+                    () => window.api.installTool(view.id, v, src || undefined),
+                    t('toast.installQueued', { version: formatVersionLabel(v, view.versions) })
+                  )
+                }
               }}
             >
-              开始安装
+              {t('toolDetail.startInstall')}
             </Button>
           </div>
         </div>
@@ -367,17 +380,18 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
       <Modal
         open={uninstallVersion !== null}
         onClose={() => setUninstallVersion(null)}
-        title={`卸载 ${view.name} ${uninstallVersion ? formatVersionLabel(uninstallVersion, view.versions) : ''}`}
+        title={t('toolDetail.uninstallTitle', {
+          name: view.name,
+          version: uninstallVersion ? formatVersionLabel(uninstallVersion, view.versions) : ''
+        })}
       >
         <div className="space-y-4">
           <p className="text-sm text-zinc-600 dark:text-zinc-300">
-            {uninstallVersion === view.activeVersion
-              ? '该版本当前处于激活状态，卸载将同时清理其环境变量与 PATH 条目。'
-              : '将从磁盘中删除该版本目录。此操作不可撤销。'}
+            {uninstallVersion === view.activeVersion ? t('toolDetail.uninstallActiveWarn') : t('toolDetail.uninstallWarn')}
           </p>
           <div className="flex justify-end gap-2">
             <Button variant="secondary" onClick={() => setUninstallVersion(null)}>
-              取消
+              {t('common.cancel')}
             </Button>
             <Button
               variant="danger"
@@ -385,10 +399,15 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
               onClick={() => {
                 const v = uninstallVersion
                 setUninstallVersion(null)
-                if (v) void action(() => window.api.uninstallTool(view.id, v), `${formatVersionLabel(v, view.versions)} 卸载任务已入队`)
+                if (v) {
+                  void action(
+                    () => window.api.uninstallTool(view.id, v),
+                    t('toast.uninstallQueued', { version: formatVersionLabel(v, view.versions) })
+                  )
+                }
               }}
             >
-              确认卸载
+              {t('toolDetail.confirmUninstall')}
             </Button>
           </div>
         </div>
@@ -398,11 +417,14 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
       <Modal
         open={activateTarget !== null}
         onClose={() => setActivateTarget(null)}
-        title={`激活 ${view.name} ${activateTarget ? formatVersionLabel(activateTarget, view.versions) : ''}`}
+        title={t('toolDetail.activateTitle', {
+          name: view.name,
+          version: activateTarget ? formatVersionLabel(activateTarget, view.versions) : ''
+        })}
       >
         <div className="space-y-4">
           <div>
-            <div className="mb-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300">环境变量写入作用域</div>
+            <div className="mb-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300">{t('toolDetail.envScope')}</div>
             <div className="flex gap-2">
               {(['user', 'system'] as const).map((s) => (
                 <button
@@ -414,17 +436,17 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
                       : 'border-zinc-300 text-zinc-600 dark:border-zinc-700 dark:text-zinc-400'
                   }`}
                 >
-                  {s === 'user' ? '当前用户' : '系统级'}
+                  {s === 'user' ? t('toolDetail.scopeUser') : t('toolDetail.scopeSystem')}
                 </button>
               ))}
             </div>
           </div>
           {activateScope === 'system' && (
-            <p className="text-xs text-amber-600 dark:text-amber-400">系统级写入需要管理员权限，将弹出 UAC 授权确认。</p>
+            <p className="text-xs text-amber-600 dark:text-amber-400">{t('toolDetail.systemScopeWarn')}</p>
           )}
           <div className="flex justify-end gap-2">
             <Button variant="secondary" onClick={() => setActivateTarget(null)}>
-              取消
+              {t('common.cancel')}
             </Button>
             <Button
               disabled={busy}
@@ -435,12 +457,15 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
                 if (v) {
                   void action(
                     () => window.api.activateTool(view.id, v, scope),
-                    `正在按${scope === 'user' ? '当前用户' : '系统级'}作用域激活 ${formatVersionLabel(v, view.versions)}`
+                    t('toast.activating', {
+                      scope: scope === 'user' ? t('toolDetail.scopeUser') : t('toolDetail.scopeSystem'),
+                      version: formatVersionLabel(v, view.versions)
+                    })
                   )
                 }
               }}
             >
-              确认激活
+              {t('toolDetail.confirmActivate')}
             </Button>
           </div>
         </div>

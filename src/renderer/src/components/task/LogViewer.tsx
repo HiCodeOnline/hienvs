@@ -1,7 +1,9 @@
 // 任务日志查看器：轮询读取任务日志文件
 import { useEffect, useRef, useState } from 'react'
+import { useI18n } from '../../stores/i18n'
 
 export function LogViewer({ taskId }: { taskId: string }) {
+  const t = useI18n()
   const [lines, setLines] = useState<string[]>([])
   const [follow, setFollow] = useState(true)
   const offsetRef = useRef(0)
@@ -49,7 +51,7 @@ export function LogViewer({ taskId }: { taskId: string }) {
   return (
     <div>
       <div className="mb-1.5 flex items-center justify-between">
-        <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">执行日志</span>
+        <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{t('log.title')}</span>
         <label className="flex cursor-pointer items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
           <input
             type="checkbox"
@@ -57,7 +59,7 @@ export function LogViewer({ taskId }: { taskId: string }) {
             onChange={(e) => setFollow(e.target.checked)}
             className="h-3.5 w-3.5 rounded border-zinc-300 accent-brand-600"
           />
-          自动滚动
+          {t('log.autoScroll')}
         </label>
       </div>
       <div
@@ -65,7 +67,7 @@ export function LogViewer({ taskId }: { taskId: string }) {
         className="h-56 overflow-y-auto rounded-lg bg-zinc-900 p-3 font-mono text-[11px] leading-relaxed dark:bg-zinc-950"
       >
         {lines.length === 0 ? (
-          <p className="text-zinc-500">暂无日志</p>
+          <p className="text-zinc-500">{t('log.empty')}</p>
         ) : (
           lines.map((line, i) => (
             <div key={i} className={`whitespace-pre-wrap break-all ${lineClass(line)}`}>

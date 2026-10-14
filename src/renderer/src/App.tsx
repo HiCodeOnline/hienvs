@@ -4,6 +4,7 @@ import { useAppStore } from './stores/app'
 import { useRegistryStore } from './stores/registry'
 import { useTasksStore } from './stores/tasks'
 import { useSettingsStore } from './stores/settings'
+import { useI18nStore, t } from './stores/i18n'
 import { Sidebar } from './components/layout/Sidebar'
 import { TitleBar } from './components/layout/TitleBar'
 import { StatusBar } from './components/layout/StatusBar'
@@ -18,20 +19,20 @@ function ToastHost() {
   const dismissToast = useAppStore((s) => s.dismissToast)
   if (toasts.length === 0) return null
   return (
-    <div className="pointer-events-none fixed bottom-6 right-6 z-[100] flex w-80 flex-col gap-2">
-      {toasts.map((t) => (
+    <div className="pointer-events-none fixed bottom-6 end-6 z-[100] flex w-80 flex-col gap-2">
+      {toasts.map((toast) => (
         <div
-          key={t.id}
-          onClick={() => dismissToast(t.id)}
+          key={toast.id}
+          onClick={() => dismissToast(toast.id)}
           className={`pointer-events-auto cursor-pointer rounded-lg border p-3.5 text-sm shadow-lg backdrop-blur transition-all ${
-            t.kind === 'success'
+            toast.kind === 'success'
               ? 'border-emerald-200 bg-emerald-50/95 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/90 dark:text-emerald-300'
-              : t.kind === 'error'
+              : toast.kind === 'error'
                 ? 'border-red-200 bg-red-50/95 text-red-800 dark:border-red-800 dark:bg-red-950/90 dark:text-red-300'
                 : 'border-zinc-200 bg-white/95 text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900/95 dark:text-zinc-300'
           }`}
         >
-          {t.message}
+          {toast.message}
         </div>
       ))}
     </div>
@@ -47,7 +48,12 @@ export default function App() {
     // 初始化数据
     void useRegistryStore.getState().load()
     void useTasksStore.getState().init()
-    void useSettingsStore.getState().load()
+    // 先取系统语言与应用信息，再按设置中的语言偏好解析生效语言
+    void (async () => {
+      const info = await window.api.appInfo().catch(() => null)
+      await useSettingsStore.getState().load()
+      useI18nStore.getState().init(info?.systemLocale ?? navigator.language, useSettingsStore.getState().settings?.language)
+    })()
 
     // 订阅主进程事件
     const unsubs = [
@@ -56,7 +62,7 @@ export default function App() {
       window.api.onTaskProgress((p) => useTasksStore.getState().handleProgress(p)),
       window.api.onRegistryUpdated(({ snapshot }) => useRegistryStore.setState({ snapshot })),
       window.api.onEnvChanged(({ toolId, applied }) =>
-        pushToast(applied ? 'success' : 'info', `${toolId} 环境变量已${applied ? '应用，重开终端生效' : '移除'}`)
+        pushToast('success', applied ? t('toast.envApplied', { toolId }) : t('toast.envRemoved', { toolId }))
       )
     ]
     return () => unsubs.forEach((u) => u())

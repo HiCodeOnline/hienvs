@@ -591,6 +591,7 @@ export class AppContext {
       platform: process.platform,
       arch: this.arch,
       osLabel: currentOsLabel(),
+      systemLocale: app.getSystemLocale(),
       installDir: this.paths.toolsDir,
       downloadDir: this.paths.downloadsDir,
       home: this.paths.home,

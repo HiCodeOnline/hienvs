@@ -1,5 +1,6 @@
 // 步骤时间线：展示工作流各步骤执行状态与下载进度
 import type { StepSnapshot } from '@shared/task-types'
+import { useStepLabel } from '../../stores/i18n'
 import { ProgressBar, Spinner, formatBytes, formatSpeed, formatEta } from '../common'
 
 function StepIcon({ state }: { state: StepSnapshot['state'] }) {
@@ -35,13 +36,14 @@ function StepIcon({ state }: { state: StepSnapshot['state'] }) {
 }
 
 export function StepTimeline({ steps }: { steps: StepSnapshot[] }) {
+  const stepLabel = useStepLabel()
   return (
     <ol className="space-y-0">
       {steps.map((step, i) => (
         <li key={step.id} className="relative flex gap-3 pb-4 last:pb-0">
           {/* 连接线 */}
           {i < steps.length - 1 && (
-            <span className="absolute left-3 top-6 h-[calc(100%-24px)] w-px bg-zinc-200 dark:bg-zinc-700" />
+            <span className="absolute start-3 top-6 h-[calc(100%-24px)] w-px bg-zinc-200 dark:bg-zinc-700" />
           )}
           <StepIcon state={step.state} />
           <div className="min-w-0 flex-1 pt-0.5">
@@ -57,7 +59,7 @@ export function StepTimeline({ steps }: { steps: StepSnapshot[] }) {
                         : 'text-zinc-900 dark:text-zinc-100'
                 }`}
               >
-                {step.title || step.type}
+                {stepLabel(step)}
               </span>
               {step.detail && (
                 <span className="max-w-[50%] truncate text-xs text-zinc-400" title={step.detail}>

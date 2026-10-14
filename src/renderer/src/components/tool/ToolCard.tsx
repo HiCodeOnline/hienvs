@@ -1,13 +1,15 @@
 // 工具卡片
 import type { ToolSummary } from '@shared/registry-types'
+import { useI18n } from '../../stores/i18n'
 import { Badge, ToolAvatar, formatVersionLabel } from '../common'
 
+/** 分类 -> 文案键 */
 const CATEGORY_LABEL: Record<string, string> = {
-  language: '语言',
-  'build-tool': '构建工具',
-  runtime: '运行时',
-  sdk: 'SDK',
-  vcs: '版本控制'
+  language: 'category.language',
+  'build-tool': 'category.buildTool',
+  runtime: 'category.runtime',
+  sdk: 'category.sdk',
+  vcs: 'category.vcs'
 }
 
 export function ToolCard({
@@ -17,6 +19,7 @@ export function ToolCard({
   tool: ToolSummary
   onOpen: () => void
 }) {
+  const t = useI18n()
   return (
     <div
       onClick={onOpen}
@@ -29,18 +32,18 @@ export function ToolCard({
             <div className="flex items-center gap-2">
               <span className="font-semibold text-zinc-900 dark:text-zinc-100">{tool.name}</span>
               {tool.category && (
-                <Badge tone="blue">{CATEGORY_LABEL[tool.category] ?? tool.category}</Badge>
+                <Badge tone="blue">{CATEGORY_LABEL[tool.category] ? t(CATEGORY_LABEL[tool.category]) : tool.category}</Badge>
               )}
             </div>
-            <div className="mt-0.5 text-xs text-zinc-400">{tool.versions.length} 个可用版本</div>
+            <div className="mt-0.5 text-xs text-zinc-400">{t('toolCard.versionsCount', { count: tool.versions.length })}</div>
           </div>
         </div>
         <div className="flex flex-col items-end gap-1">
           {!tool.activeVersion && tool.installedVersions.length > 0 && (
-            <Badge tone="amber">已安装 {tool.installedVersions.length} 个</Badge>
+            <Badge tone="amber">{t('toolCard.installedCount', { count: tool.installedVersions.length })}</Badge>
           )}
-          {!tool.available && <Badge tone="red">当前平台不可用</Badge>}
-          {tool.healthy === false && <Badge tone="red">健康检查未通过</Badge>}
+          {!tool.available && <Badge tone="red">{t('toolCard.platformUnavailable')}</Badge>}
+          {tool.healthy === false && <Badge tone="red">{t('toolCard.healthFailed')}</Badge>}
         </div>
       </div>
 
@@ -50,7 +53,9 @@ export function ToolCard({
 
       {tool.activeVersion && (
         <div className="mt-4">
-          <Badge tone="green">已激活 {formatVersionLabel(tool.activeVersion, tool.versions)}</Badge>
+          <Badge tone="green">
+            {t('toolCard.active', { version: formatVersionLabel(tool.activeVersion, tool.versions) })}
+          </Badge>
         </div>
       )}
     </div>

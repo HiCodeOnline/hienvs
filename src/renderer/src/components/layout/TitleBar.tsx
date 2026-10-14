@@ -1,6 +1,7 @@
 // 自定义标题栏：窗口控制按钮按平台适配（macOS 原生红绿灯 / Windows 直角 / Linux 圆形）
 import { useEffect, useState } from 'react'
 import { useAppStore } from '../../stores/app'
+import { useI18n } from '../../stores/i18n'
 
 const PLATFORM = window.api.platform
 const IS_MAC = PLATFORM === 'darwin'
@@ -8,10 +9,10 @@ const IS_LINUX = PLATFORM === 'linux'
 
 /** 在标题栏展示标题的页面（其余页面仅显示图标） */
 const PAGE_TITLE: Partial<Record<string, string>> = {
-  dashboard: '仪表盘',
-  tools: '工具箱',
-  tasks: '任务中心',
-  settings: '设置'
+  dashboard: 'nav.dashboard',
+  tools: 'nav.tools',
+  tasks: 'nav.tasks',
+  settings: 'nav.settings'
 }
 
 /** Windows 风格图标：1px 细线，10×10 视口 */
@@ -84,23 +85,24 @@ function LinCloseIcon() {
 
 /** Windows 风格：直角、宽按钮、关闭悬停变红 */
 function WindowsControls({ maximized }: { maximized: boolean }) {
+  const t = useI18n()
   const base =
     'no-drag flex w-12 items-center justify-center text-zinc-600 transition-colors hover:bg-zinc-200/70 active:bg-zinc-300/70 dark:text-zinc-300 dark:hover:bg-zinc-700/60'
   return (
     <div className="flex h-full items-stretch">
-      <button className={base} title="最小化" onClick={() => void window.api.windowMinimize()}>
+      <button className={base} title={t('window.minimize')} onClick={() => void window.api.windowMinimize()}>
         <WinMinIcon />
       </button>
       <button
         className={base}
-        title={maximized ? '还原' : '最大化'}
+        title={maximized ? t('window.restore') : t('window.maximize')}
         onClick={() => void window.api.windowToggleMaximize()}
       >
         {maximized ? <WinRestoreIcon /> : <WinMaxIcon />}
       </button>
       <button
         className="no-drag flex w-12 items-center justify-center text-zinc-600 transition-colors hover:bg-red-600 hover:text-white active:bg-red-700 dark:text-zinc-300"
-        title="关闭"
+        title={t('window.close')}
         onClick={() => void window.api.windowClose()}
       >
         <WinCloseIcon />
@@ -111,24 +113,25 @@ function WindowsControls({ maximized }: { maximized: boolean }) {
 
 /** Linux 风格（GNOME/Adwaita）：圆形按钮、关闭为红色圆点 */
 function LinuxControls({ maximized }: { maximized: boolean }) {
+  const t = useI18n()
   const base =
     'no-drag flex h-6 w-6 items-center justify-center rounded-full transition-colors focus:outline-none'
   const neutral = `${base} bg-zinc-200 text-zinc-700 hover:bg-zinc-300 active:bg-zinc-400 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600`
   return (
-    <div className="flex h-full items-center gap-2 pr-3">
-      <button className={neutral} title="最小化" onClick={() => void window.api.windowMinimize()}>
+    <div className="flex h-full items-center gap-2 pe-3">
+      <button className={neutral} title={t('window.minimize')} onClick={() => void window.api.windowMinimize()}>
         <LinMinIcon />
       </button>
       <button
         className={neutral}
-        title={maximized ? '还原' : '最大化'}
+        title={maximized ? t('window.restore') : t('window.maximize')}
         onClick={() => void window.api.windowToggleMaximize()}
       >
         {maximized ? <LinRestoreIcon /> : <LinMaxIcon />}
       </button>
       <button
         className={`${base} bg-red-500 text-white hover:bg-red-600 active:bg-red-700`}
-        title="关闭"
+        title={t('window.close')}
         onClick={() => void window.api.windowClose()}
       >
         <LinCloseIcon />
@@ -139,6 +142,7 @@ function LinuxControls({ maximized }: { maximized: boolean }) {
 
 export function TitleBar() {
   const page = useAppStore((s) => s.page)
+  const t = useI18n()
   const [maximized, setMaximized] = useState(false)
 
   useEffect(() => {
@@ -149,14 +153,18 @@ export function TitleBar() {
   }, [])
 
   return (
-    <div className="drag-region flex h-10 shrink-0 select-none items-center border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+    // 标题栏固定为 LTR：窗口控制按钮的位置不随 RTL 语言镜像
+    <div
+      dir="ltr"
+      className="drag-region flex h-10 shrink-0 select-none items-center border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
+    >
       {/* macOS 左侧预留原生红绿灯区域；应用图标固定在顶部，其后跟随当前页面标题 */}
-      <div className={`flex h-full items-center gap-2 ${IS_MAC ? 'pl-20' : 'pl-3'}`}>
+      <div className={`flex h-full items-center gap-2 ${IS_MAC ? 'ps-20' : 'ps-3'}`}>
         <div className="flex h-5 w-5 items-center justify-center rounded bg-gradient-to-br from-brand-500 to-brand-700 text-[10px] font-bold text-white">
           H
         </div>
         {PAGE_TITLE[page] && (
-          <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">{PAGE_TITLE[page]}</span>
+          <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">{t(PAGE_TITLE[page] as string)}</span>
         )}
       </div>
       <div className="flex-1" />

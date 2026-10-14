@@ -14,7 +14,8 @@ export function defaultSettings(): AppSettings {
     mirrorPolicy: 'auto',
     taskConcurrency: 2,
     autoRefreshRegistry: true,
-    securityNoticeDismissed: false
+    securityNoticeDismissed: false,
+    language: 'auto'
   }
 }
 
