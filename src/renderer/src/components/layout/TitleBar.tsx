@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useAppStore } from '../../stores/app'
 import { useI18n } from '../../stores/i18n'
+import logo from '../../assets/logo.png'
 
 const PLATFORM = window.api.platform
 const IS_MAC = PLATFORM === 'darwin'
@@ -160,9 +161,7 @@ export function TitleBar() {
     >
       {/* macOS 左侧预留原生红绿灯区域；应用图标固定在顶部，其后跟随当前页面标题 */}
       <div className={`flex h-full items-center gap-2 ${IS_MAC ? 'ps-20' : 'ps-3'}`}>
-        <div className="flex h-5 w-5 items-center justify-center rounded bg-gradient-to-br from-brand-500 to-brand-700 text-[10px] font-bold text-white">
-          H
-        </div>
+        <img src={logo} alt="" className="h-5 w-5" draggable={false} />
         {PAGE_TITLE[page] && (
           <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">{t(PAGE_TITLE[page] as string)}</span>
         )}

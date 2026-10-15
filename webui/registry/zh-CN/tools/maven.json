@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "id": "maven",
+  "name": "Apache Maven",
+  "description": "Java 项目构建与依赖管理工具（验证需要可用的 Java 环境）",
+  "category": "build-tool",
+  "homepage": "https://maven.apache.org",
+  "defaultVersion": "3.9.9",
+  "env": {
+    "pathDirs": [
+      "bin"
+    ]
+  },
+  "platforms": {
+    "windows": {
+      "archive": "zip",
+      "stripComponents": 1,
+      "assets": {
+        "3.9.9": {
+          "url": "https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip",
+          "mirrors": [
+            {
+              "name": "清华 TUNA",
+              "url": "https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip",
+              "size": 9202456
+            },
+            {
+              "name": "阿里云",
+              "url": "https://mirrors.aliyun.com/apache/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.zip",
+              "size": 9202456
+            }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}{{sep}}bin{{sep}}mvn.cmd\"",
+            "args": [
+              "--version"
+            ],
+            "shell": true,
+            "timeoutSec": 120
+          }
+        ]
+      }
+    },
+    "darwin": {
+      "archive": "tar.gz",
+      "stripComponents": 1,
+      "assets": {
+        "3.9.9": {
+          "url": "https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz",
+          "mirrors": [
+            {
+              "name": "清华 TUNA",
+              "url": "https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz",
+              "size": 9102945
+            }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}/bin/mvn\"",
+            "args": [
+              "--version"
+            ],
+            "shell": true,
+            "timeoutSec": 120
+          }
+        ]
+      }
+    },
+    "linux": {
+      "archive": "tar.gz",
+      "stripComponents": 1,
+      "assets": {
+        "3.9.9": {
+          "url": "https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz",
+          "mirrors": [
+            {
+              "name": "清华 TUNA",
+              "url": "https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz",
+              "size": 9102945
+            },
+            {
+              "name": "阿里云",
+              "url": "https://mirrors.aliyun.com/apache/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz",
+              "size": 9102945
+            }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}/bin/mvn\"",
+            "args": [
+              "--version"
+            ],
+            "shell": true,
+            "timeoutSec": 120
+          }
+        ]
+      }
+    }
+  }
+}

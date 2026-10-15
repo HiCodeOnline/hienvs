@@ -121,6 +121,8 @@ export class PlanResolver {
       url: '{{asset.url}}',
       fileName: '{{asset.fileName}}',
       sha256: '{{asset.sha256}}',
+      md5: '{{asset.md5}}',
+      sha1: '{{asset.sha1}}',
       size: '{{asset.size}}',
       mirrors: asset.mirrors ?? [],
       retry: { attempts: 3, backoffMs: 2000, factor: 2 }
@@ -234,6 +236,8 @@ export class PlanResolver {
       ext: d.exeExt,
       'asset.url': asset.url,
       'asset.sha256': asset.sha256 ?? '',
+      'asset.md5': asset.md5 ?? '',
+      'asset.sha1': asset.sha1 ?? '',
       'asset.fileName': fileName,
       'asset.path': path.join(cacheDir, fileName),
       'asset.size': asset.size !== undefined ? String(asset.size) : '',

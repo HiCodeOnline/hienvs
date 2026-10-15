@@ -1,0 +1,28 @@
+{
+  "name": "hienvs-webui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "hienvs 软件源可视化站点（Next.js 静态导出），同时维护并导出可被客户端远程引用的软件源 JSON",
+  "scripts": {
+    "validate:registry": "node scripts/validate-registry.mjs",
+    "sync:registry": "node scripts/sync-registry.mjs",
+    "predev": "npm run sync:registry",
+    "dev": "next dev",
+    "prebuild": "npm run validate:registry && npm run sync:registry",
+    "build": "next build",
+    "serve": "npx --yes serve out"
+  },
+  "dependencies": {
+    "next": "^15.5.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.0",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.7.0"
+  }
+}

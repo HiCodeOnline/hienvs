@@ -72,7 +72,10 @@ export type AssetFormat =
 /** 版本级资产：某个版本在某平台的下载物 */
 export interface AssetDef {
   url: string
+  /** 下载文件校验和（可选）：配置了哪种就校验哪种，至少配置一种时下载完成后强制校验 */
   sha256?: string
+  md5?: string
+  sha1?: string
   size?: number
   fileName?: string
   /** 备用镜像源（具名），官方 url 由顶层 url 提供 */

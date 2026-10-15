@@ -21,6 +21,9 @@ function createWindow(ctx: AppContext): BrowserWindow {
     windowStatePersistence: true,
     autoHideMenuBar: true,
     backgroundColor: '#09090b',
+    // dev 下运行的是 electron.exe（默认图标），显式指向生成的应用图标；
+    // 打包后图标已嵌入 exe，无需再设置
+    icon: app.isPackaged ? undefined : path.join(__dirname, '../../build/icon.png'),
     // macOS 使用原生红绿灯按钮，Windows/Linux 使用无边框窗口配合自绘控制按钮
     ...(process.platform === 'darwin' ? { titleBarStyle: 'hiddenInset' as const } : { frame: false }),
     webPreferences: {

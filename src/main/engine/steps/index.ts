@@ -62,6 +62,8 @@ const downloadStep: StepHandler = async (params, ctx, run) => {
     url: String(params.url ?? ''),
     fileName: params.fileName as string | undefined,
     sha256: params.sha256 as string | undefined,
+    md5: params.md5 as string | undefined,
+    sha1: params.sha1 as string | undefined,
     size: parseSize(params.size),
     mirrors: toMirrorUrls(params.mirrors),
     resume: params.resume as boolean | undefined,

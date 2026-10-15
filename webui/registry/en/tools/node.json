@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "id": "node",
+  "name": "Node.js",
+  "description": "JavaScript runtime built on V8 (Linux uses the tar.xz channel)",
+  "category": "runtime",
+  "homepage": "https://nodejs.org",
+  "defaultVersion": "22.12.0",
+  "env": {
+    "pathDirs": [
+      "bin"
+    ]
+  },
+  "platforms": {
+    "windows-x64": {
+      "archive": "zip",
+      "stripComponents": 1,
+      "assets": {
+        "22.12.0": {
+          "url": "https://nodejs.org/dist/v22.12.0/node-v22.12.0-win-x64.zip",
+          "mirrors": [
+            {
+              "name": "淘宝 npmmirror",
+              "url": "https://npmmirror.com/mirrors/node/v22.12.0/node-v22.12.0-win-x64.zip",
+              "size": 34872043
+            }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}{{sep}}node{{ext}}\"",
+            "args": [
+              "--version"
+            ],
+            "shell": true,
+            "timeoutSec": 60
+          }
+        ]
+      }
+    },
+    "windows-x86": {
+      "archive": "zip",
+      "stripComponents": 1,
+      "assets": {
+        "22.12.0": {
+          "url": "https://nodejs.org/dist/v22.12.0/node-v22.12.0-win-x86.zip",
+          "mirrors": [
+            {
+              "name": "淘宝 npmmirror",
+              "url": "https://npmmirror.com/mirrors/node/v22.12.0/node-v22.12.0-win-x86.zip",
+              "size": 32316847
+            }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}{{sep}}node{{ext}}\"",
+            "args": [
+              "--version"
+            ],
+            "shell": true,
+            "timeoutSec": 60
+          }
+        ]
+      }
+    },
+    "windows-arm64": {
+      "archive": "zip",
+      "stripComponents": 1,
+      "assets": {
+        "22.12.0": {
+          "url": "https://nodejs.org/dist/v22.12.0/node-v22.12.0-win-arm64.zip",
+          "mirrors": [
+            {
+              "name": "淘宝 npmmirror",
+              "url": "https://npmmirror.com/mirrors/node/v22.12.0/node-v22.12.0-win-arm64.zip",
+              "size": 30538928
+            }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}{{sep}}node{{ext}}\"",
+            "args": [
+              "--version"
+            ],
+            "shell": true,
+            "timeoutSec": 60
+          }
+        ]
+      }
+    },
+    "darwin-x64": {
+      "archive": "tar.gz",
+      "stripComponents": 1,
+      "assets": {
+        "22.12.0": {
+          "url": "https://nodejs.org/dist/v22.12.0/node-v22.12.0-darwin-x64.tar.gz",
+          "mirrors": [
+            {
+              "name": "淘宝 npmmirror",
+              "url": "https://npmmirror.com/mirrors/node/v22.12.0/node-v22.12.0-darwin-x64.tar.gz",
+              "size": 49317806
+            }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}/bin/node\"",
+            "args": [
+              "--version"
+            ],
+            "shell": true,
+            "timeoutSec": 60
+          }
+        ]
+      }
+    },
+    "darwin-arm64": {
+      "archive": "tar.gz",
+      "stripComponents": 1,
+      "assets": {
+        "22.12.0": {
+          "url": "https://nodejs.org/dist/v22.12.0/node-v22.12.0-darwin-arm64.tar.gz",
+          "mirrors": [
+            {
+              "name": "淘宝 npmmirror",
+              "url": "https://npmmirror.com/mirrors/node/v22.12.0/node-v22.12.0-darwin-arm64.tar.gz",
+              "size": 48568612
+            }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}/bin/node\"",
+            "args": [
+              "--version"
+            ],
+            "shell": true,
+            "timeoutSec": 60
+          }
+        ]
+      }
+    },
+    "linux-x64": {
+      "archive": "tar.xz",
+      "stripComponents": 1,
+      "assets": {
+        "22.12.0": {
+          "url": "https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz",
+          "mirrors": [
+            {
+              "name": "淘宝 npmmirror",
+              "url": "https://npmmirror.com/mirrors/node/v22.12.0/node-v22.12.0-linux-x64.tar.xz",
+              "size": 29734248
+            }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}/bin/node\"",
+            "args": [
+              "--version"
+            ],
+            "shell": true,
+            "timeoutSec": 60
+          }
+        ]
+      }
+    },
+    "linux-arm64": {
+      "archive": "tar.xz",
+      "stripComponents": 1,
+      "assets": {
+        "22.12.0": {
+          "url": "https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-arm64.tar.xz",
+          "mirrors": [
+            {
+              "name": "淘宝 npmmirror",
+              "url": "https://npmmirror.com/mirrors/node/v22.12.0/node-v22.12.0-linux-arm64.tar.xz",
+              "size": 28591324
+            }
+          ]
+        }
+      },
+      "workflowOverrides": {
+        "install": [
+          {
+            "id": "verify",
+            "insertAfter": "extract",
+            "type": "verify",
+            "run": "\"{{versionDir}}/bin/node\"",
+            "args": [
+              "--version"
+            ],
+            "shell": true,
+            "timeoutSec": 60
+          }
+        ]
+      }
+    }
+  }
+}

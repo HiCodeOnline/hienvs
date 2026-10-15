@@ -217,7 +217,7 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-zinc-200 bg-zinc-50 text-start text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-800/50">
-                    <th className="px-4 py-2.5 font-medium">{t('toolDetail.colVersion')}</th>
+                    <th className="px-4 py-2.5 text-start font-medium">{t('toolDetail.colVersion')}</th>
                     <th className="px-4 py-2.5 text-end font-medium">{t('toolDetail.colActions')}</th>
                   </tr>
                 </thead>

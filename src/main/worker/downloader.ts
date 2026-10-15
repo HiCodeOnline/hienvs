@@ -1,4 +1,4 @@
-// 下载器：断点续传(.part + meta)、流式 sha256、镜像回退、进度上报、取消
+// 下载器：断点续传(.part + meta)、流式校验(md5/sha1/sha256)、镜像回退、进度上报、取消
 import fs from 'node:fs'
 import path from 'node:path'
 import crypto from 'node:crypto'
@@ -11,10 +11,20 @@ export interface DownloadParams {
   url: string
   fileName?: string
   sha256?: string
+  md5?: string
+  sha1?: string
   size?: number
   mirrors?: string[]
   resume?: boolean
   timeoutSec?: number
+}
+
+/** 配置了的校验算法列表（按固定顺序），值与算法名对应 */
+const CHECK_ALGOS = ['md5', 'sha1', 'sha256'] as const
+type CheckAlgo = (typeof CHECK_ALGOS)[number]
+
+function activeChecks(params: DownloadParams): { algo: CheckAlgo; expected: string }[] {
+  return CHECK_ALGOS.filter((a) => params[a]).map((a) => ({ algo: a, expected: params[a] as string }))
 }
 
 interface PartMeta {
@@ -104,12 +114,13 @@ async function attemptDownload(
   let lastEmit = 0
   let lastBytes = offset
   let lastTime = Date.now()
-  const hash = crypto.createHash('sha256')
+  const checks = activeChecks(params)
+  const hashes = checks.map(({ algo }) => crypto.createHash(algo))
 
   const bodyStream = Readable.fromWeb(resp.body as Parameters<typeof Readable.fromWeb>[0])
   bodyStream.on('data', (chunk: Buffer) => {
     received += chunk.length
-    hash.update(chunk)
+    for (const h of hashes) h.update(chunk)
     const now = Date.now()
     if (now - lastEmit >= 250) {
       const speed = ((received - lastBytes) * 1000) / (now - lastTime)
@@ -131,13 +142,14 @@ async function attemptDownload(
 
   if (run.signal.aborted) throw new Error('任务已取消')
 
-  // 校验
-  if (params.sha256) {
-    const actual = hash.digest('hex')
-    if (actual.toLowerCase() !== params.sha256.toLowerCase()) {
+  // 校验：配置了哪些算法就逐项校验，任一不符即判定失败并清理缓存
+  for (let i = 0; i < checks.length; i++) {
+    const { algo, expected } = checks[i]
+    const actual = hashes[i].digest('hex')
+    if (actual.toLowerCase() !== expected.toLowerCase()) {
       fs.rmSync(partPath, { force: true })
       fs.rmSync(metaPath, { force: true })
-      throw new Error(`SHA256 校验失败: ${url} (期望 ${params.sha256}, 实际 ${actual})`)
+      throw new Error(`${algo.toUpperCase()} 校验失败: ${url} (期望 ${expected}, 实际 ${actual})`)
     }
   }
   if (params.size && Math.abs(received - params.size) > 1024) {
@@ -147,7 +159,7 @@ async function attemptDownload(
   fs.rmSync(metaPath, { force: true })
   fs.renameSync(partPath, filePath)
   run.progress(received, received, 0, 0)
-  return { file: filePath, verified: !!params.sha256, receivedTotal: received }
+  return { file: filePath, verified: checks.length > 0, receivedTotal: received }
 }
 
 function loadMeta(metaPath: string): PartMeta | null {
@@ -176,17 +188,22 @@ export async function download(params: DownloadParams, ctx: TaskContext, run: St
   const metaPath = partPath + '.meta.json'
   const timeoutSec = params.timeoutSec ?? 3600
 
-  // 幂等：目标文件已存在
+  // 幂等：目标文件已存在（配置了校验和则校验通过才视为命中）
   if (fs.existsSync(filePath)) {
-    if (params.sha256) {
-      const actual = await sha256File(filePath)
-      if (actual.toLowerCase() === params.sha256.toLowerCase()) {
+    const checks = activeChecks(params)
+    if (checks.length > 0) {
+      let matched = true
+      for (const { algo, expected } of checks) {
+        const actual = await hashFile(filePath, algo)
+        if (actual.toLowerCase() !== expected.toLowerCase()) matched = false
+      }
+      if (matched) {
         run.log('缓存命中，跳过下载')
         return { file: filePath }
       }
       fs.rmSync(filePath, { force: true })
     } else {
-      run.log('目标文件已存在（无 sha256 可校验），跳过下载')
+      run.log('目标文件已存在（无校验和配置），跳过下载')
       return { file: filePath }
     }
   }
@@ -197,7 +214,8 @@ export async function download(params: DownloadParams, ctx: TaskContext, run: St
     try {
       run.log(`开始下载: ${url}`)
       const r = await attemptDownload(url, filePath, partPath, metaPath, { ...params, url }, ctx, run, timeoutSec)
-      run.log(`下载完成: ${fileName} (${(r.receivedTotal / 1024 / 1024).toFixed(1)} MB${r.verified ? ', sha256 校验通过' : ', 未校验'})`)
+      const algoLabel = activeChecks(params).map((c) => c.algo.toUpperCase()).join('/')
+      run.log(`下载完成: ${fileName} (${(r.receivedTotal / 1024 / 1024).toFixed(1)} MB${r.verified ? `, ${algoLabel} 校验通过` : ', 未校验'})`)
       return { file: r.file }
     } catch (e) {
       if (run.signal.aborted) throw new Error('任务已取消')
@@ -209,9 +227,10 @@ export async function download(params: DownloadParams, ctx: TaskContext, run: St
   throw new Error(`全部下载源失败:\n${errors.join('\n')}`)
 }
 
-export async function sha256File(file: string): Promise<string> {
+/** 计算文件指定算法的校验和（小写 hex） */
+export async function hashFile(file: string, algo: 'md5' | 'sha1' | 'sha256'): Promise<string> {
   return new Promise((resolve, reject) => {
-    const h = crypto.createHash('sha256')
+    const h = crypto.createHash(algo)
     const rs = fs.createReadStream(file)
     rs.on('data', (d) => h.update(d))
     rs.on('error', reject)

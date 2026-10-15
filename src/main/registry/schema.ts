@@ -64,6 +64,8 @@ export const assetSchema = z
   .object({
     url: z.string().min(1),
     sha256: z.string().min(4).optional(),
+    md5: z.string().min(4).optional(),
+    sha1: z.string().min(4).optional(),
     size: z.number().min(0).optional(),
     fileName: z.string().min(1).optional(),
     mirrors: z.array(mirrorSourceSchema).optional(),

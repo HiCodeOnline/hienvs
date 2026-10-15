@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "name": "hienvs Official Registry",
+  "updatedAt": "2026-10-13T00:00:00Z",
+  "tools": [
+    {
+      "id": "jdk",
+      "name": "JDK",
+      "description": "Java Development Kit, managed uniformly by vendor (Temurin / Corretto / Zulu / Oracle OpenJDK), with multiple coexisting versions and one-click switching",
+      "category": "language",
+      "homepage": "https://openjdk.org",
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg",
+      "manifest": "tools/jdk.json"
+    },
+    {
+      "id": "maven",
+      "name": "Apache Maven",
+      "description": "Build and dependency management tool for Java projects (verification requires an available Java environment)",
+      "category": "build-tool",
+      "homepage": "https://maven.apache.org",
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/maven/maven-original.svg",
+      "manifest": "tools/maven.json"
+    },
+    {
+      "id": "go",
+      "name": "Go",
+      "description": "Google Go programming language toolchain",
+      "category": "language",
+      "homepage": "https://go.dev",
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/go/go-original.svg",
+      "manifest": "tools/go.json"
+    },
+    {
+      "id": "node",
+      "name": "Node.js",
+      "description": "JavaScript runtime built on V8 (Linux uses the tar.xz channel)",
+      "category": "runtime",
+      "homepage": "https://nodejs.org",
+      "icon": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg",
+      "manifest": "tools/node.json"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "defaultRegion": "zh-CN",
+  "regions": [
+    { "code": "zh-CN", "nativeName": "中国大陆", "dir": "ltr" },
+    { "code": "en", "nativeName": "Global", "dir": "ltr" }
+  ]
+}
