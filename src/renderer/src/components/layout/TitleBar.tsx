@@ -156,7 +156,7 @@ export function TitleBar() {
     // 标题栏固定为 LTR：窗口控制按钮的位置不随 RTL 语言镜像
     <div
       dir="ltr"
-      className="drag-region flex h-10 shrink-0 select-none items-center border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
+      className="drag-region flex h-10 shrink-0 select-none items-center"
     >
       {/* macOS 左侧预留原生红绿灯区域；应用图标固定在顶部，其后跟随当前页面标题 */}
       <div className={`flex h-full items-center gap-2 ${IS_MAC ? 'ps-20' : 'ps-3'}`}>

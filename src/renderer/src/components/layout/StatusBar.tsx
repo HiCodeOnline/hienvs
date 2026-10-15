@@ -51,7 +51,7 @@ export function StatusBar() {
   )
 
   return (
-    <footer className="flex h-6 shrink-0 select-none items-center justify-between border-t border-zinc-200 bg-white text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
+    <footer className="flex h-6 shrink-0 select-none items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
       <div className="flex h-full items-center">
         <span className={`${ITEM} max-w-[16rem] truncate`} title={t('statusBar.enabledSources', { list: sourceLabel })}>
           {enabledSources.length > 0 && (

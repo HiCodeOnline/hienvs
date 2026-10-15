@@ -80,7 +80,7 @@ export function Sidebar() {
   const t = useI18n()
 
   return (
-    <aside className="flex w-12 shrink-0 flex-col items-center border-e border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+    <aside className="flex w-12 shrink-0 flex-col items-center">
       <nav className="flex flex-1 flex-col items-center gap-0.5 pt-2">
         {MAIN_NAV.map((item) => (
           <NavButton key={item.id} item={item} />

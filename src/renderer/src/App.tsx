@@ -69,17 +69,20 @@ export default function App() {
   }, [pushToast])
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
+    <div className="flex h-screen flex-col overflow-hidden bg-zinc-100 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
       <TitleBar />
       <div className="flex min-h-0 flex-1">
         <Sidebar />
-        <main className="flex-1 overflow-y-auto">
-          {page === 'dashboard' && <DashboardPage />}
-          {page === 'tools' && <ToolsPage />}
-          {page === 'tool-detail' && detailToolId && <ToolDetailPage toolId={detailToolId} />}
-          {page === 'tasks' && <TasksPage />}
-          {page === 'settings' && <SettingsPage />}
-        </main>
+        {/* 内容区：圆角卡片 + 轻微悬浮效果，与上下/侧边外壳无缝衔接 */}
+        <div className="min-w-0 flex-1 p-1.5">
+          <main className="h-full overflow-y-auto rounded-xl bg-zinc-50 shadow-sm ring-1 ring-black/5 dark:bg-zinc-950 dark:ring-white/10">
+            {page === 'dashboard' && <DashboardPage />}
+            {page === 'tools' && <ToolsPage />}
+            {page === 'tool-detail' && detailToolId && <ToolDetailPage toolId={detailToolId} />}
+            {page === 'tasks' && <TasksPage />}
+            {page === 'settings' && <SettingsPage />}
+          </main>
+        </div>
       </div>
       <StatusBar />
       <ToastHost />
