@@ -10,32 +10,25 @@
   "common.builtin": "Встроенный",
   "common.autoUpdate": "Автообновление",
   "common.selectFolder": "Выбрать папку",
-
   "nav.dashboard": "Панель управления",
   "nav.tools": "Инструменты",
   "nav.tasks": "Задачи",
   "nav.settings": "Настройки",
   "nav.switchToLight": "Переключить на светлую тему",
   "nav.switchToDark": "Переключить на тёмную тему",
-
   "window.minimize": "Свернуть",
   "window.restore": "Восстановить",
   "window.maximize": "Развернуть",
   "window.close": "Закрыть",
-
-  "statusBar.noSource": "Нет источника ПО",
-  "statusBar.enabledSources": "Включённые источники ПО: {list}",
   "statusBar.download": "Загрузка",
   "statusBar.install": "Установка",
   "statusBar.osArch": "Текущая операционная система и архитектура",
   "statusBar.repo": "Открыть репозиторий источников ПО HiEnvs",
-
   "dashboard.notice": "Используйте надёжные источники ПО и защищайтесь от вредоносного ПО",
   "dashboard.noticeDismiss": "Не показывать снова после закрытия",
   "dashboard.loading": "Загрузка источников ПО…",
   "dashboard.emptyTitle": "Пока нет активированных инструментов",
   "dashboard.emptyHint": "Перейдите в раздел «Инструменты», чтобы установить и активировать такие инструменты, как Java или Go",
-
   "tools.searchPlaceholder": "Поиск инструментов…",
   "tools.refresh": "Обновить источники",
   "tools.loading": "Загрузка…",
@@ -44,19 +37,16 @@
   "tools.emptyRegistry": "Источник ПО пуст",
   "tools.emptyRegistryHint": "Проверьте настройки источников ПО в разделе «Настройки»",
   "tools.refreshed": "Источники ПО обновлены",
-
   "category.language": "Язык",
   "category.buildTool": "Средство сборки",
   "category.runtime": "Среда выполнения",
   "category.sdk": "SDK",
   "category.vcs": "Система контроля версий",
-
   "toolCard.versionsCount": "Доступно версий: {count}",
   "toolCard.installedCount": "Установлено: {count}",
   "toolCard.platformUnavailable": "Недоступно на этой платформе",
   "toolCard.healthFailed": "Проверка работоспособности не пройдена",
   "toolCard.active": "Активна версия {version}",
-
   "toolDetail.homepage": "Веб-сайт",
   "toolDetail.notFound": "Инструмент не существует или был удалён",
   "toolDetail.back": "Назад в «Инструменты»",
@@ -92,7 +82,6 @@
   "toolDetail.scopeSystem": "Для всей системы",
   "toolDetail.systemScopeWarn": "Запись для всей системы требует прав администратора и вызовет запрос UAC.",
   "toolDetail.confirmActivate": "Подтвердить активацию",
-
   "toast.sourceUpdated": "Источник обновлён",
   "toast.settingsSaved": "Настройки сохранены",
   "toast.installQueued": "{version} добавлена в очередь установки",
@@ -106,23 +95,19 @@
   "toast.envRemoved": "Переменные среды для {toolId} удалены",
   "toast.selectInstallDir": "Выберите каталог установки",
   "toast.selectDownloadDir": "Выберите каталог загрузки",
-
   "tasks.empty": "Нет задач",
   "tasks.emptyHint": "Здесь появятся задачи рабочего процесса при установке или переключении версий инструментов",
-
   "taskStatus.queued": "В очереди",
   "taskStatus.running": "Выполняется",
   "taskStatus.success": "Успешно",
   "taskStatus.failed": "Ошибка",
   "taskStatus.cancelled": "Отменено",
   "taskStatus.interrupted": "Прервано",
-
   "taskKind.install": "Установка",
   "taskKind.activate": "Активация",
   "taskKind.deactivate": "Деактивация",
   "taskKind.uninstall": "Удаление",
   "taskKind.resumeInstall": "Продолжить установку",
-
   "taskItem.resumable": "Можно продолжить",
   "taskItem.cancel": "Отменить",
   "taskItem.resume": "Продолжить",
@@ -133,11 +118,9 @@
   "taskItem.elapsed": "Прошло {time}",
   "taskItem.duration": "Длительность {time}",
   "taskItem.workflowSteps": "Шаги рабочего процесса",
-
   "log.title": "Журнал выполнения",
   "log.autoScroll": "Автопрокрутка",
   "log.empty": "Журналов пока нет",
-
   "settings.dirs": "Каталоги",
   "settings.dirsHint": "Состояние, журналы и кэш источников всегда хранятся в каталоге .hienvs в вашей домашней папке",
   "settings.installDir": "Каталог установки",
@@ -153,7 +136,6 @@
   "settings.namePlaceholder": "Имя",
   "settings.urlPlaceholder": "https://example.com/index.json",
   "settings.folderPlaceholder": "Путь к папке",
-  "settings.downloadMirror": "Загрузка и зеркала",
   "settings.mirrorPolicy": "Политика зеркал",
   "settings.mirrorPolicyHint": "Сетям материкового Китая следует предпочитать \"Сначала материковые зеркала\"",
   "settings.mirrorAuto": "Автоматически",
@@ -167,7 +149,6 @@
   "settings.languageHint": "Язык интерфейса; по умолчанию следует за системой",
   "settings.languageAuto": "Как в системе",
   "settings.saveSettings": "Сохранить настройки",
-
   "step.download": "Скачать пакет",
   "step.extract": "Извлечь",
   "step.move": "Настроить структуру каталогов",
@@ -185,5 +166,12 @@
   "step.shell.run": "Выполнить команду",
   "step.cleanup": "Очистить временные файлы",
   "step.builtin.link-current": "Переключить активную версию",
-  "step.builtin.unlink-current": "Деактивировать"
+  "step.builtin.unlink-current": "Деактивировать",
+  "settings.download": "Загрузка",
+  "toast.sourceAdded": "Источник добавлен и инициализирован",
+  "toast.sourceRemoved": "Источник удалён",
+  "tools.all": "Все",
+  "about.title": "О HiEnvs",
+  "about.slogan": "Открытые и надёжные источники ПО, созданные сообществом",
+  "about.version": "Версия {version}"
 }

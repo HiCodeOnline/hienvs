@@ -10,32 +10,25 @@
   "common.builtin": "Integrado",
   "common.autoUpdate": "Atualização automática",
   "common.selectFolder": "Selecionar pasta",
-
   "nav.dashboard": "Painel",
   "nav.tools": "Caixa de ferramentas",
   "nav.tasks": "Tarefas",
   "nav.settings": "Definições",
   "nav.switchToLight": "Mudar para modo claro",
   "nav.switchToDark": "Mudar para modo escuro",
-
   "window.minimize": "Minimizar",
   "window.restore": "Restaurar",
   "window.maximize": "Maximizar",
   "window.close": "Fechar",
-
-  "statusBar.noSource": "Sem fonte de software",
-  "statusBar.enabledSources": "Fontes de software ativadas: {list}",
   "statusBar.download": "Transferir",
   "statusBar.install": "Instalar",
   "statusBar.osArch": "Sistema operativo e arquitetura atuais",
   "statusBar.repo": "Abrir o repositório de fontes de software do HiEnvs",
-
   "dashboard.notice": "Utilize fontes de software fiáveis e proteja-se contra software malicioso",
   "dashboard.noticeDismiss": "Não mostrar novamente após fechar",
   "dashboard.loading": "A carregar fontes de software…",
   "dashboard.emptyTitle": "Ainda não há ferramentas ativadas",
   "dashboard.emptyHint": "Aceda à Caixa de ferramentas para instalar e ativar ferramentas como Java ou Go",
-
   "tools.searchPlaceholder": "Pesquisar ferramentas…",
   "tools.refresh": "Atualizar fontes",
   "tools.loading": "A carregar…",
@@ -44,19 +37,16 @@
   "tools.emptyRegistry": "A fonte de software está vazia",
   "tools.emptyRegistryHint": "Verifique a configuração das fontes de software nas Definições",
   "tools.refreshed": "Fontes de software atualizadas",
-
   "category.language": "Linguagem",
   "category.buildTool": "Ferramenta de compilação",
   "category.runtime": "Ambiente de execução",
   "category.sdk": "SDK",
   "category.vcs": "Controlo de versões",
-
   "toolCard.versionsCount": "{count} versões disponíveis",
   "toolCard.installedCount": "{count} instaladas",
   "toolCard.platformUnavailable": "Indisponível nesta plataforma",
   "toolCard.healthFailed": "Falha na verificação de estado",
   "toolCard.active": "Ativo {version}",
-
   "toolDetail.homepage": "Site",
   "toolDetail.notFound": "A ferramenta não existe ou foi removida",
   "toolDetail.back": "Voltar à Caixa de ferramentas",
@@ -92,7 +82,6 @@
   "toolDetail.scopeSystem": "Todo o sistema",
   "toolDetail.systemScopeWarn": "As escritas para todo o sistema requerem privilégios de administrador e acionarão um pedido UAC.",
   "toolDetail.confirmActivate": "Confirmar ativação",
-
   "toast.sourceUpdated": "Fonte atualizada",
   "toast.settingsSaved": "Definições guardadas",
   "toast.installQueued": "{version} adicionada à fila de instalação",
@@ -106,23 +95,19 @@
   "toast.envRemoved": "Variáveis de ambiente de {toolId} removidas",
   "toast.selectInstallDir": "Selecionar o diretório de instalação",
   "toast.selectDownloadDir": "Selecionar o diretório de transferência",
-
   "tasks.empty": "Sem tarefas",
   "tasks.emptyHint": "As tarefas de fluxo de trabalho aparecem aqui quando instala ou muda versões de ferramentas",
-
   "taskStatus.queued": "Em fila",
   "taskStatus.running": "Em execução",
   "taskStatus.success": "Concluída",
   "taskStatus.failed": "Falhada",
   "taskStatus.cancelled": "Cancelada",
   "taskStatus.interrupted": "Interrompida",
-
   "taskKind.install": "Instalar",
   "taskKind.activate": "Ativar",
   "taskKind.deactivate": "Desativar",
   "taskKind.uninstall": "Desinstalar",
   "taskKind.resumeInstall": "Retomar instalação",
-
   "taskItem.resumable": "Retomável",
   "taskItem.cancel": "Cancelar",
   "taskItem.resume": "Retomar",
@@ -133,11 +118,9 @@
   "taskItem.elapsed": "Decorrido {time}",
   "taskItem.duration": "Duração {time}",
   "taskItem.workflowSteps": "Passos do fluxo de trabalho",
-
   "log.title": "Registo de execução",
   "log.autoScroll": "Deslocação automática",
   "log.empty": "Ainda não há registos",
-
   "settings.dirs": "Diretórios",
   "settings.dirsHint": "O estado, os registos e a cache de fontes são sempre guardados no diretório .hienvs da sua pasta pessoal",
   "settings.installDir": "Diretório de instalação",
@@ -153,7 +136,6 @@
   "settings.namePlaceholder": "Nome",
   "settings.urlPlaceholder": "https://example.com/index.json",
   "settings.folderPlaceholder": "Caminho da pasta",
-  "settings.downloadMirror": "Transferência e espelhos",
   "settings.mirrorPolicy": "Política de espelhos",
   "settings.mirrorPolicyHint": "As redes da China continental devem preferir \"Espelhos continentais primeiro\"",
   "settings.mirrorAuto": "Automática",
@@ -167,7 +149,6 @@
   "settings.languageHint": "Idioma da interface; segue o sistema por predefinição",
   "settings.languageAuto": "Seguir o sistema",
   "settings.saveSettings": "Guardar definições",
-
   "step.download": "Descarregar o pacote",
   "step.extract": "Extrair",
   "step.move": "Ajustar a estrutura de diretórios",
@@ -185,5 +166,12 @@
   "step.shell.run": "Executar o comando",
   "step.cleanup": "Limpar ficheiros temporários",
   "step.builtin.link-current": "Alternar a versão ativa",
-  "step.builtin.unlink-current": "Desativar"
+  "step.builtin.unlink-current": "Desativar",
+  "settings.download": "Transferência",
+  "toast.sourceAdded": "Fonte adicionada e inicializada",
+  "toast.sourceRemoved": "Fonte removida",
+  "tools.all": "Tudo",
+  "about.title": "Sobre o HiEnvs",
+  "about.slogan": "Fontes de software confiáveis, construídas em código aberto",
+  "about.version": "Versão {version}"
 }

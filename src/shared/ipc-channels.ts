@@ -6,11 +6,14 @@ export const IPC = {
   AppOpenPath: 'app:openPath',
   AppSelectDirectory: 'app:selectDirectory',
   AppDiskUsage: 'app:diskUsage',
+  AppLaunchTool: 'app:launchTool',
+  AppReset: 'app:reset',
 
   // invoke: 注册表
   RegistryList: 'registry:list',
   RegistryRefresh: 'registry:refresh',
   RegistryUpdateSource: 'registry:updateSource',
+  RegistryValidateSource: 'registry:validateSource',
 
   // invoke: 工具
   ToolsDetail: 'tools:detail',

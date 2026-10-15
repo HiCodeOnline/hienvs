@@ -26,11 +26,15 @@ const api = {
   selectDirectory: (opts?: { title?: string; defaultPath?: string }) =>
     invoke<string | null>(IPC.AppSelectDirectory, opts ?? {}),
   diskUsage: (dir: string) => invoke<import('../shared/tool-types').DiskUsage>(IPC.AppDiskUsage, dir),
+  launchTool: (toolId: string) => invoke<void>(IPC.AppLaunchTool, toolId),
+  resetApp: () => invoke<void>(IPC.AppReset),
 
   // 注册表
   registryList: () => invoke<import('../shared/registry-types').RegistrySnapshot>(IPC.RegistryList),
   registryRefresh: () => invoke<import('../shared/registry-types').RegistrySnapshot>(IPC.RegistryRefresh),
   registryUpdateSource: (sourceId: string) => invoke<import('../shared/registry-types').RegistrySnapshot>(IPC.RegistryUpdateSource, sourceId),
+  registryValidateSource: (type: 'remote' | 'local', location: string) =>
+    invoke<{ name?: string }>(IPC.RegistryValidateSource, type, location),
 
   // 工具
   toolDetail: (toolId: string) => invoke<import('./api-types').ToolDetail>(IPC.ToolsDetail, toolId),

@@ -10,32 +10,25 @@
   "common.builtin": "مدمج",
   "common.autoUpdate": "تحديث تلقائي",
   "common.selectFolder": "اختيار مجلد",
-
   "nav.dashboard": "لوحة التحكم",
   "nav.tools": "صندوق الأدوات",
   "nav.tasks": "المهام",
   "nav.settings": "الإعدادات",
   "nav.switchToLight": "التبديل إلى الوضع الفاتح",
   "nav.switchToDark": "التبديل إلى الوضع الداكن",
-
   "window.minimize": "تصغير",
   "window.restore": "استعادة",
   "window.maximize": "تكبير",
   "window.close": "إغلاق",
-
-  "statusBar.noSource": "لا يوجد مصدر برمجيات",
-  "statusBar.enabledSources": "مصادر البرمجيات المفعّلة: {list}",
   "statusBar.download": "تنزيل",
   "statusBar.install": "تثبيت",
   "statusBar.osArch": "نظام التشغيل والمعمارية الحاليان",
   "statusBar.repo": "فتح مستودع مصادر برمجيات HiEnvs",
-
   "dashboard.notice": "استخدم مصادر برمجيات موثوقة واحذر من البرمجيات الخبيثة",
   "dashboard.noticeDismiss": "عدم الإظهار مرة أخرى بعد الإغلاق",
   "dashboard.loading": "جارٍ تحميل مصادر البرمجيات…",
   "dashboard.emptyTitle": "لم يتم تفعيل أي أداة بعد",
   "dashboard.emptyHint": "انتقل إلى صندوق الأدوات لتثبيت وتفعيل أدوات مثل Java أو Go",
-
   "tools.searchPlaceholder": "البحث عن أدوات…",
   "tools.refresh": "تحديث المصادر",
   "tools.loading": "جارٍ التحميل…",
@@ -44,19 +37,16 @@
   "tools.emptyRegistry": "مصدر البرمجيات فارغ",
   "tools.emptyRegistryHint": "تحقق من إعدادات مصدر البرمجيات في الإعدادات",
   "tools.refreshed": "تم تحديث مصادر البرمجيات",
-
   "category.language": "اللغة",
   "category.buildTool": "أداة البناء",
   "category.runtime": "بيئة التشغيل",
   "category.sdk": "SDK",
   "category.vcs": "التحكم في الإصدارات",
-
   "toolCard.versionsCount": "{count} إصدارات متاحة",
   "toolCard.installedCount": "{count} مثبّت",
   "toolCard.platformUnavailable": "غير متاح على هذه المنصة",
   "toolCard.healthFailed": "فشل فحص الحالة",
   "toolCard.active": "مفعّل {version}",
-
   "toolDetail.homepage": "الموقع الإلكتروني",
   "toolDetail.notFound": "الأداة غير موجودة أو تمت إزالتها",
   "toolDetail.back": "العودة إلى صندوق الأدوات",
@@ -92,7 +82,6 @@
   "toolDetail.scopeSystem": "كامل النظام",
   "toolDetail.systemScopeWarn": "تتطلب الكتابة على مستوى النظام امتيازات المسؤول وستؤدي إلى ظهور مطالبة UAC.",
   "toolDetail.confirmActivate": "تأكيد التفعيل",
-
   "toast.sourceUpdated": "تم تحديث المصدر",
   "toast.settingsSaved": "تم حفظ الإعدادات",
   "toast.installQueued": "تمت إضافة {version} إلى قائمة انتظار التثبيت",
@@ -106,23 +95,19 @@
   "toast.envRemoved": "تمت إزالة متغيرات البيئة الخاصة بـ {toolId}",
   "toast.selectInstallDir": "اختر دليل التثبيت",
   "toast.selectDownloadDir": "اختر دليل التنزيل",
-
   "tasks.empty": "لا توجد مهام",
   "tasks.emptyHint": "تظهر مهام سير العمل هنا عند تثبيت إصدارات الأدوات أو تبديلها",
-
   "taskStatus.queued": "في قائمة الانتظار",
   "taskStatus.running": "قيد التشغيل",
   "taskStatus.success": "نجحت",
   "taskStatus.failed": "فشلت",
   "taskStatus.cancelled": "ملغاة",
   "taskStatus.interrupted": "متوقفة",
-
   "taskKind.install": "تثبيت",
   "taskKind.activate": "تفعيل",
   "taskKind.deactivate": "إلغاء التفعيل",
   "taskKind.uninstall": "إلغاء التثبيت",
   "taskKind.resumeInstall": "استئناف التثبيت",
-
   "taskItem.resumable": "قابلة للاستئناف",
   "taskItem.cancel": "إلغاء",
   "taskItem.resume": "استئناف",
@@ -133,11 +118,9 @@
   "taskItem.elapsed": "الوقت المنقضي {time}",
   "taskItem.duration": "المدة {time}",
   "taskItem.workflowSteps": "خطوات سير العمل",
-
   "log.title": "سجل التنفيذ",
   "log.autoScroll": "تمرير تلقائي",
   "log.empty": "لا توجد سجلات بعد",
-
   "settings.dirs": "الأدلة",
   "settings.dirsHint": "يتم تخزين الحالة والسجلات وذاكرة المصادر المؤقتة دائماً ضمن دليل .hienvs في مجلدك الرئيسي",
   "settings.installDir": "دليل التثبيت",
@@ -153,7 +136,6 @@
   "settings.namePlaceholder": "الاسم",
   "settings.urlPlaceholder": "https://example.com/index.json",
   "settings.folderPlaceholder": "مسار المجلد",
-  "settings.downloadMirror": "التنزيل والمرايا",
   "settings.mirrorPolicy": "سياسة المرايا",
   "settings.mirrorPolicyHint": "يُفضّل أن تختار شبكات البر الرئيسي للصين \"مرايا البر الرئيسي أولاً\"",
   "settings.mirrorAuto": "تلقائي",
@@ -167,7 +149,6 @@
   "settings.languageHint": "لغة الواجهة؛ تتبع النظام افتراضياً",
   "settings.languageAuto": "اتّباع النظام",
   "settings.saveSettings": "حفظ الإعدادات",
-
   "step.download": "تنزيل الحزمة",
   "step.extract": "استخراج",
   "step.move": "ضبط تخطيط الدليل",
@@ -185,5 +166,12 @@
   "step.shell.run": "تشغيل الأمر",
   "step.cleanup": "تنظيف الملفات المؤقتة",
   "step.builtin.link-current": "تبديل الإصدار النشط",
-  "step.builtin.unlink-current": "إلغاء التفعيل"
+  "step.builtin.unlink-current": "إلغاء التفعيل",
+  "settings.download": "التنزيل",
+  "toast.sourceAdded": "تمت إضافة المصدر وتهيئته",
+  "toast.sourceRemoved": "تمت إزالة المصدر",
+  "tools.all": "الكل",
+  "about.title": "حول HiEnvs",
+  "about.slogan": "مصادر برمجيات موثوقة مبنية بشكل مفتوح المصدر",
+  "about.version": "الإصدار {version}"
 }

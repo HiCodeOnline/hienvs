@@ -67,17 +67,22 @@ export interface SourceEntry {
   official: boolean
 }
 
+/** 版本下单个平台的下载信息：平台、体积、校验和与匹配的下载源 */
+export interface PlatformRow {
+  platform: string
+  size?: number
+  sha256?: string
+  sources: SourceEntry[]
+}
+
 export interface VersionRow {
   /** 复合版本键：dist@version（无发行商时与 version 相同） */
   key: string
   version: string
   dist?: string
   distName?: string
-  /** 该版本存在的平台键 */
-  platforms: string[]
-  size?: number
-  sha256?: string
-  sources: SourceEntry[]
+  /** 该版本各平台的下载行（按平台顺序排列） */
+  platformRows: PlatformRow[]
 }
 
 export interface DistributionView {

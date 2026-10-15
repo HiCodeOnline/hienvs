@@ -9,6 +9,7 @@ import type {
   PlatformDef,
   RegistryIndex,
   RegistryIndexTool,
+  SourceEntry,
   ToolManifest,
   ToolView,
   VersionRow
@@ -50,7 +51,7 @@ function normalizeMirror(m: MirrorSource | string): MirrorSource {
   return m
 }
 
-/** 把一个平台集合的资产归纳为按版本聚合的行（跨平台合并到同一版本键） */
+/** 把一个平台集合的资产归纳为按版本聚合的行；版本下再按平台展开各自匹配的下载源 */
 function collectVersions(
   platforms: Record<string, PlatformDef>,
   dist?: { id: string; name: string }
@@ -61,28 +62,27 @@ function collectVersions(
       const key = dist ? `${dist.id}@${ver}` : ver
       let row = map.get(key)
       if (!row) {
-        row = { key, version: ver, dist: dist?.id, distName: dist?.name, platforms: [], sources: [] }
+        row = { key, version: ver, dist: dist?.id, distName: dist?.name, platformRows: [] }
         map.set(key, row)
       }
-      if (!row.platforms.includes(platKey)) row.platforms.push(platKey)
-      if (row.sha256 === undefined) row.sha256 = asset.sha256
-      if (row.size === undefined) row.size = asset.size
 
-      const byUrl = new Map(row.sources.map((s) => [s.url, s]))
-      if (!byUrl.has(asset.url)) {
-        byUrl.set(asset.url, { name: '', url: asset.url, size: asset.size, official: true })
-      }
+      // 该平台的下载源：官方源优先，其余为具名镜像（按 url 去重）
+      const byUrl = new Map<string, SourceEntry>()
+      byUrl.set(asset.url, { name: '', url: asset.url, size: asset.size, official: true })
       for (const m of (asset.mirrors ?? []).map(normalizeMirror)) {
         if (!byUrl.has(m.url)) byUrl.set(m.url, { name: m.name, url: m.url, size: m.size, official: false })
       }
-      row.sources = [...byUrl.values()]
+      const sources = [...byUrl.values()]
+      const size = asset.size ?? sources.find((s) => s.size !== undefined)?.size
+      row.platformRows.push({ platform: platKey, size, sha256: asset.sha256, sources })
     }
   }
   for (const row of map.values()) {
-    row.platforms = orderPlatforms(row.platforms)
-    if (row.size === undefined) {
-      row.size = row.sources.find((s) => s.size !== undefined)?.size
-    }
+    row.platformRows.sort(
+      (a, b) =>
+        (PLATFORM_ORDER.indexOf(a.platform) === -1 ? 999 : PLATFORM_ORDER.indexOf(a.platform)) -
+        (PLATFORM_ORDER.indexOf(b.platform) === -1 ? 999 : PLATFORM_ORDER.indexOf(b.platform))
+    )
   }
   return [...map.values()]
 }

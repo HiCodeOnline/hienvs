@@ -10,19 +10,29 @@ import { InstalledStore } from './core/installed-store'
 import { logger } from './core/logger'
 import { removeLink } from './core/links'
 import { TaskManager } from './tasks/manager'
-import { loadRegistries, initRegistryEnv } from './registry/sources'
+import { loadRegistries, initRegistryEnv, validateSource } from './registry/sources'
 import type { LoadedTool } from './registry/sources'
 import { fetchIcon, readCachedIcon, writeIcon } from './registry/icons'
 import { PlanResolver, ResolveError } from './registry/resolver'
 import { compareVersions, currentOsName, makeVersionKey, safeVersionSegment, splitVersionKey } from '@shared/template'
 import { matchPlatform, normalizeArch } from './registry/platform-match'
-import type { RegistrySnapshot, ToolSummary, VersionInfo, RegistrySourceStatus, MirrorSource } from '@shared/registry-types'
+import type { RegistrySnapshot, ToolSummary, VersionInfo, RegistrySource, RegistrySourceStatus, MirrorSource } from '@shared/registry-types'
 import type { EnvPlan, EnvPreview, EnvSnapshotData, TaskSnapshot } from '@shared/task-types'
-import type { AppInfo, DiskUsage, SystemToolInfo } from '@shared/tool-types'
+import type { AppInfo, AppSettings, DiskUsage, SystemToolInfo } from '@shared/tool-types'
 import { buildEnvPlan, renderManagedBlock, type ActiveToolRef } from './services/env/planner'
-import { previewEnvPlan, readWindowsUserPath, readManagedBlock, parseBlockVars, parseBlockPathEntries, unixManagedBlockFiles } from './services/env/apply'
+import { previewEnvPlan, applyEnvPlan, readWindowsUserPath, readManagedBlock, parseBlockVars, parseBlockPathEntries, unixManagedBlockFiles } from './services/env/apply'
 import { readWindowsVar } from './services/env/apply-windows'
 import { patchProcessEnv, detectSystemTool, runVersionCommand } from './services/activator'
+import type { TaskContext, StepRunHelpers } from './engine/types'
+
+/** 重置防护：拒绝清理盘符根目录、用户主目录以及包含应用自身安装位置的目录 */
+function isSafeToWipe(dir: string, appBase: string): boolean {
+  if (path.parse(dir).root === dir) return false
+  if (path.resolve(dir) === path.resolve(os.homedir())) return false
+  const norm = (p: string) => path.resolve(p).toLowerCase() + path.sep
+  if (norm(appBase).startsWith(norm(dir))) return false
+  return true
+}
 
 /** 操作系统展示名称：Windows 按内核构建号区分 10/11，macOS 由 Darwin 内核版本换算 */
 function currentOsLabel(): string {
@@ -64,11 +74,28 @@ export class AppContext {
   readonly sep: string
   readonly exeExt: string
 
+  /**
+   * dev 环境自动注入 webui 本地开发源（仅首次，标记持久化后不再重复）：
+   * 指向本地静态服务的 zh-CN 源（npm run webui:serve / serve out），打包版无此逻辑
+   */
+  private seedDevSource(settings: AppSettings): void {
+    if (app.isPackaged || settings.devSourceSeeded) return
+    const seeded: RegistrySource = {
+      id: 'dev-webui',
+      type: 'remote',
+      name: 'hienvs 官方软件源',
+      location: 'http://127.0.0.1:4173/zh-CN/index.json',
+      autoUpdate: true
+    }
+    const next = { ...settings, registries: [...settings.registries, seeded], devSourceSeeded: true }
+    settingsStore.set(next)
+    logger.info('[registry] dev 环境已注入 webui 本地开发源: ' + seeded.location)
+  }
+
   constructor(private notify: (channel: string, payload: unknown) => void) {
     const settings = settingsStore.load()
     this.paths = buildPaths({ home: defaultHienvsHome(), installDir: settings.installDir, downloadDir: settings.downloadDir })
     initRegistryEnv({
-      builtinDir: app.isPackaged ? path.join(process.resourcesPath, 'registry') : path.join(app.getAppPath(), 'resources', 'registry'),
       cacheDir: path.join(this.paths.cacheDir, 'registry')
     })
     this.installed = new InstalledStore(this.paths.installedFile)
@@ -85,6 +112,7 @@ export class AppContext {
       paths: this.paths,
       mirrorPolicy: settings.mirrorPolicy,
       proxy: settings.proxy,
+      proxyAuth: this.proxyAuthOf(settings),
       platform: this.osName,
       arch: this.arch,
       platformKey: this.platformKey,
@@ -92,7 +120,8 @@ export class AppContext {
       exeExt: this.exeExt
     })
     this.manager.restore()
-    this.applyProxy(settings.proxy)
+    this.seedDevSource(settings)
+    this.applyProxy(settings)
     // 旧版 java 工具数据迁移（jdk 发行商机制引入前的存量安装）
     this.migrateLegacyJava()
     // 启动时同步已激活工具到进程环境
@@ -139,14 +168,33 @@ export class AppContext {
   }
 
   /** 将代理配置应用到 Electron 默认会话（影响 net.fetch 拉取远程清单） */
-  private applyProxy(proxy?: string): void {
+  private applyProxy(s: Pick<AppSettings, 'proxy' | 'proxyUsername' | 'proxyPassword'>): void {
     const ses = session.defaultSession
     if (!ses) return
-    if (proxy && proxy.trim()) {
-      void ses.setProxy({ proxyRules: proxy.trim() })
+    const proxy = s.proxy?.trim()
+    if (proxy) {
+      void ses.setProxy({ proxyRules: proxy })
     } else {
       void ses.setProxy({ mode: 'direct' })
     }
+    // 代理认证：配置了用户名时通过 login 事件响应 407 质询；未配置则恢复默认（无需认证）。
+    // Session 类型未声明 'login' 事件（运行时支持），通过 EventEmitter 接口注册
+    const emitter = ses as unknown as NodeJS.EventEmitter
+    emitter.removeAllListeners('login')
+    const username = s.proxyUsername?.trim()
+    if (proxy && username) {
+      const password = s.proxyPassword ?? ''
+      emitter.on('login', (_event: unknown, _details: unknown, _authInfo: unknown, callback: (u?: string, p?: string) => void) =>
+        callback(username, password)
+      )
+    }
+  }
+
+  /** 下载链路（undici ProxyAgent）使用的代理认证凭据：仅配置了代理与用户名时生效 */
+  private proxyAuthOf(s: Pick<AppSettings, 'proxy' | 'proxyUsername' | 'proxyPassword'>): { username: string; password: string } | undefined {
+    const username = s.proxyUsername?.trim()
+    if (!s.proxy?.trim() || !username) return undefined
+    return { username, password: s.proxyPassword ?? '' }
   }
 
   private patchEnvFromStore(): void {
@@ -167,11 +215,12 @@ export class AppContext {
       this.paths = buildPaths({ home: defaultHienvsHome(), installDir: next.installDir, downloadDir: next.downloadDir })
     }
     this.manager.setConcurrency(next.taskConcurrency)
-    this.applyProxy(next.proxy)
+    this.applyProxy(next)
     this.resolver = new PlanResolver({
       paths: this.paths,
       mirrorPolicy: next.mirrorPolicy,
       proxy: next.proxy,
+      proxyAuth: this.proxyAuthOf(next),
       platform: this.osName,
       arch: this.arch,
       platformKey: this.platformKey,
@@ -201,13 +250,17 @@ export class AppContext {
     }
     const s = this.settings
     this.registryLoading = (async () => {
-      const res = await loadRegistries(s.registries.filter((r) => r.enabled), {
+      const res = await loadRegistries(s.registries, {
         autoOnly: opts.autoOnly,
         fetchSourceId: opts.fetchSourceId
       })
       this.registryTools = res.tools
       this.registryStatuses = res.statuses
       logger.info(`[registry] 加载完成: ${res.tools.length} 个工具`)
+      for (const st of res.statuses) {
+        const suffix = st.error ? ` - ${st.error.slice(0, 200)}` : ''
+        logger.info(`[registry] 源 ${st.name}: ${st.status}, ${st.toolCount} 个工具${suffix}`)
+      }
       // 清单数据就绪即刻推送快照（状态栏、源列表随之更新），不等图标下载
       this.notify('registry:updated', { snapshot: this.snapshot() })
       // 图标增量同步放到后台，避免阻塞清单返回；完成后再次推送以刷新图标
@@ -303,11 +356,16 @@ export class AppContext {
     return this.refreshRegistry(true, { fetchSourceId: sourceId })
   }
 
+  /** 添加源前的有效性校验（远程可达 + 索引结构合法），失败抛出具体原因 */
+  async validateRegistrySource(type: 'remote' | 'local', location: string): Promise<{ name?: string }> {
+    return validateSource(type, location)
+  }
+
   /** 清单源自动更新定时器：每 10 分钟拉取一次开启 autoUpdate 的远程源 */
   startRegistryAutoUpdate(): void {
     const INTERVAL_MS = 10 * 60 * 1000
     setInterval(() => {
-      const hasAuto = this.settings.registries.some((r) => r.enabled && r.type === 'remote' && r.autoUpdate)
+      const hasAuto = this.settings.registries.some((r) => r.type === 'remote' && r.autoUpdate)
       if (!hasAuto) return
       void this.refreshRegistry(true, { autoOnly: true })
         .then(() => logger.info('[registry] 自动更新完成'))
@@ -364,6 +422,15 @@ export class AppContext {
     const tools: ToolSummary[] = this.registryTools.map((t) => {
       const inst = this.installed.getTool(t.toolId)
       const versions = this.platformVersions(t)
+      // 安装器类工具：激活版本资产配置了 launch 时暴露，前端据此展示「打开」按钮
+      let launch: string | undefined
+      if (inst.activeVersion) {
+        try {
+          launch = this.resolver.resolvePlatform(t, inst.activeVersion)?.asset.launch
+        } catch {
+          launch = undefined
+        }
+      }
       return {
         id: t.toolId,
         name: t.manifest.name,
@@ -376,13 +443,65 @@ export class AppContext {
         versions,
         defaultVersion: versions.find((v) => v.isDefault)?.key ?? t.manifest.defaultVersion,
         installedVersions: Object.keys(inst.versions),
-        activeVersion: inst.activeVersion
+        activeVersion: inst.activeVersion,
+        launch
       }
     })
     return { tools, sources: this.registryStatuses, updatedAt: new Date().toISOString() }
   }
 
   // ---------------- 工具操作 ----------------
+
+  /** 启动已激活版本配置的 launch 可执行文件（安装器类工具的「打开」按钮） */
+  async launchTool(toolId: string): Promise<void> {
+    await this.ensureRegistryLoaded()
+    const tool = this.findTool(toolId)
+    if (!tool) throw new Error(`未知工具: ${toolId}`)
+    const inst = this.installed.getTool(toolId)
+    if (!inst.activeVersion) throw new Error('工具没有激活版本')
+    const resolved = this.resolver.resolvePlatform(tool, inst.activeVersion)
+    if (!resolved?.asset.launch) throw new Error('该版本未配置 launch 入口，无法打开')
+    const dir = this.resolver.versionDirOf(toolId, resolved.dist, resolved.version)
+    // 相对路径基于版本目录解析，绝对路径直接使用
+    const target = path.isAbsolute(resolved.asset.launch) ? resolved.asset.launch : path.join(dir, resolved.asset.launch)
+    const err = await shell.openPath(target)
+    if (err) throw new Error(err)
+  }
+
+  /** 重置应用：清理环境变量、删除全部配置/下载/工具/缓存目录后重启（高危操作，前端需二次确认） */
+  async resetApp(): Promise<void> {
+    const active = this.manager.list().filter((t) => t.status === 'running' || t.status === 'queued')
+    if (active.length > 0) throw new Error('存在进行中的任务，请先取消或等待完成后再重置')
+
+    // 清理已写入的环境变量：以空计划应用（移除全部托管块与 PATH 条目），失败不阻断
+    try {
+      const plan = buildEnvPlan({ activeTools: [], scope: this.installed.getEnvScope(), platform: this.osName, toolsDir: this.paths.toolsDir })
+      await applyEnvPlan(
+        { envPlan: plan, platform: this.osName } as unknown as TaskContext,
+        { log: () => {}, undo: () => {} } as unknown as StepRunHelpers
+      )
+    } catch (e) {
+      console.warn('[reset] 环境变量清理失败(忽略):', e)
+    }
+
+    // 删除下载目录、安装目录与用户目录 .hienvs（配置/状态/日志/缓存），带根目录与自删除防护
+    const appBase = app.isPackaged ? path.dirname(app.getPath('exe')) : app.getAppPath()
+    const targets = [...new Set([this.paths.downloadsDir, this.paths.toolsDir, defaultHienvsHome()])]
+    for (const dir of targets) {
+      if (!isSafeToWipe(dir, appBase)) {
+        console.warn(`[reset] 跳过危险目录: ${dir}`)
+        continue
+      }
+      try {
+        fs.rmSync(dir, { recursive: true, force: true })
+      } catch (e) {
+        console.warn(`[reset] 目录删除失败(忽略): ${dir}`, e)
+      }
+    }
+
+    app.relaunch()
+    app.exit(0)
+  }
   async install(toolId: string, version: string, preferredUrl?: string): Promise<{ taskId: string }> {
     await this.ensureRegistryLoaded()
     const tool = this.findTool(toolId)

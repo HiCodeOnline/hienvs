@@ -46,6 +46,11 @@ function orderUrls(params: DownloadParams, mirrorPolicy: TaskContext['mirrorPoli
 function proxyDispatcher(ctx: TaskContext): Dispatcher | undefined {
   if (!ctx.proxy) return undefined
   try {
+    // 配置了认证时附加 Proxy-Authorization（Basic），否则代理按匿名访问
+    if (ctx.proxyAuth?.username) {
+      const token = Buffer.from(`${ctx.proxyAuth.username}:${ctx.proxyAuth.password ?? ''}`, 'utf8').toString('base64')
+      return new ProxyAgent({ uri: ctx.proxy, token: `Basic ${token}` })
+    }
     return new ProxyAgent(ctx.proxy)
   } catch {
     return undefined

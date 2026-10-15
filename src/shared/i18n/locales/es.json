@@ -10,32 +10,25 @@
   "common.builtin": "Integrado",
   "common.autoUpdate": "Actualización automática",
   "common.selectFolder": "Seleccionar carpeta",
-
   "nav.dashboard": "Panel",
   "nav.tools": "Caja de herramientas",
   "nav.tasks": "Tareas",
   "nav.settings": "Ajustes",
   "nav.switchToLight": "Cambiar a modo claro",
   "nav.switchToDark": "Cambiar a modo oscuro",
-
   "window.minimize": "Minimizar",
   "window.restore": "Restaurar",
   "window.maximize": "Maximizar",
   "window.close": "Cerrar",
-
-  "statusBar.noSource": "Sin fuente de software",
-  "statusBar.enabledSources": "Fuentes de software habilitadas: {list}",
   "statusBar.download": "Descargar",
   "statusBar.install": "Instalar",
   "statusBar.osArch": "Sistema operativo y arquitectura actuales",
   "statusBar.repo": "Abrir el repositorio de fuentes de software de HiEnvs",
-
   "dashboard.notice": "Use fuentes de software de confianza y protéjase contra el software malicioso",
   "dashboard.noticeDismiss": "No volver a mostrar tras cerrar",
   "dashboard.loading": "Cargando fuentes de software…",
   "dashboard.emptyTitle": "Aún no hay herramientas activadas",
   "dashboard.emptyHint": "Vaya a la Caja de herramientas para instalar y activar herramientas como Java o Go",
-
   "tools.searchPlaceholder": "Buscar herramientas…",
   "tools.refresh": "Actualizar fuentes",
   "tools.loading": "Cargando…",
@@ -44,19 +37,16 @@
   "tools.emptyRegistry": "La fuente de software está vacía",
   "tools.emptyRegistryHint": "Compruebe la configuración de las fuentes de software en Ajustes",
   "tools.refreshed": "Fuentes de software actualizadas",
-
   "category.language": "Lenguaje",
   "category.buildTool": "Herramienta de compilación",
   "category.runtime": "Entorno de ejecución",
   "category.sdk": "SDK",
   "category.vcs": "Control de versiones",
-
   "toolCard.versionsCount": "{count} versiones disponibles",
   "toolCard.installedCount": "{count} instaladas",
   "toolCard.platformUnavailable": "No disponible en esta plataforma",
   "toolCard.healthFailed": "Error en la comprobación de estado",
   "toolCard.active": "Activo {version}",
-
   "toolDetail.homepage": "Sitio web",
   "toolDetail.notFound": "La herramienta no existe o se ha eliminado",
   "toolDetail.back": "Volver a la Caja de herramientas",
@@ -92,7 +82,6 @@
   "toolDetail.scopeSystem": "Todo el sistema",
   "toolDetail.systemScopeWarn": "Las escrituras para todo el sistema requieren privilegios de administrador y activarán un aviso de UAC.",
   "toolDetail.confirmActivate": "Confirmar activación",
-
   "toast.sourceUpdated": "Fuente actualizada",
   "toast.settingsSaved": "Ajustes guardados",
   "toast.installQueued": "{version} añadida a la cola de instalación",
@@ -106,23 +95,19 @@
   "toast.envRemoved": "Variables de entorno de {toolId} eliminadas",
   "toast.selectInstallDir": "Seleccionar el directorio de instalación",
   "toast.selectDownloadDir": "Seleccionar el directorio de descarga",
-
   "tasks.empty": "No hay tareas",
   "tasks.emptyHint": "Las tareas de flujo de trabajo aparecen aquí cuando instala o cambia versiones de herramientas",
-
   "taskStatus.queued": "En cola",
   "taskStatus.running": "En ejecución",
   "taskStatus.success": "Completada",
   "taskStatus.failed": "Fallida",
   "taskStatus.cancelled": "Cancelada",
   "taskStatus.interrupted": "Interrumpida",
-
   "taskKind.install": "Instalar",
   "taskKind.activate": "Activar",
   "taskKind.deactivate": "Desactivar",
   "taskKind.uninstall": "Desinstalar",
   "taskKind.resumeInstall": "Reanudar instalación",
-
   "taskItem.resumable": "Reanudable",
   "taskItem.cancel": "Cancelar",
   "taskItem.resume": "Reanudar",
@@ -133,11 +118,9 @@
   "taskItem.elapsed": "Transcurrido {time}",
   "taskItem.duration": "Duración {time}",
   "taskItem.workflowSteps": "Pasos del flujo de trabajo",
-
   "log.title": "Registro de ejecución",
   "log.autoScroll": "Desplazamiento automático",
   "log.empty": "Aún no hay registros",
-
   "settings.dirs": "Directorios",
   "settings.dirsHint": "El estado, los registros y la caché de fuentes siempre se guardan en el directorio .hienvs de su carpeta personal",
   "settings.installDir": "Directorio de instalación",
@@ -153,7 +136,6 @@
   "settings.namePlaceholder": "Nombre",
   "settings.urlPlaceholder": "https://example.com/index.json",
   "settings.folderPlaceholder": "Ruta de la carpeta",
-  "settings.downloadMirror": "Descarga y espejos",
   "settings.mirrorPolicy": "Política de espejos",
   "settings.mirrorPolicyHint": "Las redes de China continental deberían preferir \"Espejos continentales primero\"",
   "settings.mirrorAuto": "Automática",
@@ -167,7 +149,6 @@
   "settings.languageHint": "Idioma de la interfaz; sigue el sistema de forma predeterminada",
   "settings.languageAuto": "Seguir el sistema",
   "settings.saveSettings": "Guardar ajustes",
-
   "step.download": "Descargar el paquete",
   "step.extract": "Extraer",
   "step.move": "Ajustar la estructura de directorios",
@@ -185,5 +166,12 @@
   "step.shell.run": "Ejecutar el comando",
   "step.cleanup": "Limpiar archivos temporales",
   "step.builtin.link-current": "Cambiar la versión activa",
-  "step.builtin.unlink-current": "Desactivar"
+  "step.builtin.unlink-current": "Desactivar",
+  "settings.download": "Descarga",
+  "toast.sourceAdded": "Fuente añadida e inicializada",
+  "toast.sourceRemoved": "Fuente eliminada",
+  "tools.all": "Todo",
+  "about.title": "Acerca de HiEnvs",
+  "about.slogan": "Fuentes de software confiables, construidas en open source",
+  "about.version": "Versión {version}"
 }

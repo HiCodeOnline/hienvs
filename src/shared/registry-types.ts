@@ -14,7 +14,8 @@ export type PlatformKey =
   | 'darwin'
   | 'linux'
 
-export type ToolCategory = 'language' | 'build-tool' | 'runtime' | 'sdk' | 'vcs'
+/** 工具分类编码：源自定义后为任意字符串（内置 5 类仅作为回退文案） */
+export type ToolCategory = string
 
 /** 步骤通用字段 */
 export interface StepBase {
@@ -84,6 +85,8 @@ export interface AssetDef {
   installArgs?: string[]
   /** 安装时是否需要管理员权限（msi/pkg/rpm/deb 默认 true，exe/dmg 默认 false） */
   elevate?: boolean
+  /** 安装完成后可启动的可执行文件（安装器类工具）：相对版本目录或绝对路径；配置后仪表盘展示「打开」 */
+  launch?: string
 }
 
 /** 版本级覆盖（工作流步骤按 id 合并 + 资产级覆盖） */
@@ -206,9 +209,11 @@ export interface ToolSummary {
   activeVersion: string | null
   /** 工具是否健康（激活版本的 verify 通过） */
   healthy?: boolean
+  /** 激活版本配置的可启动入口（asset.launch），存在时仪表盘展示「打开」按钮 */
+  launch?: string
 }
 
-export type RegistrySourceType = 'remote' | 'local' | 'builtin'
+export type RegistrySourceType = 'remote' | 'local'
 
 export interface RegistrySource {
   id: string
@@ -216,18 +221,24 @@ export interface RegistrySource {
   name: string
   /** remote: URL；local: 文件夹路径 */
   location?: string
-  enabled: boolean
   /** 仅远程源有效：开启后每 10 分钟自动拉取一次远程内容 */
   autoUpdate?: boolean
+}
+
+/** 源配置的工具分类（index.json 中与 tools 平级的 categories） */
+export interface RegistryCategory {
+  code: string
+  name: string
 }
 
 export interface RegistrySourceStatus {
   id: string
   name: string
   type: RegistrySourceType
-  enabled: boolean
-  status: 'ok' | 'error' | 'cached' | 'skipped'
+  status: 'ok' | 'error' | 'cached'
   toolCount: number
+  /** 源配置的分类列表，工具箱据此渲染过滤 tab */
+  categories?: RegistryCategory[]
   error?: string
   updatedAt?: string
 }

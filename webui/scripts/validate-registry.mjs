@@ -13,7 +13,6 @@ const err = (msg) => {
 }
 const ok = (msg) => console.log(`  ✓ ${msg}`)
 
-const CATEGORIES = new Set(['language', 'build-tool', 'runtime', 'sdk', 'vcs'])
 const STEP_TYPES = new Set([
   'download',
   'extract',
@@ -117,13 +116,30 @@ function validateIndex(regionDir) {
   checkCond(index.schemaVersion === 1, 'schemaVersion === 1')
   checkCond(typeof index.name === 'string' && index.name.length > 0, 'name 非空')
   checkCond(Array.isArray(index.tools) && index.tools.length > 0, 'tools 非空')
+
+  // categories（与 tools 平级，可选）：编码 + 名称；工具引用的分类应在此定义
+  const definedCategories = new Set()
+  if (index.categories !== undefined) {
+    checkCond(Array.isArray(index.categories) && index.categories.length > 0, 'categories 为非空数组')
+    for (const c of index.categories ?? []) {
+      checkCond(typeof c?.code === 'string' && c.code.length > 0, `category code 非空: ${c?.code}`)
+      checkCond(typeof c?.name === 'string' && c.name.length > 0, `category name 非空: ${c?.name}`)
+      if (typeof c?.code === 'string') definedCategories.add(c.code)
+    }
+  }
+
   const ids = new Set()
   for (const t of index.tools ?? []) {
     checkCond(/^[a-z][a-z0-9-]{1,31}$/.test(t.id ?? ''), `工具 id 合法: ${t.id}`)
     if (ids.has(t.id)) err(`工具 id 重复: ${t.id}`)
     ids.add(t.id)
     checkCond(typeof t.name === 'string' && t.name.length > 0, `${t.id}: name 非空`)
-    checkCond(!t.category || CATEGORIES.has(t.category), `${t.id}: category 合法`)
+    if (t.category) {
+      checkCond(typeof t.category === 'string' && t.category.length > 0, `${t.id}: category 非空`)
+      if (index.categories !== undefined && !definedCategories.has(t.category)) {
+        console.warn(`  ⚠ ${t.id}: category(${t.category}) 未在 categories 中定义，工具箱不会显示对应过滤 tab`)
+      }
+    }
     checkCond(t.icon === undefined || /^https?:\/\//.test(t.icon), `${t.id}: icon 为 http(s) 链接`)
     checkCond(typeof t.manifest === 'string' && t.manifest.length > 0, `${t.id}: manifest 路径非空`)
   }

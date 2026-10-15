@@ -5,11 +5,21 @@ import type { AppSettings } from '@shared/tool-types'
 import { defaultHienvsHome, buildPaths } from './paths'
 import { randomUUID } from 'node:crypto'
 
+/**
+ * 便携化根目录：默认安装/下载目录相对应用安装目录（<app>/.hienvs/tools、<app>/.hienvs/downloads）。
+ * 由主进程入口在加载设置前注入（dev 为项目目录，打包后为 exe 所在目录）；未注入时回退用户目录。
+ */
+let portableBase: string | null = null
+
+export function setPortableBase(dir: string | null): void {
+  portableBase = dir
+}
+
 export function defaultSettings(): AppSettings {
-  const home = defaultHienvsHome()
+  const root = portableBase ?? defaultHienvsHome()
   return {
-    installDir: path.join(home, 'tools'),
-    downloadDir: path.join(home, 'downloads'),
+    installDir: path.join(root, '.hienvs', 'tools'),
+    downloadDir: path.join(root, '.hienvs', 'downloads'),
     registries: [],
     mirrorPolicy: 'auto',
     taskConcurrency: 2,
@@ -34,6 +44,8 @@ export class SettingsStore {
   }
 
   load(): AppSettings {
+    // 每次加载都重新计算默认值（portableBase 在入口注入后才调用 load）
+    this.data = defaultSettings()
     try {
       if (fs.existsSync(this.file)) {
         const raw = JSON.parse(fs.readFileSync(this.file, 'utf-8'))

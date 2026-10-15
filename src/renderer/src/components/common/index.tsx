@@ -113,7 +113,7 @@ export function Modal({
   )
 }
 
-export function EmptyState({ title, hint }: { title: string; hint?: string }) {
+export function EmptyState({ title, hint, children }: { title: string; hint?: string; children?: ReactNode }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
       <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
@@ -127,6 +127,7 @@ export function EmptyState({ title, hint }: { title: string; hint?: string }) {
       </div>
       <p className="text-sm font-medium text-zinc-600 dark:text-zinc-300">{title}</p>
       {hint && <p className="mt-1 text-xs text-zinc-400">{hint}</p>}
+      {children && <div className="mt-4">{children}</div>}
     </div>
   )
 }

@@ -10,32 +10,25 @@
   "common.builtin": "Terbina dalam",
   "common.autoUpdate": "Kemas kini automatik",
   "common.selectFolder": "Pilih folder",
-
   "nav.dashboard": "Papan pemuka",
   "nav.tools": "Alat",
   "nav.tasks": "Tugasan",
   "nav.settings": "Tetapan",
   "nav.switchToLight": "Tukar ke mod cerah",
   "nav.switchToDark": "Tukar ke mod gelap",
-
   "window.minimize": "Minimumkan",
   "window.restore": "Pulihkan",
   "window.maximize": "Maksimumkan",
   "window.close": "Tutup",
-
-  "statusBar.noSource": "Tiada sumber perisian",
-  "statusBar.enabledSources": "Sumber perisian yang diaktifkan: {list}",
   "statusBar.download": "Muat turun",
   "statusBar.install": "Pasang",
   "statusBar.osArch": "Sistem pengendalian dan seni bina semasa",
   "statusBar.repo": "Buka repositori sumber perisian HiEnvs",
-
   "dashboard.notice": "Gunakan sumber perisian yang dipercayai dan lindungi diri daripada perisian berniat jahat",
   "dashboard.noticeDismiss": "Jangan tunjukkan lagi selepas ditutup",
   "dashboard.loading": "Memuatkan sumber perisian…",
   "dashboard.emptyTitle": "Belum ada alat diaktifkan",
   "dashboard.emptyHint": "Pergi ke Alat untuk memasang dan mengaktifkan alat seperti Java atau Go",
-
   "tools.searchPlaceholder": "Cari alat…",
   "tools.refresh": "Muat semula sumber",
   "tools.loading": "Memuatkan…",
@@ -44,19 +37,16 @@
   "tools.emptyRegistry": "Sumber perisian kosong",
   "tools.emptyRegistryHint": "Semak konfigurasi sumber perisian dalam Tetapan",
   "tools.refreshed": "Sumber perisian dimuat semula",
-
   "category.language": "Bahasa",
   "category.buildTool": "Alat binaan",
   "category.runtime": "Masa jalan",
   "category.sdk": "SDK",
   "category.vcs": "Kawalan versi",
-
   "toolCard.versionsCount": "{count} versi tersedia",
   "toolCard.installedCount": "{count} dipasang",
   "toolCard.platformUnavailable": "Tidak tersedia pada platform ini",
   "toolCard.healthFailed": "Semakan kesihatan gagal",
   "toolCard.active": "Aktif {version}",
-
   "toolDetail.homepage": "Laman web",
   "toolDetail.notFound": "Alat ini tidak wujud atau telah dibuang",
   "toolDetail.back": "Kembali ke Alat",
@@ -92,7 +82,6 @@
   "toolDetail.scopeSystem": "Seluruh sistem",
   "toolDetail.systemScopeWarn": "Penulisan seluruh sistem memerlukan keistimewaan pentadbir dan akan mencetuskan gesaan UAC.",
   "toolDetail.confirmActivate": "Sahkan pengaktifan",
-
   "toast.sourceUpdated": "Sumber dikemas kini",
   "toast.settingsSaved": "Tetapan disimpan",
   "toast.installQueued": "{version} ditambah ke baris gilir pemasangan",
@@ -106,23 +95,19 @@
   "toast.envRemoved": "Pemboleh ubah persekitaran untuk {toolId} telah dibuang",
   "toast.selectInstallDir": "Pilih direktori pemasangan",
   "toast.selectDownloadDir": "Pilih direktori muat turun",
-
   "tasks.empty": "Tiada tugasan",
   "tasks.emptyHint": "Tugasan aliran kerja muncul di sini apabila anda memasang atau menukar versi alat",
-
   "taskStatus.queued": "Dalam baris gilir",
   "taskStatus.running": "Berjalan",
   "taskStatus.success": "Berjaya",
   "taskStatus.failed": "Gagal",
   "taskStatus.cancelled": "Dibatalkan",
   "taskStatus.interrupted": "Terganggu",
-
   "taskKind.install": "Pasang",
   "taskKind.activate": "Aktifkan",
   "taskKind.deactivate": "Nyahaktifkan",
   "taskKind.uninstall": "Nyahpasang",
   "taskKind.resumeInstall": "Sambung pemasangan",
-
   "taskItem.resumable": "Boleh disambung",
   "taskItem.cancel": "Batal",
   "taskItem.resume": "Sambung",
@@ -133,11 +118,9 @@
   "taskItem.elapsed": "Masa berlalu {time}",
   "taskItem.duration": "Tempoh {time}",
   "taskItem.workflowSteps": "Langkah aliran kerja",
-
   "log.title": "Log pelaksanaan",
   "log.autoScroll": "Tatal automatik",
   "log.empty": "Tiada log lagi",
-
   "settings.dirs": "Direktori",
   "settings.dirsHint": "Status, log dan cache sumber sentiasa disimpan di bawah direktori .hienvs dalam folder rumah anda",
   "settings.installDir": "Direktori pemasangan",
@@ -153,7 +136,6 @@
   "settings.namePlaceholder": "Nama",
   "settings.urlPlaceholder": "https://example.com/index.json",
   "settings.folderPlaceholder": "Laluan folder",
-  "settings.downloadMirror": "Muat turun dan cermin",
   "settings.mirrorPolicy": "Dasar cermin",
   "settings.mirrorPolicyHint": "Rangkaian China tanah besar sepatutnya mengutamakan \"Cermin tanah besar dahulu\"",
   "settings.mirrorAuto": "Automatik",
@@ -167,7 +149,6 @@
   "settings.languageHint": "Bahasa antara muka; mengikut sistem secara lalai",
   "settings.languageAuto": "Ikut sistem",
   "settings.saveSettings": "Simpan tetapan",
-
   "step.download": "Muat turun pakej",
   "step.extract": "Ekstrak",
   "step.move": "Laraskan susun atur direktori",
@@ -185,5 +166,12 @@
   "step.shell.run": "Jalankan arahan",
   "step.cleanup": "Bersihkan fail sementara",
   "step.builtin.link-current": "Tukar versi aktif",
-  "step.builtin.unlink-current": "Nyahaktifkan"
+  "step.builtin.unlink-current": "Nyahaktifkan",
+  "settings.download": "Muat turun",
+  "toast.sourceAdded": "Sumber ditambah dan dimulakan",
+  "toast.sourceRemoved": "Sumber dibuang",
+  "tools.all": "Semua",
+  "about.title": "Tentang HiEnvs",
+  "about.slogan": "Sumber perisian dipercayai, dibina bersama secara sumber terbuka",
+  "about.version": "Versi {version}"
 }

@@ -29,11 +29,17 @@ export interface AppSettings {
   mirrorPolicy: 'auto' | 'mainland-first' | 'official-first'
   taskConcurrency: number
   proxy?: string
+  /** 代理认证用户名（与 proxy 成对使用；两者都为空表示代理无需认证） */
+  proxyUsername?: string
+  /** 代理认证密码 */
+  proxyPassword?: string
   autoRefreshRegistry: boolean
   /** 仪表盘安全提示是否已被用户关闭（关闭后不再展示） */
   securityNoticeDismissed: boolean
   /** 界面语言偏好：auto 表示跟随系统语言，其余为具体语言代码 */
   language: import('./i18n').LanguagePreference
+  /** dev 环境是否已注入 webui 本地开发源（打包版无此逻辑） */
+  devSourceSeeded?: boolean
 }
 
 export interface SystemToolInfo {

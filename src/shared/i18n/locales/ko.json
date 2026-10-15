@@ -10,32 +10,25 @@
   "common.builtin": "내장",
   "common.autoUpdate": "자동 업데이트",
   "common.selectFolder": "폴더 선택",
-
   "nav.dashboard": "대시보드",
   "nav.tools": "도구 모음",
   "nav.tasks": "작업",
   "nav.settings": "설정",
   "nav.switchToLight": "라이트 모드로 전환",
   "nav.switchToDark": "다크 모드로 전환",
-
   "window.minimize": "최소화",
   "window.restore": "복원",
   "window.maximize": "최대화",
   "window.close": "닫기",
-
-  "statusBar.noSource": "소프트웨어 소스 없음",
-  "statusBar.enabledSources": "사용 중인 소프트웨어 소스: {list}",
   "statusBar.download": "다운로드",
   "statusBar.install": "설치",
   "statusBar.osArch": "현재 운영체제 및 아키텍처",
   "statusBar.repo": "HiEnvs 소프트웨어 소스 저장소 열기",
-
   "dashboard.notice": "신뢰할 수 있는 소프트웨어 소스를 사용하고 악성코드에 주의하세요",
   "dashboard.noticeDismiss": "닫은 후 다시 표시하지 않기",
   "dashboard.loading": "소프트웨어 소스 불러오는 중…",
   "dashboard.emptyTitle": "아직 활성화된 도구가 없습니다",
   "dashboard.emptyHint": "도구 모음에서 Java나 Go 같은 도구를 설치하고 활성화하세요",
-
   "tools.searchPlaceholder": "도구 검색…",
   "tools.refresh": "소스 새로고침",
   "tools.loading": "불러오는 중…",
@@ -44,19 +37,16 @@
   "tools.emptyRegistry": "소프트웨어 소스가 비어 있습니다",
   "tools.emptyRegistryHint": "설정에서 소프트웨어 소스 구성을 확인하세요",
   "tools.refreshed": "소프트웨어 소스를 새로고침했습니다",
-
   "category.language": "언어",
   "category.buildTool": "빌드 도구",
   "category.runtime": "런타임",
   "category.sdk": "SDK",
   "category.vcs": "버전 관리",
-
   "toolCard.versionsCount": "사용 가능한 버전 {count}개",
   "toolCard.installedCount": "{count}개 설치됨",
   "toolCard.platformUnavailable": "이 플랫폼에서는 사용할 수 없습니다",
   "toolCard.healthFailed": "상태 검사에 실패했습니다",
   "toolCard.active": "사용 중 {version}",
-
   "toolDetail.homepage": "웹사이트",
   "toolDetail.notFound": "도구가 존재하지 않거나 제거되었습니다",
   "toolDetail.back": "도구 모음으로 돌아가기",
@@ -92,7 +82,6 @@
   "toolDetail.scopeSystem": "시스템 전체",
   "toolDetail.systemScopeWarn": "시스템 전체에 기록하려면 관리자 권한이 필요하며 UAC 프롬프트가 표시됩니다.",
   "toolDetail.confirmActivate": "활성화 확인",
-
   "toast.sourceUpdated": "소스가 업데이트되었습니다",
   "toast.settingsSaved": "설정이 저장되었습니다",
   "toast.installQueued": "{version}이(가) 설치 대기열에 추가되었습니다",
@@ -106,23 +95,19 @@
   "toast.envRemoved": "{toolId}의 환경 변수가 제거되었습니다",
   "toast.selectInstallDir": "설치 디렉터리 선택",
   "toast.selectDownloadDir": "다운로드 디렉터리 선택",
-
   "tasks.empty": "작업 없음",
   "tasks.emptyHint": "도구 버전을 설치하거나 전환하면 워크플로 작업이 여기에 표시됩니다",
-
   "taskStatus.queued": "대기 중",
   "taskStatus.running": "실행 중",
   "taskStatus.success": "성공",
   "taskStatus.failed": "실패",
   "taskStatus.cancelled": "취소됨",
   "taskStatus.interrupted": "중단됨",
-
   "taskKind.install": "설치",
   "taskKind.activate": "활성화",
   "taskKind.deactivate": "비활성화",
   "taskKind.uninstall": "제거",
   "taskKind.resumeInstall": "설치 재개",
-
   "taskItem.resumable": "재개 가능",
   "taskItem.cancel": "취소",
   "taskItem.resume": "재개",
@@ -133,11 +118,9 @@
   "taskItem.elapsed": "경과 {time}",
   "taskItem.duration": "소요 시간 {time}",
   "taskItem.workflowSteps": "워크플로 단계",
-
   "log.title": "실행 로그",
   "log.autoScroll": "자동 스크롤",
   "log.empty": "아직 로그가 없습니다",
-
   "settings.dirs": "디렉터리",
   "settings.dirsHint": "상태, 로그 및 소스 캐시는 항상 홈 폴더의 .hienvs 디렉터리에 저장됩니다",
   "settings.installDir": "설치 디렉터리",
@@ -153,7 +136,6 @@
   "settings.namePlaceholder": "이름",
   "settings.urlPlaceholder": "https://example.com/index.json",
   "settings.folderPlaceholder": "폴더 경로",
-  "settings.downloadMirror": "다운로드 및 미러",
   "settings.mirrorPolicy": "미러 정책",
   "settings.mirrorPolicyHint": "중국 본토 네트워크에서는 \"중국 본토 미러 우선\"을 권장합니다",
   "settings.mirrorAuto": "자동",
@@ -167,7 +149,6 @@
   "settings.languageHint": "인터페이스 언어로, 기본적으로 시스템을 따릅니다",
   "settings.languageAuto": "시스템 따르기",
   "settings.saveSettings": "설정 저장",
-
   "step.download": "패키지 다운로드",
   "step.extract": "압축 해제",
   "step.move": "디렉터리 구조 조정",
@@ -185,5 +166,12 @@
   "step.shell.run": "명령 실행",
   "step.cleanup": "임시 파일 정리",
   "step.builtin.link-current": "활성 버전 전환",
-  "step.builtin.unlink-current": "비활성화"
+  "step.builtin.unlink-current": "비활성화",
+  "settings.download": "다운로드",
+  "toast.sourceAdded": "소스가 추가되고 초기화되었습니다",
+  "toast.sourceRemoved": "소스가 삭제되었습니다",
+  "tools.all": "전체",
+  "about.title": "HiEnvs 정보",
+  "about.slogan": "오픈소스로 함께 만드는 신뢰할 수 있는 소프트웨어 소스",
+  "about.version": "버전 {version}"
 }

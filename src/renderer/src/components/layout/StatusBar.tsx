@@ -1,20 +1,29 @@
-// 底部状态栏（VS Code 风格，沿用主题色）：左侧软件源与磁盘占用，右侧系统名称与架构
+// 底部状态栏（VS Code 风格，沿用主题色）：左侧下载/安装磁盘占用，右侧系统信息（点击弹出关于）与仓库链接
 import { useEffect, useState } from 'react'
 import type { AppInfo, DiskUsage } from '@shared/tool-types'
-import { useRegistryStore } from '../../stores/registry'
 import { useSettingsStore } from '../../stores/settings'
 import { useI18n } from '../../stores/i18n'
-import { formatBytes } from '../common'
+import { Modal, formatBytes } from '../common'
+import logoUrl from '../../assets/logo.png'
 
 const ITEM = 'flex h-full items-center gap-1 px-2 transition-colors hover:bg-black/5 dark:hover:bg-white/10'
 
+/** 磁盘占用率 -> 状态色：<70% 绿、≥70% 橙、≥90% 红 */
+function usageTone(pct: number): { dot: string; glow: string } {
+  if (pct >= 90)
+    return { dot: 'bg-red-500', glow: 'shadow-[0_0_6px_2px_rgba(239,68,68,0.7)]' }
+  if (pct >= 70)
+    return { dot: 'bg-amber-500', glow: 'shadow-[0_0_6px_2px_rgba(245,158,11,0.7)]' }
+  return { dot: 'bg-emerald-500', glow: 'shadow-[0_0_6px_2px_rgba(16,185,129,0.7)]' }
+}
+
 export function StatusBar() {
-  const snapshot = useRegistryStore((s) => s.snapshot)
   const settings = useSettingsStore((s) => s.settings)
   const t = useI18n()
   const [info, setInfo] = useState<AppInfo | null>(null)
   const [download, setDownload] = useState<DiskUsage | null>(null)
   const [install, setInstall] = useState<DiskUsage | null>(null)
+  const [aboutOpen, setAboutOpen] = useState(false)
 
   useEffect(() => {
     void window.api
@@ -41,31 +50,35 @@ export function StatusBar() {
     }
   }, [downloadDir, installDir])
 
-  const enabledSources = (snapshot?.sources ?? []).filter((s) => s.enabled)
-  const sourceLabel = enabledSources.length === 0 ? t('statusBar.noSource') : enabledSources.map((s) => s.name).join(', ')
-
-  const diskItem = (label: string, usage: DiskUsage | null) => (
-    <span className={ITEM} title={label}>
-      {label} {usage ? `${formatBytes(usage.total - usage.free)} / ${formatBytes(usage.total)}` : '—'}
-    </span>
-  )
+  const diskItem = (label: string, usage: DiskUsage | null) => {
+    const pct = usage && usage.total > 0 ? ((usage.total - usage.free) / usage.total) * 100 : 0
+    const tone = usageTone(pct)
+    return (
+      <span
+        className={ITEM}
+        title={`${label} ${pct.toFixed(0)}%`}
+      >
+        <span className={`h-2 w-2 shrink-0 rounded-full ${tone.dot} ${tone.glow}`} />
+        {label} {usage ? `${formatBytes(usage.total - usage.free)} / ${formatBytes(usage.total)}` : '—'}
+      </span>
+    )
+  }
 
   return (
     <footer className="flex h-6 shrink-0 select-none items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
       <div className="flex h-full items-center">
-        <span className={`${ITEM} max-w-[16rem] truncate`} title={t('statusBar.enabledSources', { list: sourceLabel })}>
-          {enabledSources.length > 0 && (
-            <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500 shadow-[0_0_6px_2px_rgba(16,185,129,0.7)]" />
-          )}
-          {sourceLabel}
-        </span>
         {diskItem(t('statusBar.download'), download)}
         {diskItem(t('statusBar.install'), install)}
       </div>
       <div className="flex h-full items-center">
-        <span className={ITEM} title={t('statusBar.osArch')}>
+        {/* 点击弹出关于卡片 */}
+        <button
+          onClick={() => setAboutOpen(true)}
+          title={t('statusBar.osArch')}
+          className={`${ITEM} cursor-pointer`}
+        >
           {info ? `${info.osLabel} · ${info.arch}` : '—'}
-        </span>
+        </button>
         <a
           href="https://hicodeonline.github.io/HiEnvsRepository"
           target="_blank"
@@ -78,6 +91,23 @@ export function StatusBar() {
           </svg>
         </a>
       </div>
+
+      {/* 关于卡片 */}
+      <Modal open={aboutOpen} onClose={() => setAboutOpen(false)} title={t('about.title')}>
+        <div className="flex flex-col items-center py-4 text-center">
+          <img src={logoUrl} alt="HiEnvs" className="h-16 w-16" draggable={false} />
+          <h3 className="mt-3 text-lg font-semibold text-zinc-900 dark:text-zinc-100">HiEnvs</h3>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{t('about.slogan')}</p>
+          {info && (
+            <>
+              <p className="mt-4 text-xs text-zinc-400">
+                {info.osLabel} · {info.arch}
+              </p>
+              <p className="mt-0.5 text-xs text-zinc-400">{t('about.version', { version: info.version })}</p>
+            </>
+          )}
+        </div>
+      </Modal>
     </footer>
   )
 }

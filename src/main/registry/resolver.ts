@@ -13,6 +13,8 @@ export interface ResolverDeps {
   paths: HienvsPaths
   mirrorPolicy: 'auto' | 'mainland-first' | 'official-first'
   proxy?: string
+  /** 代理 Basic 认证凭据（未配置表示代理无需认证） */
+  proxyAuth?: { username: string; password: string }
   platform: 'windows' | 'darwin' | 'linux'
   arch: string
   platformKey: string
@@ -80,7 +82,7 @@ export class PlanResolver {
   }
 
   /** 版本目录：多发行商工具含发行商层级 <toolId>/<dist>/v<version> */
-  private versionDirOf(toolId: string, dist: string | undefined, version: string): string {
+  versionDirOf(toolId: string, dist: string | undefined, version: string): string {
     const seg = 'v' + safeVersionSegment(version)
     return dist
       ? path.join(this.deps.paths.toolsDir, toolId, dist, seg)
@@ -308,6 +310,7 @@ export class PlanResolver {
       arch: d.arch,
       mirrorPolicy: d.mirrorPolicy,
       proxy: d.proxy,
+      proxyAuth: d.proxyAuth,
       preferredUrl,
       envScope: scope,
       envPlan,
@@ -360,6 +363,7 @@ export class PlanResolver {
       arch: d.arch,
       mirrorPolicy: d.mirrorPolicy,
       proxy: d.proxy,
+      proxyAuth: d.proxyAuth,
       envScope: scope,
       envPlan,
       steps,
@@ -412,6 +416,7 @@ export class PlanResolver {
       arch: d.arch,
       mirrorPolicy: d.mirrorPolicy,
       proxy: d.proxy,
+      proxyAuth: d.proxyAuth,
       envScope: scope,
       envPlan,
       steps,
@@ -457,6 +462,7 @@ export class PlanResolver {
       arch: d.arch,
       mirrorPolicy: d.mirrorPolicy,
       proxy: d.proxy,
+      proxyAuth: d.proxyAuth,
       envScope: scope,
       envPlan,
       steps,

@@ -10,7 +10,7 @@ const IS_LINUX = PLATFORM === 'linux'
 
 /** 在标题栏展示标题的页面（其余页面仅显示图标） */
 const PAGE_TITLE: Partial<Record<string, string>> = {
-  dashboard: 'nav.dashboard',
+  dashboard: 'title.dashboard',
   tools: 'nav.tools',
   tasks: 'nav.tasks',
   settings: 'nav.settings'

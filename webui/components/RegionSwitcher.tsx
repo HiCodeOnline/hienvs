@@ -40,7 +40,7 @@ export function RegionSwitcher({ regions, current }: RegionSwitcherProps) {
       items={[
         {
           key: '__root__',
-          label: t('landing.title'),
+          label: t('site.chooseRegion'),
           hint: '⌂',
           active: !current,
           onSelect: () => router.push('/')

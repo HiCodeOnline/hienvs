@@ -38,10 +38,13 @@ export function registerAllIpc(ctx: AppContext): void {
     return res.canceled ? null : (res.filePaths[0] ?? null)
   })
   handle(IPC.AppDiskUsage, (dir: string) => ctx.diskUsage(dir))
+  handle(IPC.AppLaunchTool, (toolId: string) => ctx.launchTool(toolId))
+  handle(IPC.AppReset, () => ctx.resetApp())
 
   handle(IPC.RegistryList, () => ctx.ensureRegistryLoaded().then(() => ctx.snapshot()))
   handle(IPC.RegistryRefresh, () => ctx.refreshRegistry(true))
   handle(IPC.RegistryUpdateSource, (sourceId: string) => ctx.updateRegistrySource(sourceId))
+  handle(IPC.RegistryValidateSource, (type: 'remote' | 'local', location: string) => ctx.validateRegistrySource(type, location))
 
   handle(IPC.ToolsDetail, (toolId: string) => ctx.toolDetail(toolId))
   handle(IPC.ToolsInstall, (req: { toolId: string; version: string; sourceUrl?: string }) => ctx.install(req.toolId, req.version, req.sourceUrl))

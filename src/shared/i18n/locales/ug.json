@@ -10,32 +10,25 @@
   "common.builtin": "ئىچكى قۇرۇلما",
   "common.autoUpdate": "ئۆزلۈكىدىن يېڭىلاش",
   "common.selectFolder": "قىسقۇچ تاللاش",
-
   "nav.dashboard": "باشقۇرۇش تاختىسى",
   "nav.tools": "قورال ساندۇقى",
   "nav.tasks": "ۋەزىپىلەر",
   "nav.settings": "تەڭشەكلەر",
   "nav.switchToLight": "يورۇق ھالەتكە ئالماشتۇرۇش",
   "nav.switchToDark": "قاراڭغۇ ھالەتكە ئالماشتۇرۇش",
-
   "window.minimize": "كىچىكلىتىش",
   "window.restore": "ئەسلىگە قايتۇرۇش",
   "window.maximize": "چوڭايتىش",
   "window.close": "تاقاش",
-
-  "statusBar.noSource": "يۇمشاق دېتال مەنبەسى يوق",
-  "statusBar.enabledSources": "ئاكتىپلاشتۇرۇلغان يۇمشاق دېتال مەنبەلىرى: {list}",
   "statusBar.download": "چۈشۈرۈش",
   "statusBar.install": "ئورنىتىش",
   "statusBar.osArch": "نۆۋەتتىكى مەشغۇلات سىستېمىسى ۋە قۇرۇلمىسى",
   "statusBar.repo": "HiEnvs يۇمشاق دېتال مەنبەسى ئامبىرىنى ئېچىش",
-
   "dashboard.notice": "ئىشەنچلىك يۇمشاق دېتال مەنبەلىرىنى ئىشلىتىپ، زىيانلىق يۇمشاق دېتاللاردىن ساقلىنىڭ",
   "dashboard.noticeDismiss": "تاقىغاندىن كېيىن قايتا كۆرسەتمەسلىك",
   "dashboard.loading": "يۇمشاق دېتال مەنبەلىرى يۈكلىنىۋاتىدۇ…",
   "dashboard.emptyTitle": "تېخى ھېچقانداق قورال ئاكتىپلاشتۇرۇلمىدى",
   "dashboard.emptyHint": "Java ياكى Go قاتارلىق قوراللارنى ئورنىتىش ۋە ئاكتىپلاشتۇرۇش ئۈچۈن قورال ساندۇقىغا كىرىڭ",
-
   "tools.searchPlaceholder": "قورال ئىزدەش…",
   "tools.refresh": "مەنبەلەرنى يېڭىلاش",
   "tools.loading": "يۈكلىنىۋاتىدۇ…",
@@ -44,19 +37,16 @@
   "tools.emptyRegistry": "يۇمشاق دېتال مەنبەسى قۇرۇق",
   "tools.emptyRegistryHint": "تەڭشەكلەردىكى يۇمشاق دېتال مەنبەسى سەپلىمىسىنى تەكشۈرۈڭ",
   "tools.refreshed": "يۇمشاق دېتال مەنبەلىرى يېڭىلاندى",
-
   "category.language": "تىل",
   "category.buildTool": "قۇرۇش قورالى",
   "category.runtime": "ئىجرا مۇھىتى",
   "category.sdk": "SDK",
   "category.vcs": "نەشرىنى كونترول قىلىش",
-
   "toolCard.versionsCount": "{count} نەشرىسى بار",
   "toolCard.installedCount": "{count} ئورنىتىلغان",
   "toolCard.platformUnavailable": "بۇ سۇپىدا تەمىنلەنمەيدۇ",
   "toolCard.healthFailed": "سالامەتلىك تەكشۈرۈش مەغلۇپ بولدى",
   "toolCard.active": "ئاكتىپ {version}",
-
   "toolDetail.homepage": "تور بېكەت",
   "toolDetail.notFound": "بۇ قورال مەۋجۇت ئەمەس ياكى چىقىرىۋېتىلگەن",
   "toolDetail.back": "قورال ساندۇقىغا قايتىش",
@@ -92,7 +82,6 @@
   "toolDetail.scopeSystem": "پۈتۈن سىستېما",
   "toolDetail.systemScopeWarn": "پۈتۈن سىستېمىغا يېزىش باشقۇرغۇچى ھوقۇقىنى تەلەپ قىلىدۇ ۋە UAC ئەسكەرتمىسىنى قوزغايدۇ.",
   "toolDetail.confirmActivate": "ئاكتىپلاشتۇرۇشنى جەزملەش",
-
   "toast.sourceUpdated": "مەنبە يېڭىلاندى",
   "toast.settingsSaved": "تەڭشەكلەر ساقلاندى",
   "toast.installQueued": "{version} ئورنىتىش نۆۋىتىگە قوشۇلدى",
@@ -106,23 +95,19 @@
   "toast.envRemoved": "{toolId} نىڭ مۇھىت ئۆزگەرگۈچىلىرى چىقىرىۋېتىلدى",
   "toast.selectInstallDir": "ئورنىتىش مۇندەرىجىسىنى تاللاڭ",
   "toast.selectDownloadDir": "چۈشۈرۈش مۇندەرىجىسىنى تاللاڭ",
-
   "tasks.empty": "ۋەزىپە يوق",
   "tasks.emptyHint": "قورال نەشرىنى ئورنىتىغاندا ياكى ئالماشتۇرغاندا ئىش ئېقىمى ۋەزىپىلىرى بۇ يەردە كۆرۈنىدۇ",
-
   "taskStatus.queued": "نۆۋەتتە",
   "taskStatus.running": "ئىجرا بولۇۋاتىدۇ",
   "taskStatus.success": "مۇۋەپپەق بولدى",
   "taskStatus.failed": "مەغلۇپ بولدى",
   "taskStatus.cancelled": "بىكار قىلىندى",
   "taskStatus.interrupted": "بۆلۈندى",
-
   "taskKind.install": "ئورنىتىش",
   "taskKind.activate": "ئاكتىپلاشتۇرۇش",
   "taskKind.deactivate": "ئاكتىپسىزلاشتۇرۇش",
   "taskKind.uninstall": "ئۆچۈرۈش",
   "taskKind.resumeInstall": "ئورنىتىشنى داۋاملاشتۇرۇش",
-
   "taskItem.resumable": "داۋاملاشتۇرغىلى بولىدۇ",
   "taskItem.cancel": "بىكار قىلىش",
   "taskItem.resume": "داۋاملاشتۇرۇش",
@@ -133,11 +118,9 @@
   "taskItem.elapsed": "ئۆتكەن ۋاقىت {time}",
   "taskItem.duration": "داۋاملىشىش ۋاقتى {time}",
   "taskItem.workflowSteps": "ئىش ئېقىمى قەدەملىرى",
-
   "log.title": "ئىجرا كۈندىلىكى",
   "log.autoScroll": "ئۆزلۈكىدىن سىيرىلاش",
   "log.empty": "تېخى كۈندىلىك يوق",
-
   "settings.dirs": "مۇندەرىجىلەر",
   "settings.dirsHint": "ھالەت، كۈندىلىك ۋە مەنبە كەشى ھەمىشە ئۆي مۇندەرىجىڭىزدىكى .hienvs مۇندەرىجىسىدە ساقلىنىدۇ",
   "settings.installDir": "ئورنىتىش مۇندەرىجىسى",
@@ -153,7 +136,6 @@
   "settings.namePlaceholder": "ئىسىم",
   "settings.urlPlaceholder": "https://example.com/index.json",
   "settings.folderPlaceholder": "قىسقۇچ يولى",
-  "settings.downloadMirror": "چۈشۈرۈش ۋە ئەينەكلەر",
   "settings.mirrorPolicy": "ئەينەك سىياسىتى",
   "settings.mirrorPolicyHint": "جۇڭگو چوڭ قۇرۇقلۇق تورلىرى \"چوڭ قۇرۇقلۇق ئەينىكى بىرىنچى\" نى تاللىشى كېرەك",
   "settings.mirrorAuto": "ئۆزلۈكىدىن",
@@ -167,7 +149,6 @@
   "settings.languageHint": "كۆرۈنمە يۈز تىلى؛ سۈكۈتتىكى ھالەتتە سىستېمىغا ئەمەل قىلىدۇ",
   "settings.languageAuto": "سىستېمىغا ئەمەل قىلىش",
   "settings.saveSettings": "تەڭشەكلەرنى ساقلاش",
-
   "step.download": "بوغچىنى چۈشۈرۈش",
   "step.extract": "يېشىش",
   "step.move": "مۇندەرىجە ئورۇنلاشتۇرۇشىنى تەڭشەش",
@@ -185,5 +166,12 @@
   "step.shell.run": "بۇيرۇق ئىجرا قىلىش",
   "step.cleanup": "ۋاقىتلىق ھۆججەتلەرنى تازىلاش",
   "step.builtin.link-current": "ئاكتىپ نەشرىنى ئالماشتۇرۇش",
-  "step.builtin.unlink-current": "ئاكتىپسىزلاشتۇرۇش"
+  "step.builtin.unlink-current": "ئاكتىپسىزلاشتۇرۇش",
+  "settings.download": "چۈشۈرۈش",
+  "toast.sourceAdded": "مەنبە قوشۇلدى ۋە تەييارلاندى",
+  "toast.sourceRemoved": "مەنبە ئۆچۈرۈلدى",
+  "tools.all": "ھەممىسى",
+  "about.title": "HiEnvs ھەققىدە",
+  "about.slogan": "ئوچۇق كودلۇق ئورتاق بەرپا قىلىنغان ئىشەنچلىك يۇمشاق دېتال مەنبەلىرى",
+  "about.version": "نەشرى {version}"
 }

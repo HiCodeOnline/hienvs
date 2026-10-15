@@ -1,4 +1,5 @@
-// 清单源加载与合并：remote / local / builtin 三类，后加载者覆盖前者（按 toolId）
+// 清单源加载与合并：remote / local 两类，后加载者覆盖前者（按 toolId）
+// 默认不提供任何内置源，全部由用户在设置中手动添加（添加时校验有效性）
 import fs from 'node:fs'
 import path from 'node:path'
 import { net } from 'electron'
@@ -6,19 +7,17 @@ import { createHash } from 'node:crypto'
 import { registryIndexSchema, toolManifestSchema } from './schema'
 import type { ParsedRegistryIndex } from './schema'
 import type { LoadedTool } from './types'
-import type { RegistrySource, RegistrySourceStatus } from '@shared/registry-types'
+import type { RegistrySource, RegistrySourceStatus, RegistrySourceType } from '@shared/registry-types'
 import { logger } from '../core/logger'
 
 export type { LoadedTool } from './types'
 
 export interface RegistryEnv {
-  /** 内置清单目录 */
-  builtinDir: string
   /** 远程源缓存目录 */
   cacheDir: string
 }
 
-let env: RegistryEnv = { builtinDir: '', cacheDir: '' }
+let env: RegistryEnv = { cacheDir: '' }
 
 export function initRegistryEnv(e: RegistryEnv): void {
   env = e
@@ -51,8 +50,7 @@ async function fetchRemoteText(url: string, timeoutMs = 15000): Promise<string> 
 
 async function loadIndex(
   base: ParsedRegistryIndex,
-  sourceType: RegistrySourceStatus['type'],
-  sourceName: string,
+  source: { id: string; name: string; type: RegistrySourceType },
   fetchManifest: (rel: string) => Promise<string>
 ): Promise<SourceLoadResult> {
   const tools: LoadedTool[] = []
@@ -76,7 +74,7 @@ async function loadIndex(
           continue
         }
       }
-      tools.push({ toolId: entry.id, manifest: parsed.data, sourceId: sourceName, icon: entry.icon })
+      tools.push({ toolId: entry.id, manifest: parsed.data, sourceId: source.id, icon: entry.icon })
     } catch (e) {
       errors.push(`${entry.id}: ${e instanceof Error ? e.message : String(e)}`)
     }
@@ -84,12 +82,12 @@ async function loadIndex(
   return {
     tools,
     status: {
-      id: sourceName,
-      name: sourceName,
-      type: sourceType,
-      enabled: true,
+      id: source.id,
+      name: source.name,
+      type: source.type,
       status: tools.length > 0 ? 'ok' : 'error',
       toolCount: tools.length,
+      categories: base.categories,
       error: errors.length ? errors.join('; ') : undefined,
       updatedAt: base.updatedAt
     }
@@ -121,9 +119,10 @@ async function loadRemote(source: RegistrySource, preferCache = false): Promise<
   }
   const parsed = registryIndexSchema.safeParse(JSON.parse(raw))
   if (!parsed.success) throw new Error(`index 校验失败: ${parsed.error.issues[0]?.path.join('.') ?? 'unknown'}`)
-  const baseName = url.endsWith('/') ? url : url + '/'
-  const res = await loadIndex(parsed.data, 'remote', source.name, async (rel) => {
-    return fetchRemoteText(new URL(rel, baseName).toString())
+  // manifest 相对路径基于 index.json 所在目录解析（不能把 index.json/ 当目录，否则拼出 .../index.json/tools/x.json 404）
+  const baseDir = url.slice(0, url.lastIndexOf('/') + 1)
+  const res = await loadIndex(parsed.data, { id: source.id, name: source.name, type: 'remote' }, async (rel) => {
+    return fetchRemoteText(new URL(rel, baseDir).toString())
   })
   if (fromCache) res.status.status = 'cached'
   return res
@@ -134,64 +133,39 @@ async function loadLocal(source: RegistrySource): Promise<SourceLoadResult> {
   const raw = fs.readFileSync(path.join(dir, 'index.json'), 'utf-8')
   const parsed = registryIndexSchema.safeParse(JSON.parse(raw))
   if (!parsed.success) throw new Error(`index 校验失败: ${parsed.error.issues[0]?.path.join('.') ?? 'unknown'}`)
-  return loadIndex(parsed.data, 'local', source.name, async (rel) =>
+  return loadIndex(parsed.data, { id: source.id, name: source.name, type: 'local' }, async (rel) =>
     fs.readFileSync(path.join(dir, rel), 'utf-8')
   )
 }
 
-function loadBuiltin(): SourceLoadResult {
-  const baseDir = env.builtinDir
-  const fallback = {
-    tools: [] as LoadedTool[],
-    status: {
-      id: 'builtin',
-      name: '内置清单',
-      type: 'builtin' as const,
-      enabled: true,
-      status: 'error' as const,
-      toolCount: 0,
-      error: undefined as string | undefined
-    } as RegistrySourceStatus
+/** 添加源前的有效性校验：远程需可访问且索引结构合法，本地需存在 index.json 且结构合法；通过返回索引名称 */
+export async function validateSource(type: RegistrySourceType, location: string): Promise<{ name?: string }> {
+  if (!location.trim()) throw new Error(type === 'remote' ? '请填写源地址' : '请填写源文件夹路径')
+  let raw: string
+  if (type === 'remote') {
+    try {
+      raw = await fetchRemoteText(location.trim())
+    } catch (e) {
+      throw new Error(`无法访问源地址: ${e instanceof Error ? e.message : String(e)}`)
+    }
+  } else {
+    try {
+      raw = fs.readFileSync(path.join(location.trim(), 'index.json'), 'utf-8')
+    } catch {
+      throw new Error('文件夹中未找到有效的 index.json')
+    }
   }
+  let parsedJson: unknown
   try {
-    const raw = fs.readFileSync(path.join(baseDir, 'index.json'), 'utf-8')
-    const parsed = registryIndexSchema.safeParse(JSON.parse(raw))
-    if (!parsed.success) {
-      fallback.status.error = '内置清单格式错误'
-      return fallback
-    }
-    const tools: LoadedTool[] = []
-    const errors: string[] = []
-    for (const entry of parsed.data.tools) {
-      try {
-        const mRaw = fs.readFileSync(path.join(baseDir, entry.manifest), 'utf-8')
-        const m = toolManifestSchema.safeParse(JSON.parse(mRaw))
-        if (!m.success) {
-          errors.push(`${entry.id}: 清单校验失败`)
-          continue
-        }
-        tools.push({ toolId: entry.id, manifest: m.data, sourceId: parsed.data.name, icon: entry.icon })
-      } catch (e) {
-        errors.push(`${entry.id}: ${e instanceof Error ? e.message : String(e)}`)
-      }
-    }
-    return {
-      tools,
-      status: {
-        id: 'builtin',
-        name: parsed.data.name,
-        type: 'builtin',
-        enabled: true,
-        status: tools.length > 0 ? 'ok' : 'error',
-        toolCount: tools.length,
-        error: errors.length ? errors.join('; ') : undefined,
-        updatedAt: parsed.data.updatedAt
-      }
-    }
-  } catch (e) {
-    fallback.status.error = e instanceof Error ? e.message : String(e)
-    return fallback
+    parsedJson = JSON.parse(raw)
+  } catch {
+    throw new Error('index.json 不是合法的 JSON')
   }
+  const parsed = registryIndexSchema.safeParse(parsedJson)
+  if (!parsed.success) {
+    throw new Error(`清单索引校验失败: ${parsed.error.issues[0]?.path.join('.') ?? 'unknown'}`)
+  }
+  return { name: parsed.data.name }
 }
 
 export interface LoadOptions {
@@ -202,21 +176,13 @@ export interface LoadOptions {
 }
 
 /**
- * 加载并合并全部清单源：内置(最低优先) -> 用户源按数组顺序 -> 后者覆盖前者（按 toolId）
+ * 加载并合并全部用户清单源：按数组顺序，后者覆盖前者（按 toolId）
  */
 export async function loadRegistries(sources: RegistrySource[], opts: LoadOptions = {}): Promise<LoadResult> {
   const merged = new Map<string, LoadedTool>()
   const statuses: RegistrySourceStatus[] = []
 
-  const builtin = loadBuiltin()
-  statuses.push(builtin.status)
-  for (const t of builtin.tools) merged.set(t.toolId, t)
-
   for (const source of sources) {
-    if (!source.enabled) {
-      statuses.push({ id: source.id, name: source.name, type: source.type, enabled: false, status: 'skipped', toolCount: 0 })
-      continue
-    }
     if (source.type === 'remote') {
       // 选择性拉取：定时自动更新只拉 autoUpdate 源；手动单源更新只拉指定源；无缓存的源始终拉取
       const skipFetch = (opts.autoOnly && !source.autoUpdate) || (opts.fetchSourceId !== undefined && opts.fetchSourceId !== source.id)
@@ -229,7 +195,6 @@ export async function loadRegistries(sources: RegistrySource[], opts: LoadOption
           id: source.id,
           name: source.name,
           type: source.type,
-          enabled: true,
           status: 'error',
           toolCount: 0,
           error: e instanceof Error ? e.message : String(e)
@@ -247,7 +212,6 @@ export async function loadRegistries(sources: RegistrySource[], opts: LoadOption
         id: source.id,
         name: source.name,
         type: source.type,
-        enabled: true,
         status: 'error',
         toolCount: 0,
         error: e instanceof Error ? e.message : String(e)

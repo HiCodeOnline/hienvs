@@ -3,7 +3,7 @@ import { useAppStore } from '../stores/app'
 import { useRegistryStore } from '../stores/registry'
 import { useSettingsStore } from '../stores/settings'
 import { useI18n } from '../stores/i18n'
-import { EmptyState, Spinner } from '../components/common'
+import { Button, EmptyState, Spinner } from '../components/common'
 import { ToolCard } from '../components/tool/ToolCard'
 
 export function DashboardPage() {
@@ -14,6 +14,7 @@ export function DashboardPage() {
   const t = useI18n()
 
   const activeTools = (snapshot?.tools ?? []).filter((tool) => tool.activeVersion)
+  const hasSources = (snapshot?.sources ?? []).length > 0
   const showNotice = settings !== null && !settings.securityNoticeDismissed
 
   return (
@@ -44,6 +45,12 @@ export function DashboardPage() {
         <div className="flex items-center gap-2 text-sm text-zinc-400">
           <Spinner /> {t('dashboard.loading')}
         </div>
+      ) : !hasSources ? (
+        <div className="rounded-xl border border-dashed border-zinc-200 dark:border-zinc-800">
+          <EmptyState title={t('tools.noSource')} hint={t('tools.noSourceHint')}>
+            <Button onClick={() => navigate('settings')}>{t('settings.configureSources')}</Button>
+          </EmptyState>
+        </div>
       ) : activeTools.length === 0 ? (
         <div className="rounded-xl border border-dashed border-zinc-200 dark:border-zinc-800">
           <EmptyState title={t('dashboard.emptyTitle')} hint={t('dashboard.emptyHint')} />
@@ -51,7 +58,7 @@ export function DashboardPage() {
       ) : (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
           {activeTools.map((tool) => (
-            <ToolCard key={tool.id} tool={tool} onOpen={() => navigate('tool-detail', tool.id)} />
+            <ToolCard key={tool.id} tool={tool} onOpen={() => navigate('tool-detail', tool.id)} showOpen />
           ))}
         </div>
       )}

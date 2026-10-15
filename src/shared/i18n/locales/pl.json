@@ -10,32 +10,25 @@
   "common.builtin": "Wbudowane",
   "common.autoUpdate": "Automatyczna aktualizacja",
   "common.selectFolder": "Wybierz folder",
-
   "nav.dashboard": "Pulpit",
   "nav.tools": "Narzędzia",
   "nav.tasks": "Zadania",
   "nav.settings": "Ustawienia",
   "nav.switchToLight": "Przełącz na tryb jasny",
   "nav.switchToDark": "Przełącz na tryb ciemny",
-
   "window.minimize": "Minimalizuj",
   "window.restore": "Przywróć",
   "window.maximize": "Maksymalizuj",
   "window.close": "Zamknij",
-
-  "statusBar.noSource": "Brak źródła oprogramowania",
-  "statusBar.enabledSources": "Włączone źródła oprogramowania: {list}",
   "statusBar.download": "Pobieranie",
   "statusBar.install": "Instalacja",
   "statusBar.osArch": "Bieżący system operacyjny i architektura",
   "statusBar.repo": "Otwórz repozytorium źródeł oprogramowania HiEnvs",
-
   "dashboard.notice": "Korzystaj ze zaufanych źródeł oprogramowania i chroń się przed złośliwym oprogramowaniem",
   "dashboard.noticeDismiss": "Nie pokazuj ponownie po zamknięciu",
   "dashboard.loading": "Ładowanie źródeł oprogramowania…",
   "dashboard.emptyTitle": "Brak aktywowanych narzędzi",
   "dashboard.emptyHint": "Przejdź do Narzędzi, aby zainstalować i aktywować narzędzia takie jak Java lub Go",
-
   "tools.searchPlaceholder": "Szukaj narzędzi…",
   "tools.refresh": "Odśwież źródła",
   "tools.loading": "Ładowanie…",
@@ -44,19 +37,16 @@
   "tools.emptyRegistry": "Źródło oprogramowania jest puste",
   "tools.emptyRegistryHint": "Sprawdź konfigurację źródeł oprogramowania w Ustawieniach",
   "tools.refreshed": "Źródła oprogramowania odświeżone",
-
   "category.language": "Język",
   "category.buildTool": "Narzędzie do budowania",
   "category.runtime": "Środowisko uruchomieniowe",
   "category.sdk": "SDK",
   "category.vcs": "Kontrola wersji",
-
   "toolCard.versionsCount": "Dostępne wersje: {count}",
   "toolCard.installedCount": "Zainstalowano: {count}",
   "toolCard.platformUnavailable": "Niedostępne na tej platformie",
   "toolCard.healthFailed": "Kontrola stanu nie powiodła się",
   "toolCard.active": "Aktywna wersja {version}",
-
   "toolDetail.homepage": "Strona internetowa",
   "toolDetail.notFound": "Narzędzie nie istnieje lub zostało usunięte",
   "toolDetail.back": "Powrót do narzędzi",
@@ -92,7 +82,6 @@
   "toolDetail.scopeSystem": "Dla całego systemu",
   "toolDetail.systemScopeWarn": "Zapis dla całego systemu wymaga uprawnień administratora i wywoła monit UAC.",
   "toolDetail.confirmActivate": "Potwierdź aktywację",
-
   "toast.sourceUpdated": "Źródło zaktualizowane",
   "toast.settingsSaved": "Ustawienia zapisane",
   "toast.installQueued": "{version} dodano do kolejki instalacji",
@@ -106,23 +95,19 @@
   "toast.envRemoved": "Usunięto zmienne środowiskowe dla {toolId}",
   "toast.selectInstallDir": "Wybierz katalog instalacji",
   "toast.selectDownloadDir": "Wybierz katalog pobierania",
-
   "tasks.empty": "Brak zadań",
   "tasks.emptyHint": "Zadania przepływu pracy pojawią się tutaj, gdy zainstalujesz lub przełączysz wersje narzędzi",
-
   "taskStatus.queued": "W kolejce",
   "taskStatus.running": "W trakcie",
   "taskStatus.success": "Powodzenie",
   "taskStatus.failed": "Niepowodzenie",
   "taskStatus.cancelled": "Anulowano",
   "taskStatus.interrupted": "Przerwano",
-
   "taskKind.install": "Instalacja",
   "taskKind.activate": "Aktywacja",
   "taskKind.deactivate": "Dezaktywacja",
   "taskKind.uninstall": "Odinstalowanie",
   "taskKind.resumeInstall": "Wznów instalację",
-
   "taskItem.resumable": "Można wznowić",
   "taskItem.cancel": "Anuluj",
   "taskItem.resume": "Wznów",
@@ -133,11 +118,9 @@
   "taskItem.elapsed": "Upłynęło {time}",
   "taskItem.duration": "Czas trwania {time}",
   "taskItem.workflowSteps": "Kroki przepływu pracy",
-
   "log.title": "Dziennik wykonania",
   "log.autoScroll": "Automatyczne przewijanie",
   "log.empty": "Brak dzienników",
-
   "settings.dirs": "Katalogi",
   "settings.dirsHint": "Stan, dzienniki i pamięć podręczna źródeł są zawsze przechowywane w katalogu .hienvs w folderze domowym",
   "settings.installDir": "Katalog instalacji",
@@ -153,7 +136,6 @@
   "settings.namePlaceholder": "Nazwa",
   "settings.urlPlaceholder": "https://example.com/index.json",
   "settings.folderPlaceholder": "Ścieżka folderu",
-  "settings.downloadMirror": "Pobieranie i serwery lustrzane",
   "settings.mirrorPolicy": "Polityka serwerów lustrzanych",
   "settings.mirrorPolicyHint": "Sieci w Chinach kontynentalnych powinny preferować \"Najpierw serwery lustrzane Chin kontynentalnych\"",
   "settings.mirrorAuto": "Automatyczna",
@@ -167,7 +149,6 @@
   "settings.languageHint": "Język interfejsu; domyślnie zgodny z systemem",
   "settings.languageAuto": "Zgodnie z systemem",
   "settings.saveSettings": "Zapisz ustawienia",
-
   "step.download": "Pobierz pakiet",
   "step.extract": "Wypakuj",
   "step.move": "Dostosuj układ katalogów",
@@ -185,5 +166,12 @@
   "step.shell.run": "Uruchom polecenie",
   "step.cleanup": "Wyczyść pliki tymczasowe",
   "step.builtin.link-current": "Przełącz aktywną wersję",
-  "step.builtin.unlink-current": "Dezaktywuj"
+  "step.builtin.unlink-current": "Dezaktywuj",
+  "settings.download": "Pobieranie",
+  "toast.sourceAdded": "Źródło dodane i zainicjalizowane",
+  "toast.sourceRemoved": "Źródło usunięte",
+  "tools.all": "Wszystko",
+  "about.title": "O HiEnvs",
+  "about.slogan": "Zaufane źródła oprogramowania budowane otwarcie",
+  "about.version": "Wersja {version}"
 }

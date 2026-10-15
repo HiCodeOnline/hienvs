@@ -2,6 +2,11 @@
   "schemaVersion": 1,
   "name": "hienvs Official Registry",
   "updatedAt": "2026-10-13T00:00:00Z",
+  "categories": [
+    { "code": "language", "name": "Languages" },
+    { "code": "build-tool", "name": "Build tools" },
+    { "code": "runtime", "name": "Runtimes" }
+  ],
   "tools": [
     {
       "id": "jdk",

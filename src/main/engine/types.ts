@@ -37,6 +37,8 @@ export interface TaskContext {
   arch: string
   mirrorPolicy: 'auto' | 'mainland-first' | 'official-first'
   proxy?: string
+  /** 代理 Basic 认证凭据（未配置表示代理无需认证；下载步骤使用） */
+  proxyAuth?: { username: string; password: string }
   /** 用户安装时指定的下载源 URL：优先使用，失败后仍回退其余源 */
   preferredUrl?: string
   envScope: 'user' | 'system'

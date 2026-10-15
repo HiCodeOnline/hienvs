@@ -10,32 +10,25 @@
   "common.builtin": "अंतर्निहित",
   "common.autoUpdate": "स्वतः अपडेट",
   "common.selectFolder": "फ़ोल्डर चुनें",
-
   "nav.dashboard": "डैशबोर्ड",
   "nav.tools": "टूलबॉक्स",
   "nav.tasks": "कार्य",
   "nav.settings": "सेटिंग्स",
   "nav.switchToLight": "लाइट मोड पर स्विच करें",
   "nav.switchToDark": "डार्क मोड पर स्विच करें",
-
   "window.minimize": "मिनिमाइज़ करें",
   "window.restore": "पुनर्स्थापित करें",
   "window.maximize": "मैक्सिमाइज़ करें",
   "window.close": "बंद करें",
-
-  "statusBar.noSource": "कोई सॉफ़्टवेयर स्रोत नहीं",
-  "statusBar.enabledSources": "सक्षम सॉफ़्टवेयर स्रोत: {list}",
   "statusBar.download": "डाउनलोड",
   "statusBar.install": "इंस्टॉल",
   "statusBar.osArch": "वर्तमान ऑपरेटिंग सिस्टम और आर्किटेक्चर",
   "statusBar.repo": "HiEnvs सॉफ़्टवेयर स्रोत रिपॉज़िटरी खोलें",
-
   "dashboard.notice": "विश्वसनीय सॉफ़्टवेयर स्रोतों का उपयोग करें और मैलवेयर से बचें",
   "dashboard.noticeDismiss": "बंद करने के बाद दोबारा न दिखाएँ",
   "dashboard.loading": "सॉफ़्टवेयर स्रोत लोड हो रहे हैं…",
   "dashboard.emptyTitle": "अभी तक कोई टूल सक्रिय नहीं किया गया",
   "dashboard.emptyHint": "Java या Go जैसे टूल इंस्टॉल और सक्रिय करने के लिए टूलबॉक्स पर जाएँ",
-
   "tools.searchPlaceholder": "टूल खोजें…",
   "tools.refresh": "स्रोत रीफ़्रेश करें",
   "tools.loading": "लोड हो रहा है…",
@@ -44,19 +37,16 @@
   "tools.emptyRegistry": "सॉफ़्टवेयर स्रोत खाली है",
   "tools.emptyRegistryHint": "सेटिंग्स में सॉफ़्टवेयर स्रोत कॉन्फ़िगरेशन जाँचें",
   "tools.refreshed": "सॉफ़्टवेयर स्रोत रीफ़्रेश हो गए",
-
   "category.language": "भाषा",
   "category.buildTool": "बिल्ड टूल",
   "category.runtime": "रनटाइम",
   "category.sdk": "SDK",
   "category.vcs": "वर्ज़न कंट्रोल",
-
   "toolCard.versionsCount": "{count} वर्ज़न उपलब्ध",
   "toolCard.installedCount": "{count} इंस्टॉल",
   "toolCard.platformUnavailable": "इस प्लेटफ़ॉर्म पर उपलब्ध नहीं",
   "toolCard.healthFailed": "हेल्थ चेक विफल",
   "toolCard.active": "सक्रिय {version}",
-
   "toolDetail.homepage": "वेबसाइट",
   "toolDetail.notFound": "टूल मौजूद नहीं है या हटा दिया गया है",
   "toolDetail.back": "टूलबॉक्स पर वापस जाएँ",
@@ -92,7 +82,6 @@
   "toolDetail.scopeSystem": "संपूर्ण सिस्टम",
   "toolDetail.systemScopeWarn": "सिस्टम-व्यापी लेखन के लिए प्रशासक विशेषाधिकार आवश्यक हैं और UAC प्रॉम्प्ट दिखाई देगा।",
   "toolDetail.confirmActivate": "सक्रियण की पुष्टि करें",
-
   "toast.sourceUpdated": "स्रोत अपडेट हुआ",
   "toast.settingsSaved": "सेटिंग्स सहेजी गईं",
   "toast.installQueued": "{version} इंस्टॉल कतार में जोड़ा गया",
@@ -106,23 +95,19 @@
   "toast.envRemoved": "{toolId} के एनवायरनमेंट वेरिएबल हटाए गए",
   "toast.selectInstallDir": "इंस्टॉल डायरेक्टरी चुनें",
   "toast.selectDownloadDir": "डाउनलोड डायरेक्टरी चुनें",
-
   "tasks.empty": "कोई कार्य नहीं",
   "tasks.emptyHint": "टूल वर्ज़न इंस्टॉल या स्विच करने पर वर्कफ़्लो कार्य यहाँ दिखाई देंगे",
-
   "taskStatus.queued": "कतार में",
   "taskStatus.running": "चल रहा है",
   "taskStatus.success": "सफल",
   "taskStatus.failed": "विफल",
   "taskStatus.cancelled": "रद्द",
   "taskStatus.interrupted": "बाधित",
-
   "taskKind.install": "इंस्टॉल",
   "taskKind.activate": "सक्रिय करें",
   "taskKind.deactivate": "निष्क्रिय करें",
   "taskKind.uninstall": "अनइंस्टॉल",
   "taskKind.resumeInstall": "इंस्टॉल फिर शुरू करें",
-
   "taskItem.resumable": "फिर शुरू करने योग्य",
   "taskItem.cancel": "रद्द करें",
   "taskItem.resume": "फिर शुरू करें",
@@ -133,11 +118,9 @@
   "taskItem.elapsed": "बीता समय {time}",
   "taskItem.duration": "अवधि {time}",
   "taskItem.workflowSteps": "वर्कफ़्लो चरण",
-
   "log.title": "निष्पादन लॉग",
   "log.autoScroll": "स्वतः स्क्रॉल",
   "log.empty": "अभी कोई लॉग नहीं",
-
   "settings.dirs": "डायरेक्टरियाँ",
   "settings.dirsHint": "स्थिति, लॉग और स्रोत कैश सदैव आपके होम फ़ोल्डर की .hienvs डायरेक्टरी में संग्रहीत होते हैं",
   "settings.installDir": "इंस्टॉल डायरेक्टरी",
@@ -153,7 +136,6 @@
   "settings.namePlaceholder": "नाम",
   "settings.urlPlaceholder": "https://example.com/index.json",
   "settings.folderPlaceholder": "फ़ोल्डर पथ",
-  "settings.downloadMirror": "डाउनलोड और मिरर",
   "settings.mirrorPolicy": "मिरर नीति",
   "settings.mirrorPolicyHint": "मुख्य भूमि चीन के नेटवर्क को \"मुख्य भूमि मिरर पहले\" चुनना चाहिए",
   "settings.mirrorAuto": "स्वचालित",
@@ -167,7 +149,6 @@
   "settings.languageHint": "इंटरफ़ेस भाषा; डिफ़ॉल्ट रूप से सिस्टम का अनुसरण करती है",
   "settings.languageAuto": "सिस्टम का अनुसरण करें",
   "settings.saveSettings": "सेटिंग्स सहेजें",
-
   "step.download": "पैकेज डाउनलोड करें",
   "step.extract": "एक्सट्रैक्ट करें",
   "step.move": "डायरेक्टरी लेआउट समायोजित करें",
@@ -185,5 +166,12 @@
   "step.shell.run": "कमांड चलाएँ",
   "step.cleanup": "अस्थायी फ़ाइलें साफ़ करें",
   "step.builtin.link-current": "सक्रिय वर्ज़न स्विच करें",
-  "step.builtin.unlink-current": "निष्क्रिय करें"
+  "step.builtin.unlink-current": "निष्क्रिय करें",
+  "settings.download": "डाउनलोड",
+  "toast.sourceAdded": "स्रोत जोड़ा गया और आरंभ किया गया",
+  "toast.sourceRemoved": "स्रोत हटाया गया",
+  "tools.all": "सभी",
+  "about.title": "HiEnvs के बारे में",
+  "about.slogan": "ओपन-सोर्स, साझा निर्मित विश्वसनीय सॉफ़्टवेयर स्रोत",
+  "about.version": "संस्करण {version}"
 }

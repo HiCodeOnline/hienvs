@@ -3,7 +3,7 @@ import { app, BrowserWindow, shell } from 'electron'
 import path from 'node:path'
 import { logger } from './core/logger'
 import { defaultHienvsHome } from './core/paths'
-import { settingsStore } from './core/settings'
+import { settingsStore, setPortableBase } from './core/settings'
 import { AppContext } from './context'
 import { registerAllIpc } from './ipc'
 import { IPC } from '@shared/ipc-channels'
@@ -64,6 +64,9 @@ const gotLock = app.requestSingleInstanceLock()
 if (!gotLock) {
   app.quit()
 } else {
+  // 默认安装/下载目录随应用安装目录（<app>/.hienvs/tools、downloads），需在加载设置前注入
+  setPortableBase(app.isPackaged ? path.dirname(app.getPath('exe')) : app.getAppPath())
+
   app.on('second-instance', () => {
     const [win] = BrowserWindow.getAllWindows()
     if (win) {

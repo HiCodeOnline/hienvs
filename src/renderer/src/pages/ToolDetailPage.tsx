@@ -6,7 +6,7 @@ import type { TaskSnapshot } from '@shared/task-types'
 import { useAppStore } from '../stores/app'
 import { useRegistryStore } from '../stores/registry'
 import { useI18n } from '../stores/i18n'
-import { Badge, Button, EmptyState, Modal, Spinner, ToolAvatar, formatVersionLabel } from '../components/common'
+import { Badge, Button, EmptyState, Modal, Spinner, ToolAvatar, formatBytes, formatVersionLabel } from '../components/common'
 
 interface VersionGroup {
   dist?: string
@@ -348,6 +348,15 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
                   >
                     {s.url}
                   </span>
+                  {s.size !== undefined && (
+                    <span
+                      className={`mt-0.5 block text-xs font-normal ${
+                        installSourceUrl === s.url ? 'text-brand-600/70 dark:text-brand-300/70' : 'text-zinc-400 dark:text-zinc-500'
+                      }`}
+                    >
+                      {formatBytes(s.size)}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>

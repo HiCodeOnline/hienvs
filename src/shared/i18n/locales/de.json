@@ -10,32 +10,25 @@
   "common.builtin": "Integriert",
   "common.autoUpdate": "Automatische Aktualisierung",
   "common.selectFolder": "Ordner auswählen",
-
   "nav.dashboard": "Übersicht",
   "nav.tools": "Werkzeugkasten",
   "nav.tasks": "Aufgaben",
   "nav.settings": "Einstellungen",
   "nav.switchToLight": "Zum hellen Modus wechseln",
   "nav.switchToDark": "Zum dunklen Modus wechseln",
-
   "window.minimize": "Minimieren",
   "window.restore": "Wiederherstellen",
   "window.maximize": "Maximieren",
   "window.close": "Schließen",
-
-  "statusBar.noSource": "Keine Softwarequelle",
-  "statusBar.enabledSources": "Aktivierte Softwarequellen: {list}",
   "statusBar.download": "Download",
   "statusBar.install": "Installation",
   "statusBar.osArch": "Aktuelles Betriebssystem und Architektur",
   "statusBar.repo": "Das HiEnvs-Repository für Softwarequellen öffnen",
-
   "dashboard.notice": "Verwenden Sie vertrauenswürdige Softwarequellen und schützen Sie sich vor Schadsoftware",
   "dashboard.noticeDismiss": "Nach dem Schließen nicht erneut anzeigen",
   "dashboard.loading": "Softwarequellen werden geladen…",
   "dashboard.emptyTitle": "Noch keine Werkzeuge aktiviert",
   "dashboard.emptyHint": "Wechseln Sie zum Werkzeugkasten, um Werkzeuge wie Java oder Go zu installieren und zu aktivieren",
-
   "tools.searchPlaceholder": "Werkzeuge suchen…",
   "tools.refresh": "Quellen aktualisieren",
   "tools.loading": "Wird geladen…",
@@ -44,19 +37,16 @@
   "tools.emptyRegistry": "Die Softwarequelle ist leer",
   "tools.emptyRegistryHint": "Prüfen Sie die Softwarequellen-Konfiguration in den Einstellungen",
   "tools.refreshed": "Softwarequellen aktualisiert",
-
   "category.language": "Sprache",
   "category.buildTool": "Build-Tool",
   "category.runtime": "Laufzeitumgebung",
   "category.sdk": "SDK",
   "category.vcs": "Versionsverwaltung",
-
   "toolCard.versionsCount": "{count} Versionen verfügbar",
   "toolCard.installedCount": "{count} installiert",
   "toolCard.platformUnavailable": "Auf dieser Plattform nicht verfügbar",
   "toolCard.healthFailed": "Integritätsprüfung fehlgeschlagen",
   "toolCard.active": "Aktiv: {version}",
-
   "toolDetail.homepage": "Website",
   "toolDetail.notFound": "Das Werkzeug existiert nicht oder wurde entfernt",
   "toolDetail.back": "Zurück zum Werkzeugkasten",
@@ -92,7 +82,6 @@
   "toolDetail.scopeSystem": "Systemweit",
   "toolDetail.systemScopeWarn": "Systemweite Schreibvorgänge erfordern Administratorrechte und lösen eine UAC-Abfrage aus.",
   "toolDetail.confirmActivate": "Aktivierung bestätigen",
-
   "toast.sourceUpdated": "Quelle aktualisiert",
   "toast.settingsSaved": "Einstellungen gespeichert",
   "toast.installQueued": "{version} zur Installationswarteschlange hinzugefügt",
@@ -106,23 +95,19 @@
   "toast.envRemoved": "Umgebungsvariablen für {toolId} entfernt",
   "toast.selectInstallDir": "Installationsverzeichnis auswählen",
   "toast.selectDownloadDir": "Download-Verzeichnis auswählen",
-
   "tasks.empty": "Keine Aufgaben",
   "tasks.emptyHint": "Workflow-Aufgaben erscheinen hier, wenn Sie Werkzeugversionen installieren oder wechseln",
-
   "taskStatus.queued": "In Warteschlange",
   "taskStatus.running": "Wird ausgeführt",
   "taskStatus.success": "Erfolgreich",
   "taskStatus.failed": "Fehlgeschlagen",
   "taskStatus.cancelled": "Abgebrochen",
   "taskStatus.interrupted": "Unterbrochen",
-
   "taskKind.install": "Installation",
   "taskKind.activate": "Aktivierung",
   "taskKind.deactivate": "Deaktivierung",
   "taskKind.uninstall": "Deinstallation",
   "taskKind.resumeInstall": "Installation fortsetzen",
-
   "taskItem.resumable": "Fortsetzbar",
   "taskItem.cancel": "Abbrechen",
   "taskItem.resume": "Fortsetzen",
@@ -133,11 +118,9 @@
   "taskItem.elapsed": "Verstrichen {time}",
   "taskItem.duration": "Dauer {time}",
   "taskItem.workflowSteps": "Workflow-Schritte",
-
   "log.title": "Ausführungsprotokoll",
   "log.autoScroll": "Automatisches Scrollen",
   "log.empty": "Noch keine Protokolle",
-
   "settings.dirs": "Verzeichnisse",
   "settings.dirsHint": "Status, Protokolle und Quell-Cache werden immer im Verzeichnis .hienvs in Ihrem Home-Ordner gespeichert",
   "settings.installDir": "Installationsverzeichnis",
@@ -153,7 +136,6 @@
   "settings.namePlaceholder": "Name",
   "settings.urlPlaceholder": "https://example.com/index.json",
   "settings.folderPlaceholder": "Ordnerpfad",
-  "settings.downloadMirror": "Download und Spiegel",
   "settings.mirrorPolicy": "Spiegel-Richtlinie",
   "settings.mirrorPolicyHint": "Netzwerke in Festlandchina sollten \"Zuerst Festland-Spiegel\" bevorzugen",
   "settings.mirrorAuto": "Automatisch",
@@ -167,7 +149,6 @@
   "settings.languageHint": "Sprache der Oberfläche; folgt standardmäßig dem System",
   "settings.languageAuto": "Systemeinstellung folgen",
   "settings.saveSettings": "Einstellungen speichern",
-
   "step.download": "Paket herunterladen",
   "step.extract": "Entpacken",
   "step.move": "Verzeichnisstruktur anpassen",
@@ -185,5 +166,12 @@
   "step.shell.run": "Befehl ausführen",
   "step.cleanup": "Temporäre Dateien bereinigen",
   "step.builtin.link-current": "Aktive Version wechseln",
-  "step.builtin.unlink-current": "Deaktivieren"
+  "step.builtin.unlink-current": "Deaktivieren",
+  "settings.download": "Download",
+  "toast.sourceAdded": "Quelle hinzugefügt und initialisiert",
+  "toast.sourceRemoved": "Quelle entfernt",
+  "tools.all": "Alle",
+  "about.title": "Über HiEnvs",
+  "about.slogan": "Open-Source-Softwarequellen aus Community-Vertrauen",
+  "about.version": "Version {version}"
 }
