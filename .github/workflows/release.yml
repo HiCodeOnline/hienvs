@@ -30,8 +30,9 @@ jobs:
           cache: npm
 
       # 项目 .npmrc 配置了国内镜像（仅本地开发加速用），CI 海外 runner 移除以免拉取缓慢/失败
+      # 用 Node 删除以兼容 Windows(PowerShell)/macOS/Linux 三种默认 shell
       - name: Remove local mirror config
-        run: rm -f .npmrc
+        run: node -e "require('fs').rmSync('.npmrc',{force:true})"
 
       - name: Install dependencies
         run: npm ci

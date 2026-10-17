@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "description": "hienvs - 跨平台开发环境管理器：多版本下载、安装、切换，由远程 JSON 清单驱动的工作流编排",
   "main": "./out/main/index.js",
-  "author": "hienvs",
+  "author": {
+    "name": "HiCodeOnline",
+    "email": "hicodeonline@gmail.com",
+    "homepage": "https://www.hicode.online"
+  },
   "license": "MIT",
   "scripts": {
     "dev": "electron-vite dev",
