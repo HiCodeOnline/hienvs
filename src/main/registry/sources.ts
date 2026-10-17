@@ -74,7 +74,7 @@ async function loadIndex(
           continue
         }
       }
-      tools.push({ toolId: entry.id, manifest: parsed.data, sourceId: source.id, icon: entry.icon })
+      tools.push({ toolId: entry.id, manifest: parsed.data, sourceId: source.id, systemAgnostic: entry.systemAgnostic, icon: entry.icon })
     } catch (e) {
       errors.push(`${entry.id}: ${e instanceof Error ? e.message : String(e)}`)
     }

@@ -157,6 +157,8 @@ export interface RegistryIndexTool {
   homepage?: string
   /** 图标链接地址（刷新清单源时下载到本地缓存并展示） */
   icon?: string
+  /** 系统无关工具（如系统镜像）：跳过当前平台校验，所有系统均可下载 */
+  systemAgnostic?: boolean
   manifest: string
   manifestSha256?: string
 }

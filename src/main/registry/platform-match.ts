@@ -79,3 +79,17 @@ export function matchPlatform(
   }
   return index.get(`${os}-${arch}`) ?? index.get(os) ?? universal
 }
+
+/**
+ * 系统无关工具（systemAgnostic，如系统镜像）的平台解析：
+ * 先按常规规则匹配（含 none 兜底）；仍未命中时不判定为"不支持"，
+ * 而是回退到任意平台定义（镜像通常只声明单一平台键，但任何系统都应能下载该文件）。
+ */
+export function resolveAgnosticPlatform(
+  platforms: Record<string, PlatformDef> | undefined,
+  os: OsName,
+  arch: string
+): PlatformDef | undefined {
+  if (!platforms) return undefined
+  return matchPlatform(platforms, os, arch) ?? Object.values(platforms)[0]
+}

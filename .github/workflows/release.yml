@@ -1,0 +1,66 @@
+# 发布工作流：推送 v* 标签（如 v0.1.0）时在 Windows / macOS / Linux 三平台并行构建，
+# 并将产物自动上传到对应的 GitHub Release。
+# 注意：发标签前请先 bump package.json 的 version，产物文件名取自 version。
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # 项目 .npmrc 配置了国内镜像（仅本地开发加速用），CI 海外 runner 移除以免拉取缓慢/失败
+      - name: Remove local mirror config
+        run: rm -f .npmrc
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck & build
+        run: |
+          npm run typecheck
+          npm run build
+
+      - name: Package Windows (NSIS x64 + arm64)
+        if: runner.os == 'Windows'
+        run: npx electron-builder --win --x64 --arm64 --publish never
+
+      # macOS 未签名（electron-builder.yml identity: null），同一 runner 交叉产出 x64 与 arm64 dmg
+      - name: Package macOS (dmg)
+        if: runner.os == 'macOS'
+        run: npx electron-builder --mac --x64 --arm64 --publish never
+
+      - name: Package Linux (AppImage & deb, x64 + arm64)
+        if: runner.os == 'Linux'
+        run: npx electron-builder --linux --x64 --arm64 --publish never
+
+      # 标签推送触发时 action-gh-release 会自动创建同名 Release 并上传产物
+      - name: Upload artifacts to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.AppImage
+            dist/*.deb
+          generate_release_notes: true

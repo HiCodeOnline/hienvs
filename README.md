@@ -51,6 +51,8 @@ npm run dist:linux   # Linux
 
 清单资源通过 `extraResources` 随包分发。
 
+也可通过 GitHub Actions 自动发布：推送 `v*` 标签（如 `git tag v0.1.0 && git push --tags`）即触发 Windows / macOS / Linux 三平台并行构建，产物自动上传至对应 GitHub Release（见 [.github/workflows/release.yml](.github/workflows/release.yml)）。发标签前请先 bump `package.json` 的 `version`。
+
 ## 数据目录
 
 | 内容 | 位置 |

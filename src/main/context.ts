@@ -15,7 +15,7 @@ import type { LoadedTool } from './registry/sources'
 import { fetchIcon, readCachedIcon, writeIcon } from './registry/icons'
 import { PlanResolver, ResolveError } from './registry/resolver'
 import { compareVersions, currentOsName, makeVersionKey, safeVersionSegment, splitVersionKey } from '@shared/template'
-import { matchPlatform, normalizeArch } from './registry/platform-match'
+import { matchPlatform, resolveAgnosticPlatform, normalizeArch } from './registry/platform-match'
 import type { RegistrySnapshot, ToolSummary, VersionInfo, RegistrySource, RegistrySourceStatus, MirrorSource } from '@shared/registry-types'
 import type { EnvPlan, EnvPreview, EnvSnapshotData, TaskSnapshot } from '@shared/task-types'
 import type { AppInfo, AppSettings, DiskUsage, SystemToolInfo } from '@shared/tool-types'
@@ -391,7 +391,10 @@ export class AppContext {
         : [{ id: undefined, name: undefined, defaultVersion: tool.manifest.defaultVersion, platforms: tool.manifest.platforms ?? {} }]
     const out: VersionInfo[] = []
     for (const { id: distId, name, defaultVersion, platforms } of entries) {
-      const plat = matchPlatform(platforms, this.osName, this.arch)
+      // 系统无关工具（如系统镜像）：跳过当前平台校验，未命中时回退任意平台定义，所有系统均可下载
+      const plat = tool.systemAgnostic
+        ? resolveAgnosticPlatform(platforms, this.osName, this.arch)
+        : matchPlatform(platforms, this.osName, this.arch)
       const all = new Map<string, VersionInfo>()
       for (const p of Object.values(platforms)) {
         for (const [v, asset] of Object.entries(p.assets ?? {})) {

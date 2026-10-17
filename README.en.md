@@ -51,6 +51,8 @@ npm run dist:linux   # Linux
 
 Registry assets are bundled via `extraResources`.
 
+Releases can also be automated via GitHub Actions: pushing a `v*` tag (e.g. `git tag v0.1.0 && git push --tags`) triggers parallel Windows / macOS / Linux builds, with artifacts uploaded to the corresponding GitHub Release (see [.github/workflows/release.yml](.github/workflows/release.yml)). Bump `package.json` `version` before tagging.
+
 ## Data Directories
 
 | Content | Location |

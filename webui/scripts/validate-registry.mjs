@@ -144,6 +144,7 @@ function validateIndex(regionDir) {
       }
     }
     checkCond(t.icon === undefined || /^https?:\/\//.test(t.icon), `${t.id}: icon 为 http(s) 链接`)
+    checkCond(t.systemAgnostic === undefined || typeof t.systemAgnostic === 'boolean', `${t.id}: systemAgnostic 为布尔值`)
     checkCond(typeof t.manifest === 'string' && t.manifest.length > 0, `${t.id}: manifest 路径非空`)
   }
   return index

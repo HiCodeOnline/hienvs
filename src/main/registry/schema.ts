@@ -158,6 +158,11 @@ export const registryIndexSchema = z.object({
       category: categoryCodeSchema,
       homepage: z.string().optional(),
       icon: z.string().url().optional(),
+      /**
+       * 系统无关工具（如系统镜像）：客户端不校验当前平台是否支持，
+       * 命中平台缺失时回退到 none 键或任意平台定义的资产，所有系统均可下载。
+       */
+      systemAgnostic: z.boolean().optional(),
       manifest: z.string().min(1),
       manifestSha256: z.string().optional()
     }).passthrough()

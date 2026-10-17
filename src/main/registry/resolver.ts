@@ -6,7 +6,7 @@ import { renderDeep, safeVersionSegment, splitVersionKey, makeVersionKey } from 
 import type { AssetFormat, ManifestStep, AssetDef, PlatformDef, ToolEnvDef } from '@shared/registry-types'
 import type { TaskContext, ResolvedStep } from '../engine/types'
 import { buildEnvPlan, type ActiveToolRef } from '../services/env/planner'
-import { matchPlatform } from './platform-match'
+import { matchPlatform, resolveAgnosticPlatform } from './platform-match'
 import type { HienvsPaths } from '../core/paths'
 
 export interface ResolverDeps {
@@ -81,6 +81,13 @@ export class PlanResolver {
     return (def?.platforms ?? tool.manifest.platforms ?? {}) as Record<string, PlatformDef>
   }
 
+  /** 平台资产解析：系统无关工具（如系统镜像）跳过当前平台校验，未命中时回退任意平台定义 */
+  private matchToolPlatform(tool: LoadedTool, platforms: Record<string, PlatformDef>): PlatformDef | undefined {
+    return tool.systemAgnostic
+      ? resolveAgnosticPlatform(platforms, this.deps.platform, this.deps.arch)
+      : matchPlatform(platforms, this.deps.platform, this.deps.arch)
+  }
+
   /** 版本目录：多发行商工具含发行商层级 <toolId>/<dist>/v<version> */
   versionDirOf(toolId: string, dist: string | undefined, version: string): string {
     const seg = 'v' + safeVersionSegment(version)
@@ -94,7 +101,7 @@ export class PlanResolver {
     const { dist, version } = splitVersionKey(versionKey)
     this.resolveDist(tool, dist)
     const platforms = this.platformsOf(tool, dist)
-    const plat = matchPlatform(platforms, this.deps.platform, this.deps.arch)
+    const plat = this.matchToolPlatform(tool, platforms)
     if (!plat) return null
     const asset = plat.assets?.[version]
     if (!asset) return null
@@ -107,7 +114,7 @@ export class PlanResolver {
     const out: string[] = []
     for (const { id: distId } of this.distributionsOf(tool)) {
       const platforms = this.platformsOf(tool, distId)
-      const plat = matchPlatform(platforms, this.deps.platform, this.deps.arch)
+      const plat = this.matchToolPlatform(tool, platforms)
       for (const v of Object.keys(plat?.assets ?? {})) out.push(makeVersionKey(distId, v))
     }
     return out
