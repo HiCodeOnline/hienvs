@@ -52,6 +52,7 @@ export function registerAllIpc(ctx: AppContext): void {
   handle(IPC.ToolsDeactivate, (toolId: string) => ctx.deactivate(toolId))
   handle(IPC.ToolsUninstall, (req: { toolId: string; version?: string }) => ctx.uninstall(req.toolId, req.version))
   handle(IPC.ToolsDetectSystem, (toolId: string) => ctx.detectSystem(toolId))
+  handle(IPC.ToolsOpenVersionDir, (req: { toolId: string; version: string }) => ctx.openToolVersionDir(req.toolId, req.version))
 
   handle(IPC.TasksList, () => ctx.manager.list())
   handle(IPC.TasksGet, (taskId: string) => ctx.manager.get(taskId))

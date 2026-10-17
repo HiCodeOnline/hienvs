@@ -1,6 +1,7 @@
 // 通用小组件
 import { useState, type ReactNode } from 'react'
-import { currentLanguage } from '../../stores/i18n'
+import { currentLanguage, useI18n } from '../../stores/i18n'
+import { useAppStore } from '../../stores/app'
 
 export function Button({
   children,
@@ -183,6 +184,36 @@ export function formatVersionLabel(key: string, versions?: { key: string; versio
   if (v?.distName) return `${v.distName} ${v.version}`
   const i = key.indexOf('@')
   return i > 0 ? `${key.slice(0, i)} ${key.slice(i + 1)}` : key
+}
+
+/**
+ * 打开目录按钮：点击打开该版本对应的目录。
+ * 解压/落位安装的工具（如 jdk）打开版本安装目录，仅下载的工具（如 iso 镜像）打开下载目录，具体由主进程判定。
+ */
+export function OpenFolderButton({ toolId, version }: { toolId: string; version: string }) {
+  const t = useI18n()
+  const pushToast = useAppStore((s) => s.pushToast)
+  return (
+    <button
+      onClick={(e) => {
+        // 卡片整体可点击跳转详情，这里阻止冒泡
+        e.stopPropagation()
+        window.api
+          .openToolVersionDir(toolId, version)
+          .catch((err) => pushToast('error', err instanceof Error ? err.message : String(err)))
+      }}
+      title={t('common.openFolder')}
+      className="inline-flex shrink-0 cursor-pointer items-center rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+    >
+      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M4 6a2 2 0 012-2h3.2a1 1 0 01.8.4l1 1.2a1 1 0 00.8.4H18a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"
+        />
+      </svg>
+    </button>
+  )
 }
 
 export function formatBytes(n?: number): string {

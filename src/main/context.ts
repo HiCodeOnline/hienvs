@@ -729,6 +729,29 @@ export class AppContext {
     void shell.openPath(map[target])
   }
 
+  /**
+   * 打开某工具某版本的目录：
+   * 解压/落位安装的工具（如 jdk）打开版本安装目录；仅下载的工具（如 iso 镜像）打开该版本的下载目录
+   */
+  openToolVersionDir(toolId: string, versionKey: string): void {
+    const { dist, version } = splitVersionKey(versionKey)
+    const versionDir = this.resolver.versionDirOf(toolId, dist, version)
+    const downloadDir = dist
+      ? path.join(this.paths.downloadsDir, toolId, dist, safeVersionSegment(version))
+      : path.join(this.paths.downloadsDir, toolId, safeVersionSegment(version))
+    const isDir = (p: string): boolean => {
+      try {
+        return fs.statSync(p).isDirectory()
+      } catch {
+        return false
+      }
+    }
+    // 安装目录存在（已落位安装）优先，否则回退到该版本的下载目录，再回退到下载根目录
+    const target = isDir(versionDir) ? versionDir : isDir(downloadDir) ? downloadDir : this.paths.downloadsDir
+    logger.info(`[tools] 打开版本目录: ${toolId} ${versionKey} -> ${target}`)
+    void shell.openPath(target)
+  }
+
   genId(prefix: string): string {
     return `${prefix}-${randomUUID().slice(0, 8)}`
   }

@@ -6,7 +6,7 @@ import type { TaskSnapshot } from '@shared/task-types'
 import { useAppStore } from '../stores/app'
 import { useRegistryStore } from '../stores/registry'
 import { useI18n } from '../stores/i18n'
-import { Badge, Button, EmptyState, Modal, Spinner, ToolAvatar, formatBytes, formatVersionLabel } from '../components/common'
+import { Badge, Button, EmptyState, Modal, OpenFolderButton, Spinner, ToolAvatar, formatBytes, formatVersionLabel } from '../components/common'
 
 interface VersionGroup {
   dist?: string
@@ -239,6 +239,8 @@ export function ToolDetailPage({ toolId }: { toolId: string }) {
                             ) : (
                               <span className="text-xs text-zinc-400">{t('toolDetail.notInstalled')}</span>
                             )}
+                            {/* 已安装版本：打开该版本目录（安装目录或下载目录） */}
+                            {installed && <OpenFolderButton toolId={view.id} version={v.key} />}
                           </div>
                         </td>
                         <td className="px-4 py-3 text-end">

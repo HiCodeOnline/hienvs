@@ -8,7 +8,6 @@ import { useI18nStore, t } from './stores/i18n'
 import { Sidebar } from './components/layout/Sidebar'
 import { TitleBar } from './components/layout/TitleBar'
 import { StatusBar } from './components/layout/StatusBar'
-import { DashboardPage } from './pages/DashboardPage'
 import { ToolsPage } from './pages/ToolsPage'
 import { ToolDetailPage } from './pages/ToolDetailPage'
 import { TasksPage } from './pages/TasksPage'
@@ -76,7 +75,6 @@ export default function App() {
         {/* 内容区：圆角卡片 + 轻微悬浮效果，与上下/侧边外壳无缝衔接 */}
         <div className="min-w-0 flex-1 p-1.5">
           <main className="h-full overflow-y-auto rounded-xl bg-zinc-50 shadow-sm ring-1 ring-black/5 dark:bg-zinc-950 dark:ring-white/10">
-            {page === 'dashboard' && <DashboardPage />}
             {page === 'tools' && <ToolsPage />}
             {page === 'tool-detail' && detailToolId && <ToolDetailPage toolId={detailToolId} />}
             {page === 'tasks' && <TasksPage />}

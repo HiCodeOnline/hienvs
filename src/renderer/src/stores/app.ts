@@ -1,7 +1,7 @@
 // 全局应用状态：导航 / Toast / 主题
 import { create } from 'zustand'
 
-export type Page = 'dashboard' | 'tools' | 'tool-detail' | 'tasks' | 'settings'
+export type Page = 'tools' | 'tool-detail' | 'tasks' | 'settings'
 
 export interface Toast {
   id: number
@@ -23,7 +23,7 @@ interface AppState {
 let toastSeq = 1
 
 export const useAppStore = create<AppState>((set, get) => ({
-  page: 'dashboard',
+  page: 'tools',
   detailToolId: null,
   dark: false,
   toasts: [],

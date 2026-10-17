@@ -45,6 +45,7 @@ const api = {
   deactivateTool: (toolId: string) => invoke<{ taskId: string }>(IPC.ToolsDeactivate, toolId),
   uninstallTool: (toolId: string, version?: string) => invoke<{ taskId: string }>(IPC.ToolsUninstall, { toolId, version }),
   detectSystem: (toolId: string) => invoke<import('../shared/tool-types').SystemToolInfo>(IPC.ToolsDetectSystem, toolId),
+  openToolVersionDir: (toolId: string, version: string) => invoke<void>(IPC.ToolsOpenVersionDir, { toolId, version }),
 
   // 任务
   tasksList: () => invoke<import('../shared/task-types').TaskSnapshot[]>(IPC.TasksList),

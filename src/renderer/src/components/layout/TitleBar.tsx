@@ -1,20 +1,11 @@
 // 自定义标题栏：窗口控制按钮按平台适配（macOS 原生红绿灯 / Windows 直角 / Linux 圆形）
 import { useEffect, useState } from 'react'
-import { useAppStore } from '../../stores/app'
 import { useI18n } from '../../stores/i18n'
 import logo from '../../assets/logo.png'
 
 const PLATFORM = window.api.platform
 const IS_MAC = PLATFORM === 'darwin'
 const IS_LINUX = PLATFORM === 'linux'
-
-/** 在标题栏展示标题的页面（其余页面仅显示图标） */
-const PAGE_TITLE: Partial<Record<string, string>> = {
-  dashboard: 'title.dashboard',
-  tools: 'nav.tools',
-  tasks: 'nav.tasks',
-  settings: 'nav.settings'
-}
 
 /** Windows 风格图标：1px 细线，10×10 视口 */
 function WinMinIcon() {
@@ -142,7 +133,6 @@ function LinuxControls({ maximized }: { maximized: boolean }) {
 }
 
 export function TitleBar() {
-  const page = useAppStore((s) => s.page)
   const t = useI18n()
   const [maximized, setMaximized] = useState(false)
 
@@ -159,12 +149,10 @@ export function TitleBar() {
       dir="ltr"
       className="drag-region flex h-10 shrink-0 select-none items-center"
     >
-      {/* macOS 左侧预留原生红绿灯区域；应用图标固定在顶部，其后跟随当前页面标题 */}
+      {/* macOS 左侧预留原生红绿灯区域；应用图标后固定展示应用名称 HiEnvs */}
       <div className={`flex h-full items-center gap-2 ${IS_MAC ? 'ps-20' : 'ps-3'}`}>
         <img src={logo} alt="" className="h-5 w-5" draggable={false} />
-        {PAGE_TITLE[page] && (
-          <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">{t(PAGE_TITLE[page] as string)}</span>
-        )}
+        <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">{t('title.app')}</span>
       </div>
       <div className="flex-1" />
       {!IS_MAC && (IS_LINUX ? <LinuxControls maximized={maximized} /> : <WindowsControls maximized={maximized} />)}

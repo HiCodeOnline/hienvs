@@ -17,8 +17,11 @@ export function ToolsPage() {
   const t = useI18n()
   const [keyword, setKeyword] = useState('')
   const [refreshing, setRefreshing] = useState(false)
-  const [activeSource, setActiveSource] = useState<string | null>(null)
-  const [activeCategory, setActiveCategory] = useState<string>('all')
+  // 源与分类选择放在 registry store：从详情页返回时组件重挂载也不丢失
+  const activeSource = useRegistryStore((s) => s.activeSourceId)
+  const setActiveSource = useRegistryStore((s) => s.setActiveSourceId)
+  const activeCategory = useRegistryStore((s) => s.activeCategory)
+  const setActiveCategory = useRegistryStore((s) => s.setActiveCategory)
 
   const sources = useMemo(() => snapshot?.sources ?? [], [snapshot])
   const current = sources.find((s) => s.id === activeId()) ?? null

@@ -32,6 +32,9 @@ const STEP_TYPES = new Set([
   'builtin.unlink-current'
 ])
 
+// 下载链接：http(s) 直链 / BT（magnet: 或 http .torrent）/ ed2k 文件链接
+const DOWNLOAD_URL_RE = /^(https?:\/\/|magnet:\?|ed2k:\/\/\|file\|)/
+
 function checkCond(cond, msg) {
   if (cond) ok(msg)
   else err(msg)
@@ -73,7 +76,7 @@ function validatePlatforms(platforms, defaultVersion, label) {
     const assets = plat.assets ?? {}
     checkCond(Object.keys(assets).length > 0, `${label}${platKey}: assets 非空`)
     for (const [ver, asset] of Object.entries(assets)) {
-      checkCond(/^https?:\/\//.test(asset.url ?? ''), `${label}${platKey}@${ver}: url 为 http(s)`)
+      checkCond(DOWNLOAD_URL_RE.test(asset.url ?? ''), `${label}${platKey}@${ver}: url 为 http(s)/BT/ed2k`)
       if (asset.sha256 !== undefined) {
         checkCond(/^[a-f0-9]{64}$/i.test(asset.sha256), `${label}${platKey}@${ver}: sha256 为 64 位 hex`)
       }
@@ -85,7 +88,7 @@ function validatePlatforms(platforms, defaultVersion, label) {
       }
       for (const mir of asset.mirrors ?? []) {
         const url = typeof mir === 'string' ? mir : mir?.url
-        checkCond(/^https?:\/\//.test(url ?? ''), `${label}${platKey}@${ver}: 镜像 url 为 http(s)`)
+        checkCond(DOWNLOAD_URL_RE.test(url ?? ''), `${label}${platKey}@${ver}: 镜像 url 为 http(s)/BT/ed2k`)
         if (typeof mir !== 'string') {
           checkCond(typeof mir?.name === 'string' && mir.name.length > 0, `${label}${platKey}@${ver}: 镜像 name 非空`)
           checkCond(

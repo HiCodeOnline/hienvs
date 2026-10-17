@@ -1,9 +1,7 @@
 // 工具卡片
-import type { MouseEvent } from 'react'
 import type { ToolSummary } from '@shared/registry-types'
-import { useAppStore } from '../../stores/app'
 import { useI18n } from '../../stores/i18n'
-import { Badge, ToolAvatar, formatVersionLabel } from '../common'
+import { Badge, OpenFolderButton, ToolAvatar, formatVersionLabel } from '../common'
 
 /** 分类 -> 文案键（源未提供分类名时的内置回退） */
 const CATEGORY_LABEL: Record<string, string> = {
@@ -17,23 +15,15 @@ const CATEGORY_LABEL: Record<string, string> = {
 export function ToolCard({
   tool,
   onOpen,
-  showOpen = false,
   categoryName
 }: {
   tool: ToolSummary
   onOpen: () => void
-  /** 仪表盘展示：激活版本配置了 launch 入口时显示「打开」按钮 */
-  showOpen?: boolean
   /** 工具箱传入的源配置分类名；未传时回退内置分类文案或原始编码 */
   categoryName?: string
 }) {
   const t = useI18n()
-  const pushToast = useAppStore((s) => s.pushToast)
 
-  function openApp(e: MouseEvent) {
-    e.stopPropagation()
-    window.api.launchTool(tool.id).catch((err) => pushToast('error', err instanceof Error ? err.message : String(err)))
-  }
   return (
     <div
       onClick={onOpen}
@@ -72,18 +62,8 @@ export function ToolCard({
           <Badge tone="green">
             {t('toolCard.active', { version: formatVersionLabel(tool.activeVersion, tool.versions) })}
           </Badge>
-          {showOpen && tool.launch && (
-            <button
-              onClick={openApp}
-              title={t('toolCard.open')}
-              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-sky-600 ring-1 ring-sky-200 transition hover:bg-sky-50 dark:text-sky-400 dark:ring-sky-500/30 dark:hover:bg-sky-500/10"
-            >
-              <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M14 5h5v5m0-5l-8.5 8.5M19 14v4a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h4" />
-              </svg>
-              {t('toolCard.open')}
-            </button>
-          )}
+          {/* 打开该版本目录（安装目录或下载目录） */}
+          <OpenFolderButton toolId={tool.id} version={tool.activeVersion} />
         </div>
       )}
     </div>

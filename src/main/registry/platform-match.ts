@@ -57,6 +57,7 @@ export function parsePlatformKey(key: string): { os: OsName; arch?: string } | n
  * 架构感知的平台匹配：
  * 1. 精确键 `${os}-${arch}`（如 windows-x64 / linux-arm64）
  * 2. 通用键 `${os}`（架构无关资产）
+ * 3. 平台无关键 `none`（不关心平台的资产，如系统镜像类纯下载工具，所有系统平台均可下载）
  * 不做跨架构回退：x64 机器不会拿到 x86 资产，arm64 机器不会拿到 x64 资产。
  */
 export function matchPlatform(
@@ -66,10 +67,15 @@ export function matchPlatform(
 ): PlatformDef | undefined {
   if (!platforms) return undefined
   const index = new Map<string, PlatformDef>()
+  let universal: PlatformDef | undefined
   for (const [key, def] of Object.entries(platforms)) {
+    if (key.toLowerCase() === 'none') {
+      universal = def
+      continue
+    }
     const parsed = parsePlatformKey(key)
     if (!parsed) continue
     index.set(parsed.arch ? `${parsed.os}-${parsed.arch}` : parsed.os, def)
   }
-  return index.get(`${os}-${arch}`) ?? index.get(os)
+  return index.get(`${os}-${arch}`) ?? index.get(os) ?? universal
 }

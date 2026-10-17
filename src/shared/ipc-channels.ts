@@ -22,6 +22,7 @@ export const IPC = {
   ToolsDeactivate: 'tools:deactivate',
   ToolsUninstall: 'tools:uninstall',
   ToolsDetectSystem: 'tools:detectSystem',
+  ToolsOpenVersionDir: 'tools:openVersionDir',
 
   // invoke: 任务
   TasksList: 'tasks:list',
